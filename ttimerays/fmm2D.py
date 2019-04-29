@@ -40,6 +40,25 @@ class Grid2D():
 #################################################
 
 def forwtt(vel,grdh,xinit,yinit,coordsrc,coordrec,ttarrout=False) :
+    """
+      Traveltime calculation given a source and related receivers.
+      
+      Parameters
+      ------------------------------------------
+      vel:   input velocity model
+      grdh:  grid spacing
+      xinit: x axis origin coordinate
+      yinit: y axis origin coordinate
+      coordsrc: coordinates of the sources
+      coordred: coordinates of the receivers
+      ttarrout: Optionally returns the full array of traveltimes
+      
+      Returns
+      ------------------------------------------
+      ttpicks: the traveltimes at the receivers
+      ttarr: optionally return the traveltime array
+      
+    """
 
     nx,ny = vel.shape
     grd = Grid2D(nx,ny,grdh,xinit,yinit)
@@ -59,6 +78,9 @@ def forwtt(vel,grdh,xinit,yinit,coordsrc,coordrec,ttarrout=False) :
 #################################################
 
 def bilinear_interp(f,hgrid,xinit,yinit,xreq,yreq) :
+    """
+     Bilinear interpolation (2D).
+    """
     nx,ny = f.shape
     ## rearrange such that the coordinates of corners are (0,0), (0,1), (1,0), and (1,1)
     xh=(xreq-xinit)/hgrid
@@ -94,6 +116,9 @@ def bilinear_interp(f,hgrid,xinit,yinit,xreq,yreq) :
 #################################################
 
 def fmm_findclosestnode(x,y,xinit,yinit,h) :
+    """
+     Find closest grid node to given coordinates.
+    """
     # xini ???
     # yini ???
     ix = int(__NP.floor((x-xinit)/h))
@@ -111,6 +136,20 @@ def fmm_findclosestnode(x,y,xinit,yinit,h) :
 #################################################
 
 def ttFMM(vel,src,grd) :
+    """   
+     Fast marching method to compute traveltimes in 2D
+     
+     Parameters
+     -------------------------
+     vel: input velocity model
+     src: source position
+     grd: grid parameters
+     
+     Returns
+     ----------------------
+     ttime: array of traveltimes
+     
+    """
 
     epsilon = 1e-6
       
