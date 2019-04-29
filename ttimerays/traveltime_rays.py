@@ -30,12 +30,18 @@ tolerance = 1e-6
 ###########################################################################
 
 def rollmod(mod,nx,ny) :
+    """
+     Reshape a flattened model to 2D
+    """
     modr = mod.copy().reshape(nx,ny,order='F')
     return modr
 
 #############################################################
 
 def unrollmod(mod) :
+    """
+      Flatten a 2D model to a vector, using column-major Fortran order.
+    """
     modu = mod.copy().flatten('F')
     return mody
 
@@ -66,7 +72,7 @@ def setupgrid(nx,ny,dx,dy,xinit,yinit) :
 
 def lininv(G,cov_m,cov_d,mprior,dobs) :
     """
-    Linear inversion under gaussian assumptions
+    Linear inversion under Gaussian assumptions.
     """
     assert dobs.ndim==1
     assert mprior.ndim==1
@@ -105,6 +111,9 @@ def lininv(G,cov_m,cov_d,mprior,dobs) :
 ###########################################################################
 
 def __bilinear_interp(f,hgrid, pt):
+    """ 
+     Bilinear interpolation.
+    """
     xreq=pt[0]
     yreq=pt[1]
     xh=xreq/hgrid
@@ -120,7 +129,20 @@ def __bilinear_interp(f,hgrid, pt):
 
 def traveltime(velmod,gridpar,srcs,recs) :
     """
-      Calculate traveltime for all sources
+      Calculate traveltime for all sources and receivers.
+      
+      Parameters
+      --------------------------------
+      velmod: input velocity model
+      gridpar: grid parameters      
+      srcs: coordinates of sources
+      recs: coordinates of receivers
+      
+      Returns
+      --------------------------------
+      ttpicks: traveltimes at the receivers
+      ttime: traveltime arrays
+      
     """
     assert gridpar['dx'] == gridpar['dy']
     hgrid = gridpar['dx']
@@ -263,7 +285,7 @@ def __pointisonLINE(a,b, pointc):
 
 def __segintersRECT(rect,seg,rectangle=True) :
     """
-    find intersection of segments and a polygon
+    Find intersection of segments and a polygon.
 
     """
     if rectangle==True :
@@ -321,7 +343,7 @@ def __findclosestnode(xini,yini,dx,dy,pt) :
 def __findcelledge(xini,yini,dx,dy,nx,ny, pt, endptgrad, source=False ) :
 
     """
-    find the corners defining the cell where ray will propagate next
+     Find the corners defining the cell where ray will propagate next
 
     """
     
@@ -429,7 +451,10 @@ def __findcelledge(xini,yini,dx,dy,nx,ny, pt, endptgrad, source=False ) :
 
 ##########################################################
 
-def __ijinvelgrid(segment,gridpar) :    
+def __ijinvelgrid(segment,gridpar) :
+    """
+     Get the indices of the velocity cell related to a given segment.
+    """
     xini=gridpar['xvelmin']
     yini=gridpar['yvelmin']
     dx=gridpar['dx']
@@ -445,7 +470,9 @@ def __ijinvelgrid(segment,gridpar) :
 ##########################################################
 
 def __globgrad(gridpar,ttime) :
-   
+    """
+      Calculate interpolant functions for the gradient of the traveltime array.
+    """
     assert gridpar['dx']==gridpar['dy']
     h = gridpar['dx']
     globxgrad,globygrad = __NP.gradient(ttime,h) #,edge_order=2)
@@ -469,6 +496,9 @@ def __globgrad(gridpar,ttime) :
 ###########################################################
 
 def __gradatpt(fxgrad,fygrad,pt) :
+    """
+     Compute gradient at point pt.
+    """
     xgr = fxgrad(pt[0],pt[1])[0]
     ygr = fygrad(pt[0],pt[1])[0]
     #print '>> grad >>> ',xgr,ygr,'pt',pt
@@ -636,7 +666,7 @@ def traceray(gridpar,recpos,coordsrc, ttime) :
 
 def traceallrays(gridpar,srccoo,reccoo,grdsttime) :
     """
-    Trace multiple rays
+    Trace multiple rays.
     """
     assert reccoo.ndim==2
     assert srccoo.ndim==2
@@ -661,7 +691,7 @@ def traceallrays(gridpar,srccoo,reccoo,grdsttime) :
             
 def trace_straight_ray(gridpar,srcpos,recpos) :
     """
-    Trace a straight ray, from receiver to source 
+    Trace a straight ray, from receiver to source.
     """
 
     xini = gridpar['xttmin'] 
@@ -740,7 +770,7 @@ def trace_straight_ray(gridpar,srcpos,recpos) :
 
 def traceall_straight_rays(gridpar,srccoo,reccoo) :
     """
-    Trace multiple rays
+    Trace multiple straight rays.
     """
     assert reccoo.ndim==2
     assert srccoo.ndim==2
@@ -764,7 +794,7 @@ def traceall_straight_rays(gridpar,srccoo,reccoo) :
 
 def buildtomomat(gridpar,rays, ttpick) :
     """
-    Build forward matrix
+    Build forward matrix for traveltime tomography.
     """
     print("Building forward matrix")
     nrec = rays.shape[0]
@@ -808,7 +838,7 @@ def plotgrid(gridpar) :
 
 def plotrays(src,rec,rays) :
     """
-    Plot rays as polyline
+    Plot rays as polylines.
     """
     for j in range(rays.shape[1]) :
         __PL.plot(src[j,0],src[j,1],'ok',zorder=100)
@@ -823,7 +853,7 @@ def plotrays(src,rec,rays) :
 
 def plotvelmod(gridpar,velmod,vmin=None,vmax=None) :
     """
-      Plot velocity model
+      Plot velocity model.
     """
     if vmin==None and vmax==None :
         vmin=velmod.min()
@@ -841,7 +871,7 @@ def plotvelmod(gridpar,velmod,vmin=None,vmax=None) :
 
 def plotttimemod(gridpar,ttime) :
     """
-      Plot velocity model
+      Plot traveltime array.
     """
     extent_ttime = [gridpar['xttmin']-gridpar['dx']/2.0,gridpar['xttmax']+gridpar['dx']/2.0,
                     gridpar['yttmax']+gridpar['dy']/2.0,gridpar['yttmin']-gridpar['dy']/2.0 ]
