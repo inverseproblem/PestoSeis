@@ -12,13 +12,17 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#     along with this program. If not, see <https://www.gnu.org/licenses/>.#!/usr/bin/env python3
+#     along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 
-import ttimerays.binheap as __BH
-# import importlib
-# importlib.reload(BH)
+"""
+.. module:: fmm2D
+    :synopsis: Fast marching method in 2D to compute seismic traveltimes.
+ 
+.. moduleauthor:: Andrea Zunino
+"""
 
+from .binheap import BinHeapMin
 import numpy as __NP
 
 #################################################
@@ -272,7 +276,7 @@ def ttFMM(vel,src,grd) :
     Nmax = nx*ny
     ## ???? bheap = build_minheap(Array{Float64}(0),Nmax,Array{Int64}(0))
     ## initialize an empty min bin heap
-    bheap = __BH.BinHeapMin(__NP.array([]),Nmax,__NP.array([]))
+    bheap = BinHeapMin(__NP.array([]),Nmax,__NP.array([]))
 
     
     ## pre-allocate

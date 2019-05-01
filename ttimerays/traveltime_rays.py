@@ -22,7 +22,7 @@ import sys as __sys
 from scipy import linalg as __LA
 from scipy import interpolate as __SPINT
 
-from ttimerays import forwtt
+from .fmm2D import forwtt
 
 ### important!
 tolerance = 1e-6
