@@ -15,6 +15,12 @@
 #     along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 
+"""
+.. module:: traveltime_rays.py
+    :synopsis: A set of functions to compute seismic traveltimes, trace rays and performing simple ray tomography.
+ 
+.. moduleauthor:: Andrea Zunino
+"""
 import numpy as __NP
 import matplotlib.pyplot as __PL
 #import fdtime2d as TT
@@ -22,7 +28,7 @@ import sys as __sys
 from scipy import linalg as __LA
 from scipy import interpolate as __SPINT
 
-from .fmm2D import forwtt
+from ttimerays.fmm2D import forwtt as _forwtt
 
 ### important!
 tolerance = 1e-6
@@ -31,7 +37,15 @@ tolerance = 1e-6
 
 def rollmod(mod,nx,ny) :
     """
-     Reshape a flattened model to 2D
+    Reshape a flattened (a vector) model to 2D (an array).
+
+    :param mod: input flattened model
+    :type mod: numpy.ndarray (2D)
+    :param nx,ny: sizes of the input 2D model
+    :type nx,ny: int,int
+
+    :returns: the reshaped model as a 2D array
+    :rtype: numpy.ndarray (2D)
     """
     modr = mod.copy().reshape(nx,ny,order='F')
     return modr
@@ -40,32 +54,41 @@ def rollmod(mod,nx,ny) :
 
 def unrollmod(mod) :
     """
-      Flatten a 2D model to a vector, using column-major Fortran order.
+    Flatten a 2D model to a vector, using column-major Fortran order.
+   
+    :param mod: input 2D model (probably velocity)
+    
+    :returns: the flattened model as a vector (1D)
+
     """
     modu = mod.copy().flatten('F')
     return mody
 
 #############################################################
 
-def setupgrid(nx,ny,dx,dy,xinit,yinit) :
-    """
-      Setup grid parameters
+def setupgrid(nx,ny,dh,xinit,yinit) :
+    """    
+    Setup grid parameters.
+
+    :param nx,ny: grid dimensions in x and y
+    :param dx,dy: grid spacing (cell size) in x and y
+    :param xinit,yinit: x and y axes origin
+
     """
     gridpar = {}
-    gridpar['dx']  = float(dx)
-    gridpar['dy']  = float(dy)
+    gridpar['dh']  = float(dh)
     gridpar['nx']  = int(nx)
     gridpar['ny']  = int(ny)
     gridpar['xinit']  = float(xinit)
     gridpar['yinit']  = float(yinit)
-    gridpar['xttmin'] = float(xinit) - gridpar['dx']/2.0 #  float(xttmin)
-    gridpar['yttmin'] = float(yinit) - gridpar['dy']/2.0 #  float(yttmin)
-    gridpar['xttmax'] = gridpar['nx']*gridpar['dx']+gridpar['xttmin']
-    gridpar['yttmax'] = gridpar['ny']*gridpar['dy']+gridpar['yttmin']
-    gridpar['xvelmin'] = gridpar['xttmin']+gridpar['dx']/2.0
-    gridpar['yvelmin'] = gridpar['yttmin']+gridpar['dy']/2.0
-    gridpar['xvelmax'] = gridpar['nx']*gridpar['dx']+gridpar['xttmin']-gridpar['dx']/2.0
-    gridpar['yvelmax'] = gridpar['ny']*gridpar['dy']+gridpar['yttmin']-gridpar['dy']/2.0
+    gridpar['xttmin'] = float(xinit) - gridpar['dh']/2.0 #  float(xttmin)
+    gridpar['yttmin'] = float(yinit) - gridpar['dh']/2.0 #  float(yttmin)
+    gridpar['xttmax'] = gridpar['nx']*gridpar['dh']+gridpar['xttmin']
+    gridpar['yttmax'] = gridpar['ny']*gridpar['dh']+gridpar['yttmin']
+    gridpar['xvelmin'] = gridpar['xttmin']+gridpar['dh']/2.0
+    gridpar['yvelmin'] = gridpar['yttmin']+gridpar['dh']/2.0
+    gridpar['xvelmax'] = gridpar['nx']*gridpar['dh']+gridpar['xttmin']-gridpar['dh']/2.0
+    gridpar['yvelmax'] = gridpar['ny']*gridpar['dh']+gridpar['yttmin']-gridpar['dh']/2.0
     return gridpar
 
 ###########################################################################
@@ -73,6 +96,14 @@ def setupgrid(nx,ny,dx,dy,xinit,yinit) :
 def lininv(G,cov_m,cov_d,mprior,dobs) :
     """
     Linear inversion under Gaussian assumptions.
+
+    :param G: forward model matrix (d=Gm)
+    :param cov_m,cov_d: covariances for model parameters and observed data, respectively
+    :param mprior: prior model
+    :param dobs: obsrved data
+
+    :returns: the posterior mean model and the posterior covariance matrix
+
     """
     assert dobs.ndim==1
     assert mprior.ndim==1
@@ -131,21 +162,16 @@ def traveltime(velmod,gridpar,srcs,recs) :
     """
       Calculate traveltime for all sources and receivers.
       
-      Parameters
-      --------------------------------
-      velmod: input velocity model
-      gridpar: grid parameters      
-      srcs: coordinates of sources
-      recs: coordinates of receivers
+      :param velmod: input velocity model
+      :param gridpar: grid parameters dictionary (as defined by setupgrid())    
+      :param srcs: coordinates of sources
+      :param recs: coordinates of receivers
       
-      Returns
-      --------------------------------
-      ttpicks: traveltimes at the receivers
-      ttime: traveltime arrays
+      :returns: traveltimes at the receivers and traveltime arrays
       
     """
-    assert gridpar['dx'] == gridpar['dy']
-    hgrid = gridpar['dx']
+    #assert gridpar['dx'] == gridpar['dy']
+    hgrid = gridpar['dh']
     xinit = gridpar['xinit']
     yinit = gridpar['yinit']
     nsrc = srcs.shape[0]
@@ -156,7 +182,7 @@ def traveltime(velmod,gridpar,srcs,recs) :
         __sys.stdout.write(line)
         __sys.stdout.flush()
 
-        ttpicks[i],ttime[i] = forwtt(velmod,hgrid,xinit,yinit,srcs[i,:],recs,ttarrout=True)
+        ttpicks[i],ttime[i] = _forwtt(velmod,hgrid,xinit,yinit,srcs[i,:],recs,ttarrout=True)
         
         ##ttpicks[i],ttime[i]=traveltimesinglesrc(velmod,gridpar,srcs[i,:],recs)
     print(' ')
@@ -457,8 +483,8 @@ def __ijinvelgrid(segment,gridpar) :
     """
     xini=gridpar['xvelmin']
     yini=gridpar['yvelmin']
-    dx=gridpar['dx']
-    dy=gridpar['dy']
+    dx=gridpar['dh']
+    dy=gridpar['dh']
     ## calculate midpoint of segment
     midpoint = (segment[0,:]+segment[1,:])/2.0
     ## indices corresponding to the nearest velocity model cell
@@ -473,8 +499,8 @@ def __globgrad(gridpar,ttime) :
     """
       Calculate interpolant functions for the gradient of the traveltime array.
     """
-    assert gridpar['dx']==gridpar['dy']
-    h = gridpar['dx']
+    #assert gridpar['dx']==gridpar['dy']
+    h = gridpar['dh']
     globxgrad,globygrad = __NP.gradient(ttime,h) #,edge_order=2)
     # x, y : array_like
     # Arrays defining the data point coordinates.
@@ -561,14 +587,22 @@ def __ptinbounds(gridpar,pt) :
 
 ##########################################################
 
-def traceray(gridpar,recpos,coordsrc, ttime) :
+def _traceray(gridpar,recpos,coordsrc, ttime) :
     """
-    Back-trace ray using negative gradient of traveltime direction
+    Back-trace a single ray using negative gradient of traveltime direction
+
+    :param gridpar: grid parameters dictionary (as defined by setupgrid())    
+    :param recpos: position of the receiver
+    :param srcpos: position of the source
+    :param ttime: traveltime array (2D)
+
+    :returns: the traced ray 
+
     """
     xini = gridpar['xttmin'] 
     yini = gridpar['yttmin']
-    dx = gridpar['dx'] 
-    dy = gridpar['dy'] 
+    dx = gridpar['dh'] 
+    dy = gridpar['dh'] 
     nx = int(gridpar['nx']) 
     ny = int(gridpar['ny'])
     
@@ -666,7 +700,15 @@ def traceray(gridpar,recpos,coordsrc, ttime) :
 
 def traceallrays(gridpar,srccoo,reccoo,grdsttime) :
     """
-    Trace multiple rays.
+    Trace multiple rays, for all sources and receivers.
+
+    :param gridpar: grid parameters dictionary (as defined by setupgrid())    
+    :param srccoo: position of the source, a 2D array with two columns, representing x and y
+    :param reccoo: position of the receiver, a 2D array with two columns, representing x and y
+    :param grdsttime: array of traveltime arrays [list of 2D arrays, one per source]
+
+    :returns: the traced rays 
+
     """
     assert reccoo.ndim==2
     assert srccoo.ndim==2
@@ -683,21 +725,22 @@ def traceallrays(gridpar,srccoo,reccoo,grdsttime) :
         for i in range(nrec) :
             # print('tracing ray for receiver',i+1,'of',nrec)
             singlerec = reccoo[i,:]
-            rays[i,j] = traceray(gridpar,singlerec,singlesrc,ttime)
+            rays[i,j] = _traceray(gridpar,singlerec,singlesrc,ttime)
     print(' ')
     return rays
 
 ##########################################################
             
-def trace_straight_ray(gridpar,srcpos,recpos) :
+def _trace_straight_ray(gridpar,srcpos,recpos) :
     """
     Trace a straight ray, from receiver to source.
+
     """
 
     xini = gridpar['xttmin'] 
     yini = gridpar['yttmin']
-    dx = gridpar['dx'] 
-    dy = gridpar['dy'] 
+    dx = gridpar['dh'] 
+    dy = gridpar['dh'] 
     nx = int(gridpar['nx']) 
     ny = int(gridpar['ny'])
     
@@ -771,6 +814,11 @@ def trace_straight_ray(gridpar,srcpos,recpos) :
 def traceall_straight_rays(gridpar,srccoo,reccoo) :
     """
     Trace multiple straight rays.
+
+    :param gridpar: grid parameters dictionary (as defined by setupgrid())    
+    :param srccoo: position of the source, a 2D array with two columns, representing x and y
+    :param reccoo: position of the receiver, a 2D array with two columns, representing x and y
+
     """
     assert reccoo.ndim==2
     assert srccoo.ndim==2
@@ -785,7 +833,7 @@ def traceall_straight_rays(gridpar,srccoo,reccoo) :
         for i in range(nrec) :
             # print('tracing ray for receiver',i+1,'of',nrec)
             singlerec = reccoo[i,:]
-            rays[i,j] = trace_straight_ray(gridpar,singlesrc,singlerec)
+            rays[i,j] = _trace_straight_ray(gridpar,singlesrc,singlerec)
             
     print(' ')
     return rays
@@ -794,7 +842,15 @@ def traceall_straight_rays(gridpar,srccoo,reccoo) :
 
 def buildtomomat(gridpar,rays, ttpick) :
     """
-    Build forward matrix for traveltime tomography.
+    Build forward matrix from rays for traveltime tomography.
+
+    :param gridpar: grid parameters dictionary (as defined by setupgrid())    
+    :param rays: seismic rays, as outputted by traceallrays()
+    :param ttpick: traveltime picks at the receivers
+
+    :returns: the 'tomography' matrix and the vector of traveltime picks 
+                  (flattened for performing tomography)
+
     """
     print("Building forward matrix")
     nrec = rays.shape[0]
@@ -821,14 +877,17 @@ def buildtomomat(gridpar,rays, ttpick) :
 def plotgrid(gridpar) :
     """
     Plot staggered grid edges: traveltime at nodes and velocity in cells
+
+    :param gridpar: grid parameters dictionary (as defined by setupgrid())    
+
     """
     for j in range(gridpar['ny']+1):
-        __PL.hlines(y = gridpar['yttmin'] + j*gridpar['dy'], xmin = gridpar['xttmin'],
-                  xmax = gridpar['xttmin'] + gridpar['nx']*gridpar['dx'],
+        __PL.hlines(y = gridpar['yttmin'] + j*gridpar['dh'], xmin = gridpar['xttmin'],
+                  xmax = gridpar['xttmin'] + gridpar['nx']*gridpar['dh'],
                   color='black',linewidth=0.6)
     for j in range(gridpar['nx']+1):
-        __PL.vlines(x =  gridpar['xttmin'] + j*gridpar['dx'], ymin = gridpar['yttmin'],
-                  ymax = gridpar['yttmin'] + gridpar['ny']*gridpar['dy'],
+        __PL.vlines(x =  gridpar['xttmin'] + j*gridpar['dh'], ymin = gridpar['yttmin'],
+                  ymax = gridpar['yttmin'] + gridpar['ny']*gridpar['dh'],
                   color='black',linewidth=0.6)
     __PL.xlim([gridpar['xttmin'],gridpar['xttmax']])
     __PL.ylim([gridpar['yttmax'],gridpar['yttmin']]) 
@@ -839,6 +898,11 @@ def plotgrid(gridpar) :
 def plotrays(src,rec,rays) :
     """
     Plot rays as polylines.
+
+    :param src: coordinates of the sources
+    :param rec: coordinates of the receivers
+    :param rays: seismic rays, as outputted by traceallrays()
+
     """
     for j in range(rays.shape[1]) :
         __PL.plot(src[j,0],src[j,1],'ok',zorder=100)
@@ -853,14 +917,19 @@ def plotrays(src,rec,rays) :
 
 def plotvelmod(gridpar,velmod,vmin=None,vmax=None) :
     """
-      Plot velocity model.
+    Plot velocity model as an image.
+
+    :param gridpar: grid parameters dictionary (as defined by setupgrid())    
+    :param velmod: velocity model
+    :param vmin,vmax: optional values to clip the colorbar min and max values
+
     """
     if vmin==None and vmax==None :
         vmin=velmod.min()
         vmax=velmod.max()
     
-    extent_vel = [gridpar['xvelmin']-gridpar['dx']/2.0,gridpar['xvelmax']+gridpar['dx']/2.0,
-                  gridpar['yvelmax']+gridpar['dy']/2.0,gridpar['yvelmin']-gridpar['dy']/2.0 ]
+    extent_vel = [gridpar['xvelmin']-gridpar['dh']/2.0,gridpar['xvelmax']+gridpar['dh']/2.0,
+                  gridpar['yvelmax']+gridpar['dh']/2.0,gridpar['yvelmin']-gridpar['dh']/2.0 ]
     __PL.imshow(velmod.T,interpolation='nearest',extent=extent_vel,
               origin='upper',cmap=__PL.cm.rainbow,aspect='auto',vmin=vmin,vmax=vmax)
     __PL.colorbar()
@@ -871,10 +940,14 @@ def plotvelmod(gridpar,velmod,vmin=None,vmax=None) :
 
 def plotttimemod(gridpar,ttime) :
     """
-      Plot traveltime array.
+    Plot traveltime array as an image.
+
+    :param gridpar: grid parameters dictionary (as defined by setupgrid()) 
+    :param ttime: traveltime array
+   
     """
-    extent_ttime = [gridpar['xttmin']-gridpar['dx']/2.0,gridpar['xttmax']+gridpar['dx']/2.0,
-                    gridpar['yttmax']+gridpar['dy']/2.0,gridpar['yttmin']-gridpar['dy']/2.0 ]
+    extent_ttime = [gridpar['xttmin']-gridpar['dh']/2.0,gridpar['xttmax']+gridpar['dh']/2.0,
+                    gridpar['yttmax']+gridpar['dh']/2.0,gridpar['yttmin']-gridpar['dh']/2.0 ]
     __PL.imshow(ttime.T,interpolation='nearest',extent=extent_ttime,
               origin='upper',cmap=__PL.cm.rainbow,aspect='auto')
     __PL.colorbar()

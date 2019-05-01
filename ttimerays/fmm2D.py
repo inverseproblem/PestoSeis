@@ -22,7 +22,8 @@
 .. moduleauthor:: Andrea Zunino
 """
 
-from .binheap import BinHeapMin
+from ttimerays.binheap import BinHeapMin 
+
 import numpy as __NP
 
 #################################################
@@ -45,22 +46,17 @@ class Grid2D():
 
 def forwtt(vel,grdh,xinit,yinit,coordsrc,coordrec,ttarrout=False) :
     """
-      Traveltime calculation given a source and related receivers.
+    Traveltimes calculation given a velocity model, position of sources and receivers.
       
-      Parameters
-      ------------------------------------------
-      vel:   input velocity model
-      grdh:  grid spacing
-      xinit: x axis origin coordinate
-      yinit: y axis origin coordinate
-      coordsrc: coordinates of the sources
-      coordred: coordinates of the receivers
-      ttarrout: Optionally returns the full array of traveltimes
+    :param vel: input velocity model
+    :param grdh:  grid spacing
+    :param xinit: x axis origin coordinate
+    :param yinit: y axis origin coordinate
+    :param coordsrc: coordinates of the sources
+    :param coordred: coordinates of the receivers
+    :param ttarrout: optiona, returns the full array of traveltimes
       
-      Returns
-      ------------------------------------------
-      ttpicks: the traveltimes at the receivers
-      ttarr: optionally return the traveltime array
+    :returns: the traveltimes at the receivers and, optionally, the traveltime arrays
       
     """
 
