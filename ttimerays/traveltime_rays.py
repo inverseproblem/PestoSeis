@@ -516,8 +516,8 @@ def __globgrad(gridpar,ttime) :
                     gridpar['yttmax'],
                     gridpar['ny']+1)
     ## create interpolant
-    fxgrad = __SPINT.interp2d(x,y,globxgrad.T,kind='cubic')
-    fygrad = __SPINT.interp2d(x,y,globygrad.T,kind='cubic')
+    fxgrad = __SPINT.interp2d(x,y,globxgrad.T,kind='linear')
+    fygrad = __SPINT.interp2d(x,y,globygrad.T,kind='linear')
     return fxgrad,fygrad
 
 ###########################################################
