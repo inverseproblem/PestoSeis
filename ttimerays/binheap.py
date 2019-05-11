@@ -15,6 +15,12 @@
 #     along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 
+"""
+.. module:: binheap.py
+    :synopsis: Binary heap trees (min/max).
+  
+.. moduleauthor:: Andrea Zunino
+"""
 import numpy as NP
 
 ##=================================

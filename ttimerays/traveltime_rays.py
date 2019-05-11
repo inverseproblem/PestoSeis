@@ -81,12 +81,12 @@ def setupgrid(nx,ny,dh,xinit,yinit) :
     gridpar['ny']  = int(ny)
     gridpar['xinit']  = float(xinit)
     gridpar['yinit']  = float(yinit)
-    gridpar['xttmin'] = float(xinit) - gridpar['dh']/2.0 #  float(xttmin)
-    gridpar['yttmin'] = float(yinit) - gridpar['dh']/2.0 #  float(yttmin)
+    gridpar['xttmin'] = gridpar['xinit'] - gridpar['dh']/2.0 #  float(xttmin)
+    gridpar['yttmin'] = gridpar['yinit'] - gridpar['dh']/2.0 #  float(yttmin)
     gridpar['xttmax'] = gridpar['nx']*gridpar['dh']+gridpar['xttmin']
     gridpar['yttmax'] = gridpar['ny']*gridpar['dh']+gridpar['yttmin']
-    gridpar['xvelmin'] = gridpar['xttmin']+gridpar['dh']/2.0
-    gridpar['yvelmin'] = gridpar['yttmin']+gridpar['dh']/2.0
+    gridpar['xvelmin'] = gridpar['xinit']
+    gridpar['yvelmin'] = gridpar['yinit']
     gridpar['xvelmax'] = gridpar['nx']*gridpar['dh']+gridpar['xttmin']-gridpar['dh']/2.0
     gridpar['yvelmax'] = gridpar['ny']*gridpar['dh']+gridpar['yttmin']-gridpar['dh']/2.0
     return gridpar
@@ -168,7 +168,8 @@ def traveltime(velmod,gridpar,srcs,recs) :
       :param recs: coordinates of receivers
       
       :returns: traveltimes at the receivers and traveltime arrays
-      
+      :rtype: ndarray,ndarray
+
     """
     #assert gridpar['dx'] == gridpar['dy']
     hgrid = gridpar['dh']
@@ -817,7 +818,10 @@ def traceall_straight_rays(gridpar,srccoo,reccoo) :
 
     :param gridpar: grid parameters dictionary (as defined by setupgrid())    
     :param srccoo: position of the source, a 2D array with two columns, representing x and y
-    :param reccoo: position of the receiver, a 2D array with two columns, representing x and y
+    :param reccoo: position of the receiver, a 2D array with two columns, representing x and y  
+           
+    :returns: the coordinates of the ray paths
+    :rtype: ndarray
 
     """
     assert reccoo.ndim==2
@@ -850,6 +854,7 @@ def buildtomomat(gridpar,rays, ttpick) :
 
     :returns: the 'tomography' matrix and the vector of traveltime picks 
                   (flattened for performing tomography)
+    :rtype: ndarray
 
     """
     print("Building forward matrix")
@@ -927,12 +932,13 @@ def plotvelmod(gridpar,velmod,vmin=None,vmax=None) :
     if vmin==None and vmax==None :
         vmin=velmod.min()
         vmax=velmod.max()
-    
+
     extent_vel = [gridpar['xvelmin']-gridpar['dh']/2.0,gridpar['xvelmax']+gridpar['dh']/2.0,
                   gridpar['yvelmax']+gridpar['dh']/2.0,gridpar['yvelmin']-gridpar['dh']/2.0 ]
     __PL.imshow(velmod.T,interpolation='nearest',extent=extent_vel,
               origin='upper',cmap=__PL.cm.rainbow,aspect='auto',vmin=vmin,vmax=vmax)
-    __PL.colorbar()
+    cb=__PL.colorbar()
+    cb.set_label('velocity')
     #__PL.gca().set_aspect('equal')
     return
 

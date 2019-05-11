@@ -16,3 +16,7 @@ All members including private ones
    :private-members:
 
       
+.. automodule:: ttimerays.binheap
+   :noindex:
+   :members: 
+   :private-members:

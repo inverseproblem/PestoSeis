@@ -140,13 +140,13 @@ def ttFMM(vel,src,grd) :
      Fast marching method to compute traveltimes in 2D
      
      Parameters
-     -------------------------
+
      vel: input velocity model
      src: source position
      grd: grid parameters
      
      Returns
-     ----------------------
+
      ttime: array of traveltimes
      
     """

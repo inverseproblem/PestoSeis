@@ -23,8 +23,8 @@ If we currently are in the directory ``dir1`` and the package is located in the 
 	    ttimerays.py
 	    ...
 	
-Then something along the along the following lines should work: ::
-
+Then something along the along the following lines in ``myscript.py`` should work: ::
+ 
   import sys
   # add location of ttimerays package to path
   sys.path.append('pyteachseismo/')
@@ -37,6 +37,7 @@ At this point, the functions from ``ttimerays`` should be available as, for inst
 
 Using ``ttimerays``
 ---------------------
+
 
 Setup of grid parameters and models
 ++++++++++++++++++++++++++++++++++++
@@ -99,11 +100,11 @@ Example of plotting the grid::
   TR.plotgrid(gridpar)
   PL.show()
 
-which produces
+which produces the following image
 
 .. figure::  images/gridpl.png
    :align:   center
-
+   :width: 400px
 
 
 Traveltimes
@@ -129,7 +130,10 @@ Example::
 Rays 
 ++++++++++++++++
 
-In order to trace rays, the traveltime arrays are needed first. So, after computing traveltimes, it is possible to trace (approximatively) the rays using the function :func:`ttimerays.traceallrays`
+Trace rays in a 2D model
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In order to trace rays in a 2D model, the traveltime arrays are needed first. So, after computing traveltimes, it is possible to trace (approximatively) the rays using the function :func:`ttimerays.traceallrays`
 
 Example::
 
@@ -138,12 +142,54 @@ Example::
   ttpick,ttime = TR.traveltime(velmod,gridpar,sources,receivers)
   ## now trace rays (ttime contains a set of 2D traveltime arrays)
   rays = TR.traceallrays(gridpar,sources,receivers,ttime)
+  
 
+Trace rays in a horizontally layered medium
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The function :func:`ttimerays.tracerayhorlay` provides a way to compute ray paths, traveltime and distance covered in a horizontally layered medium, provided depths of layers and their velocity. The geometrical setup is as following::
+
+    #
+    # v1,theta1
+    #  
+    # --------xpt1------------
+    #           \
+    # v2,theta2  \
+    #             \  
+    # ------------xpt2--------
+    #        
+    #  
+    #   |\
+    #   | \   theta
+    #   |  \
+    #   |-->\
+    #   |    *
+    #
+    
+The angle *theta* is the take off angle, measured anti-clockwise from the vertical.
+Example::
+
+  [...]
+  import numpy as NP
+  # number of layers
+  Nlay = 120
+  # depth of layers -- includes both top and bottom (Nlay+1)
+  laydepth = NP.linspace(0.0,2000.0,Nlay+1)[1:]
+  # velocity
+  vp = NP.linspace(2000.0,3000.0,Nlay)
+  # origin of ray
+  xystart = NP.array([0.0, 0.0])
+  # take off angle
+  takeoffangle = 45.0
+  
+  # trace a single ray
+  TR.tracerayhorlay(laydep, vel, xystart, takeoffangle)
 
 
 Ray tomography
 ++++++++++++++++
 
+A function to perform simple linear inversion under Gaussian assumptions (least squares approach) is provided in :func:`ttimerays.lininv`. In order to run the inversion the `tomography matrix` (containing the length of the rays in each cell), the prior mean model and covariances for observed data and model parameters are needed. The rays can be calcutated using :func:`ttimerays.traceallrays` and subsequently the tomography matrix can be built using :func:`ttimerays.buildtomomat`. This kind of inversion is quite primitive and therefore often unstable. The result are the posterior mean model and covariance matrix (we are under Gaussian assumptions).
 
 Example::
 

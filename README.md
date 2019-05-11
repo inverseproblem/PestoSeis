@@ -3,6 +3,5 @@
 
 A Python package to learn about seismic rays and traveltime computations.
 
-## Installing ##
 
-## Usage ##
+[TTimeRays docs](docs/build/html/index.html)
