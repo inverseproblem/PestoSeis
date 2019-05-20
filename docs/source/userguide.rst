@@ -191,6 +191,30 @@ Ray tomography
 
 A function to perform simple linear inversion under Gaussian assumptions (least squares approach) is provided in :func:`ttimerays.lininv`. In order to run the inversion the `tomography matrix` (containing the length of the rays in each cell), the prior mean model and covariances for observed data and model parameters are needed. The rays can be calcutated using :func:`ttimerays.traceallrays` and subsequently the tomography matrix can be built using :func:`ttimerays.buildtomomat`. This kind of inversion is quite primitive and therefore often unstable. The result are the posterior mean model and covariance matrix (we are under Gaussian assumptions).
 
+.. math::
+   
+   S( \mathbf{m}) = \frac{1}{2} ( \mathbf{G} \mathbf{m} - \mathbf{d}_{\sf{obs}} )^{\sf{T}}
+   \mathbf{C}^{-1}_{\rm{D}} ( \mathbf{G} \mathbf{m} - \mathbf{d}_{\sf{obs}} ) 
+   + \frac{1}{2} ( \mathbf{m} - \mathbf{m}_{\sf{prior}} )^{\sf{T}} \mathbf{C}^{-1}_{\rm{M}}
+     ( \mathbf{m} - \mathbf{m}_{\sf{prior}} ) 
+ 
+
+The posterior covariance matrix is given by 
+
+.. math::
+   
+   \mathbf{\widetilde{C}}_{\rm{M}} =  \left( \mathbf{G}^{\sf{T}} \,
+   \mathbf{C}^{-1}_{\rm{D}} \, \mathbf{G} + \mathbf{C}^{-1}_{\rm{M}} \right)^{-1}
+
+and the center of posterior Gaussian (the mean model) is 
+
+.. math::  
+
+   \mathbf{\widetilde{m}}  
+   = \mathbf{m}_{\rm{prior}}+ \mathbf{\widetilde{C}}_{\rm{M}} \, \mathbf{G}^{\sf{T}} \, \mathbf{C}^{-1}_{\rm{D}} \left(\mathbf{d}_{\rm{obs}} - \mathbf{G} \mathbf{m}_{\rm{prior}} \right) .
+
+
+
 Example::
 
   [...]

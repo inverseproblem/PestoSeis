@@ -338,21 +338,21 @@ def __segintersRECT(rect,seg,rectangle=True) :
 
 ##########################################################
 
-def __findclosestnode(xini,yini,dx,dy,pt) :
+def __findclosestnode(xmin,ymin,dx,dy,pt) :
     # xini ?
     # yini ?
     x = pt[0]
     y = pt[1]
-    ix = __NP.floor((x-xini)/dx)
-    iy = __NP.floor((y-yini)/dy)
-    rx = x-xini-ix*dx
-    ry = y-yini-iy*dy
+    ix = __NP.floor((x-xmin)/dx)
+    iy = __NP.floor((y-ymin)/dy)
+    rx = x-xmin-ix*dx
+    ry = y-ymin-iy*dy
     if rx>=(dx/2.0) :
         ix = ix+1        
     if ry>=(dy/2.0) :
         iy = iy+1        
-    xcp = ix*dx + xini
-    ycp = iy*dy + yini
+    xcp = ix*dx + xmin
+    ycp = iy*dy + ymin
     #print '\n$$$$$',x,y,ix,iy,rx,ry,xcp,ycp
     if abs(ycp-pt[1])<=tolerance and abs(xcp-pt[0])<=tolerance :
         side = 'corner' 
@@ -367,14 +367,14 @@ def __findclosestnode(xini,yini,dx,dy,pt) :
 
 #############################################################
 
-def __findcelledge(xini,yini,dx,dy,nx,ny, pt, endptgrad, source=False ) :
+def __findcelledge(xmin,ymin,dx,dy,nx,ny, pt, endptgrad, source=False ) :
 
     """
      Find the corners defining the cell where ray will propagate next
 
     """
     
-    cgridpt,pos,idxsttime = __findclosestnode(xini,yini,dx,dy,pt) 
+    cgridpt,pos,idxsttime = __findclosestnode(xmin,ymin,dx,dy,pt) 
 
     #print '>>>> position: ',pos, pt,cgridpt
     
@@ -507,12 +507,14 @@ def __globgrad(gridpar,ttime) :
     # Arrays defining the data point coordinates.
     # If the points lie on a regular grid, x can
     #  specify the column coordinates and y the
-    #  row coordinates, for example:
-    x = __NP.linspace(gridpar['xttmin'],
+    #  row coordinates.
+
+    ## Adding half grid-spacing to make things work... To be checked...
+    x = gridpar['dh']/2.0 + __NP.linspace(gridpar['xttmin'],
                     gridpar['xttmax'],
                     gridpar['nx']+1)
 
-    y = __NP.linspace(gridpar['yttmin'],
+    y = gridpar['dh']/2.0 + __NP.linspace(gridpar['yttmin'],
                     gridpar['yttmax'],
                     gridpar['ny']+1)
     ## create interpolant
@@ -600,8 +602,8 @@ def _traceray(gridpar,recpos,coordsrc, ttime) :
     :returns: the traced ray 
 
     """
-    xini = gridpar['xttmin'] 
-    yini = gridpar['yttmin']
+    xmin = gridpar['xttmin'] 
+    ymin = gridpar['yttmin']
     dx = gridpar['dh'] 
     dy = gridpar['dh'] 
     nx = int(gridpar['nx']) 
@@ -616,7 +618,7 @@ def _traceray(gridpar,recpos,coordsrc, ttime) :
 
     ## find cell including source
     endptgrad = __nextptgrad(fxgrad,fygrad,steplen, coordsrc )
-    srccell,possrc = __findcelledge(xini,yini,dx,dy,nx,ny, coordsrc, endptgrad,source=True )
+    srccell,possrc = __findcelledge(xmin,ymin,dx,dy,nx,ny, coordsrc, endptgrad,source=True )
 
     # print 'srccell',srccell
     # __PL.plot(srccell[:,0],srccell[:,1],'o-')
@@ -624,10 +626,10 @@ def _traceray(gridpar,recpos,coordsrc, ttime) :
     # __PL.show()
     
     ## from receiver to first edge???
-    curpt = recpos
+    curpt = recpos.copy()
     endptgrad = __nextptgrad(fxgrad,fygrad,steplen, curpt )
        
-    rect,pos = __findcelledge(xini,yini,dx,dy,nx,ny, curpt, endptgrad )
+    rect,pos = __findcelledge(xmin,ymin,dx,dy,nx,ny, curpt, endptgrad )
     segment = __NP.vstack((curpt,endptgrad))
     status,itspt = __segintersRECT(rect,segment,rectangle=True)
 
@@ -649,7 +651,7 @@ def _traceray(gridpar,recpos,coordsrc, ttime) :
         cou+=1
         endptgrad = __nextptgrad(fxgrad,fygrad,steplen, curpt )
 
-        rect,pos = __findcelledge(xini,yini,dx,dy,nx,ny, curpt, endptgrad ) 
+        rect,pos = __findcelledge(xmin,ymin,dx,dy,nx,ny, curpt, endptgrad ) 
         segment = __NP.vstack((curpt,endptgrad))
 
         status,itspt = __segintersRECT(rect,segment,rectangle=True)
@@ -738,8 +740,8 @@ def _trace_straight_ray(gridpar,srcpos,recpos) :
 
     """
 
-    xini = gridpar['xttmin'] 
-    yini = gridpar['yttmin']
+    xmin = gridpar['xttmin'] 
+    ymin = gridpar['yttmin']
     dx = gridpar['dh'] 
     dy = gridpar['dh'] 
     nx = int(gridpar['nx']) 
@@ -751,13 +753,13 @@ def _trace_straight_ray(gridpar,srcpos,recpos) :
 
     ## find cell including source
     # endptgrad = __nextptgrad(fxgrad,fygrad,steplen, coordsrc )
-    srccell,possrctxt = __findcelledge(xini,yini,dx,dy,nx,ny,srcpos,recpos,source=True )
+    srccell,possrctxt = __findcelledge(xmin,ymin,dx,dy,nx,ny,srcpos,recpos,source=True )
 
 
     curpt = recpos.copy()
     endpt = srcpos.copy()
        
-    rect,pos = __findcelledge(xini,yini,dx,dy,nx,ny, curpt, endpt )
+    rect,pos = __findcelledge(xmin,ymin,dx,dy,nx,ny, curpt, endpt )
     segment = __NP.vstack((curpt,endpt))
     status,itspt = __segintersRECT(rect,segment,rectangle=True)
 
@@ -779,7 +781,7 @@ def _trace_straight_ray(gridpar,srcpos,recpos) :
         cou+=1
         ##endpt = __nextptgrad(fxgrad,fygrad,steplen, curpt )
 
-        rect,pos = __findcelledge(xini,yini,dx,dy,nx,ny, curpt, endpt ) 
+        rect,pos = __findcelledge(xmin,ymin,dx,dy,nx,ny, curpt, endpt ) 
         segment = __NP.vstack((curpt,endpt))
 
         status,itspt = __segintersRECT(rect,segment,rectangle=True)
