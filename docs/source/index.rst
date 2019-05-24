@@ -3,6 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+
 TTimeRays's documentation
 =====================================
 
@@ -42,7 +43,7 @@ The User guide provides information about how to use the package with examples.
 For developers
 ==================
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    developerdocs
 

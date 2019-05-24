@@ -106,11 +106,6 @@ def bilinear_interp(f,hgrid,xinit,yinit,xreq,yreq) :
     xd=xh-(i) # indices starts from 0
     yd=yh-(j) # indices starts from 0
     intval = f[i,j]*(1.0-xd)*(1.0-yd)+f[i+1,j]*(1.0-yd)*xd + f[i,j+1]*(1.0-xd)*yd+f[i+1,j+1]*xd*yd
-    
-    # println("------------")
-    # @show xreq yreq xh yh 
-    # @show i j xd yd
-    # @show f[i:i+1,j:j+1], intval
     return intval
 
 #################################################
@@ -119,17 +114,17 @@ def fmm_findclosestnode(x,y,xinit,yinit,h) :
     """
      Find closest grid node to given coordinates.
     """
-    # xini ???
-    # yini ???
-    ix = int(__NP.floor((x-xinit)/h))
-    iy = int(__NP.floor((y-yinit)/h))
-    rx = x-(ix*h+xinit)
-    ry = y-(iy*h+yinit)
+    xzero = x-xinit
+    yzero = y-yinit
+    ix = int(__NP.floor(xzero/h)) 
+    iy = int(__NP.floor(yzero/h)) 
+    rx = xzero-(ix*h)
+    ry = yzero-(iy*h)
     middle = h/2.0
     if rx>=middle :
         ix = ix+1
     if ry>=middle :
-        iy = iy+1
+        iy = iy+1  
     ## return Int(ix+1),Int(iy+1) # julia
     return int(ix),int(iy) # python
 
@@ -137,39 +132,40 @@ def fmm_findclosestnode(x,y,xinit,yinit,h) :
 
 def ttFMM(vel,src,grd) :
     """   
-     Fast marching method to compute traveltimes in 2D
+     Fast marching method to compute traveltimes in 2D.
+     Uses a staggered grid, time array is bigger than velocity array, 
+     following Podvin & Lecompte scheme.
      
-     Parameters
-
-     vel: input velocity model
-     src: source position
-     grd: grid parameters
+     :param vel: input velocity model
+     :param src: source position
+     :param grd: grid parameters
      
-     Returns
-
-     ttime: array of traveltimes
+     :returns :  ttime, array of traveltimes
      
     """
 
     epsilon = 1e-6
       
     ## ttime
-    nx,ny=grd.ntx,grd.nty #size(vel).+1  ## STAGGERED GRID!!!
-    nvx = grd.nx
-    nvy = grd.ny
+    ntx,nty=grd.ntx,grd.nty # ttime grid, size(vel)+1  ## STAGGERED GRID!!!
+    nvx = grd.nx # velocity grid size
+    nvy = grd.ny # velocity grid size
     inittt = 1e30
-    ttime = __NP.zeros((nx,ny))
+    ttime = __NP.zeros((ntx,nty))
     ttime[:,:] = inittt
     
     ## source location, etc.      
     mindistsrc = 1e-5
-    onsrc = __NP.zeros((nx,ny),dtype=bool)
+    onsrc = __NP.zeros((ntx,nty),dtype=bool)
     onsrc[:,:] = False
     xsrc,ysrc=src[0],src[1]
 
-    ix,iy = fmm_findclosestnode(xsrc,ysrc,grd.xinit,grd.yinit,grd.hgrid) 
-    rx = src[0]-((ix-1)*grd.hgrid+grd.xinit)
-    ry = src[1]-((iy-1)*grd.hgrid+grd.yinit)
+    ## grd.xinit-hgr because TIME array on STAGGERED grid
+    hgr = grd.hgrid/2.0
+    ix,iy = fmm_findclosestnode(xsrc,ysrc,grd.xinit-hgr,grd.yinit-hgr,grd.hgrid)
+    
+    rx = src[0]-((ix)*grd.hgrid+grd.xinit-hgr) # NO (i-1)*grd.., just i*grd.. python
+    ry = src[1]-((iy)*grd.hgrid+grd.yinit-hgr) # NO (i-1)*grd.., just i*grd.. python
     halfg = 0.0 #hgrid/2.0
     
     dist = __NP.sqrt(rx**2+ry**2)
@@ -193,13 +189,22 @@ def ttFMM(vel,src,grd) :
         ######=======>>>>>>>
         for (j,i) in zip(jsrc,isrc) :
             #for i in isrc
-            xp = (i)*grd.hgrid+grd.xinit # NO (i-1)*grd.., just i*grd.. python
-            yp = (j)*grd.hgrid+grd.yinit
-            ii = int(__NP.floor((xsrc-grd.xinit))/grd.hgrid) #+1
-            jj = int(__NP.floor((ysrc-grd.yinit))/grd.hgrid) #+1
+            ## grd.xinit-hgr because TIME array on STAGGERED grid
+            xp = (i)*grd.hgrid+grd.xinit-hgr # NO (i-1)*grd.., just i*grd.. python
+            yp = (j)*grd.hgrid+grd.yinit-hgr
+            ii = i-1   #int(__NP.floor((xsrc-grd.xinit))/grd.hgrid) #+1
+            jj = j-1    #int(__NP.floor((ysrc-grd.yinit))/grd.hgrid) #+1
             #### vel[isrc[1,1],jsrc[1,1]] STAGGERED GRID!!!
             ttime[i,j] = __NP.sqrt((xsrc-xp)**2+(ysrc-yp)**2) / vel[ii-1,jj-1]#[isrc[1,1],jsrc[1,1]]
+            #print("source:",ii,jj,xp,yp)
 
+    # import matplotlib.pyplot as plt
+    # plt.figure()
+    # extent=
+    # plt.imshow(onsrc.T,extent=extent)
+    # plt.plot(xsrc/grd.hgrid,ysrc/grd.hgrid,'or')
+    # plt.show()
+    # exit()
     
     ###################################################### 
     ## indices of points clockwise
@@ -250,13 +255,13 @@ def ttFMM(vel,src,grd) :
     #-------------------------------
     ## init FMM 
                      
-    status = __NP.zeros((nx,ny),dtype=int) #Array{Int64}(nx,ny)
+    status = __NP.zeros((ntx,nty),dtype=int) #Array{Int64}(ntx,nty)
     status[:,:] = 0   ## set all to far
     status[onsrc] = 2 ## set to accepted on src
     naccinit=__NP.count_nonzero(status==2)  ## count(status.==2)
     
     ## get all i,j accepted 
-    iss,jss = __NP.where(status==2) ## findn(status.==2) #ind2sub((nx,ny),find(status.==2))
+    iss,jss = __NP.where(status==2) ## findn(status.==2) #ind2sub((ntx,nty),find(status.==2))
     naccinit = iss.size
     iss = __NP.zeros(naccinit,dtype=int) ##Array{Int64,1}(naccinit)
     jss = __NP.zeros(naccinit,dtype=int) ##Array{Int64,1}(naccinit)
@@ -269,7 +274,7 @@ def ttFMM(vel,src,grd) :
                 l+=1
 
     ## Init the max binary heap with void arrays but max size
-    Nmax = nx*ny
+    Nmax = ntx*nty
     ## ???? bheap = build_minheap(Array{Float64}(0),Nmax,Array{Int64}(0))
     ## initialize an empty min bin heap
     bheap = BinHeapMin(__NP.array([]),Nmax,__NP.array([]))
@@ -287,7 +292,7 @@ def ttFMM(vel,src,grd) :
             j = jss[l] + neigh[ne,1]
 
             ## if the point is out of bounds skip this iteration
-            if (i>nx-1) or (i<0) or (j>ny-1) or (j<0) :
+            if (i>ntx-1) or (i<0) or (j>nty-1) or (j<0) :
                 continue
             
             if status[i,j]==0 : ## far
@@ -295,8 +300,8 @@ def ttFMM(vel,src,grd) :
                 ## add tt of point to binary heap and give handle
                 tmptt = calcttpt(ttime,ttlocmin,inittt,slowness,grd,cooa,coob,coovin,coovadj,i,j)
                 # get handle
-                ##han = sub2ind((nx,ny),i,j)
-                han = __NP.ravel_multi_index((i,j),(nx,ny))
+                ##han = sub2ind((ntx,nty),i,j)
+                han = __NP.ravel_multi_index((i,j),(ntx,nty))
                 # insert into heap
                 bheap.insert_minheap(tmptt,han)
                 # change status, add to narrow band
@@ -304,7 +309,7 @@ def ttFMM(vel,src,grd) :
 
     #-------------------------------
     ## main FMM loop
-    totnpts = nx*ny
+    totnpts = ntx*nty
     for node in range(naccinit+1,totnpts+1): ## <<<<===| CHECK !!!!
 
         ## if no top left exit the game...
@@ -312,9 +317,9 @@ def ttFMM(vel,src,grd) :
             break
 
         han,tmptt = bheap.pop_minheap()
-        ia,ja = __NP.unravel_index(han,(nx,ny)) #ind2sub((nx,ny),han)
-        #ja = div(han,nx) +1
-        #ia = han - nx*(ja-1)
+        ia,ja = __NP.unravel_index(han,(ntx,nty)) #ind2sub((ntx,nty),han)
+        #ja = div(han,ntx) +1
+        #ia = han - ntx*(ja-1)
         # set status to accepted
         status[ia,ja] = 2 # 2=accepted
         # set traveltime of the new accepted point
@@ -327,14 +332,14 @@ def ttFMM(vel,src,grd) :
             j = ja + neigh[ne,1]
                        
             ## if the point is out of bounds skip this iteration
-            if (i>nx-1) or (i<0) or (j>ny-1) or (j<0) :
+            if (i>ntx-1) or (i<0) or (j>nty-1) or (j<0) :
                 continue
 
             if status[i,j]==0 : ## far, active
 
                 ## add tt of point to binary heap and give handle
                 tmptt = calcttpt(ttime,ttlocmin,inittt,slowness,grd,cooa,coob,coovin,coovadj,i,j)
-                han = __NP.ravel_multi_index((i,j),(nx,ny)) #sub2ind((nx,ny),i,j)
+                han = __NP.ravel_multi_index((i,j),(ntx,nty)) #sub2ind((ntx,nty),i,j)
                 bheap.insert_minheap(tmptt,han)
                 # change status, add to narrow band
                 status[i,j]=1                
@@ -344,7 +349,7 @@ def ttFMM(vel,src,grd) :
                 # update the traveltime for this point
                 tmptt = calcttpt(ttime,ttlocmin,inittt,slowness,grd,cooa,coob,coovin,coovadj,i,j)
                 # get handle
-                han = __NP.ravel_multi_index((i,j),(nx,ny)) #sub2ind((nx,ny),i,j)
+                han = __NP.ravel_multi_index((i,j),(ntx,nty)) #sub2ind((nx,nty),i,j)
                 # update the traveltime for this point in the heap
                 bheap.update_node_minheap(tmptt,han)
 

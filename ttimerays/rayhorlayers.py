@@ -26,7 +26,7 @@ import numpy as __NP
   
 #############################################
 
-def tracerayhorlay(laydep, vel, xystart,takeoffangle) :
+def tracerayhorlay(laydep, vel, xystart,takeoffangle,maxnumiterations=20000) :
     """
     Trace rays in a horizontally layered model. 
       
@@ -38,7 +38,10 @@ def tracerayhorlay(laydep, vel, xystart,takeoffangle) :
     :type mod: numpy.ndarray 
     :param takeoffangle: take off angles 
     :type mod: float 
-       
+    :param maxnumiterations: limit the number of ray segments to calculate, in case 
+                             the ray never reaches the surface
+    :type mod: float 
+
     :returns: coordinates of the the ray path, traveltime and distance covered 
     :rtype: ndarray,float,float  
    
@@ -186,8 +189,8 @@ def tracerayhorlay(laydep, vel, xystart,takeoffangle) :
         elif (raycoo[-2,1]<0.0) and (abs(zlay-0.0)<=1e-6) :
             break
 
-        # elif i>10000 :
-        #     break
+        elif i>maxnumiterations :
+            break
         
     #############################
     #### return coordinates of the ray path, total traveltime and total length

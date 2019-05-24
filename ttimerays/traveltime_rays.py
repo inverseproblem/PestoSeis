@@ -62,7 +62,7 @@ def unrollmod(mod) :
 
     """
     modu = mod.copy().flatten('F')
-    return mody
+    return modu
 
 #############################################################
 
@@ -376,7 +376,8 @@ def __findcelledge(xmin,ymin,dx,dy,nx,ny, pt, endptgrad, source=False ) :
     
     cgridpt,pos,idxsttime = __findclosestnode(xmin,ymin,dx,dy,pt) 
 
-    #print '>>>> position: ',pos, pt,cgridpt
+    # print( '>>>> position: ',pos, pt,cgridpt )
+    # print( '>>>> endptgrad: ',endptgrad )
     
     ## set lower left corner based on position with
     ##  respect to the closest grid point
@@ -509,17 +510,19 @@ def __globgrad(gridpar,ttime) :
     #  specify the column coordinates and y the
     #  row coordinates.
 
-    ## Adding half grid-spacing to make things work... To be checked...
-    x = gridpar['dh']/2.0 + __NP.linspace(gridpar['xttmin'],
+    x = __NP.linspace(gridpar['xttmin'],
                     gridpar['xttmax'],
                     gridpar['nx']+1)
 
-    y = gridpar['dh']/2.0 + __NP.linspace(gridpar['yttmin'],
+    y = __NP.linspace(gridpar['yttmin'],
                     gridpar['yttmax'],
                     gridpar['ny']+1)
+    
     ## create interpolant
-    fxgrad = __SPINT.interp2d(x,y,globxgrad.T,kind='linear')
-    fygrad = __SPINT.interp2d(x,y,globygrad.T,kind='linear')
+    fxgrad = __SPINT.RectBivariateSpline(x,y,globxgrad,kx=5, ky=5) #kind='linear')
+    fygrad = __SPINT.RectBivariateSpline(x,y,globygrad,kx=5, ky=5) #kind='linear')
+    # fxgrad = __SPINT.interp2d(x,y,globxgrad.T,kind='linear')
+    # fygrad = __SPINT.interp2d(x,y,globygrad.T,kind='linear')
     return fxgrad,fygrad
 
 ###########################################################
@@ -528,8 +531,11 @@ def __gradatpt(fxgrad,fygrad,pt) :
     """
      Compute gradient at point pt.
     """
-    xgr = fxgrad(pt[0],pt[1])[0]
-    ygr = fygrad(pt[0],pt[1])[0]
+    # xgr = fxgrad(pt[0],pt[1])[0]
+    # ygr = fygrad(pt[0],pt[1])[0]
+    xgr = fxgrad(pt[0],pt[1],grid=False)
+    ygr = fygrad(pt[0],pt[1],grid=False)
+
     #print '>> grad >>> ',xgr,ygr,'pt',pt
     return __NP.array([xgr,ygr])
 
@@ -544,8 +550,8 @@ def __nextptgrad(fxgrad,fygrad,steplen, pt ) :
     ## modulus of grad
     modgrad = __NP.sqrt(grad[0]**2+grad[1]**2)
     if modgrad==0.0 :
-        print(modgrad==0.0)
-        exit()
+        #raise ValueError('__nextptgrad(): Gradient module is 0.0.')
+        return pt.copy()
     #print 'mod of grad',modgrad
     ## direction OPPOSITE to grad
     #print pt,steplen,grad,modgrad
@@ -613,14 +619,15 @@ def _traceray(gridpar,recpos,coordsrc, ttime) :
     ##   setup 2 interpolants
     fxgrad,fygrad = __globgrad(gridpar,ttime) 
 
-    steplen = 1.5*__NP.sqrt(dx**2+dy**2)
+    #steplen = 1.5*__NP.sqrt(dx**2+dy**2)
+    steplen = 10.0*__NP.sqrt(dx**2+dy**2)
     nearsource = tolerance #__NP.sqrt(dx/2.0**2+dy/2.0**2) #tolerance
 
     ## find cell including source
     endptgrad = __nextptgrad(fxgrad,fygrad,steplen, coordsrc )
     srccell,possrc = __findcelledge(xmin,ymin,dx,dy,nx,ny, coordsrc, endptgrad,source=True )
 
-    # print 'srccell',srccell
+    # print('srccell',srccell)
     # __PL.plot(srccell[:,0],srccell[:,1],'o-')
     # __PL.plot(coordsrc[0],coordsrc[1],'o')
     # __PL.show()
@@ -628,6 +635,9 @@ def _traceray(gridpar,recpos,coordsrc, ttime) :
     ## from receiver to first edge???
     curpt = recpos.copy()
     endptgrad = __nextptgrad(fxgrad,fygrad,steplen, curpt )
+
+    # print("\ncurpt:",curpt)
+    # print("endptgrad:",endptgrad)
        
     rect,pos = __findcelledge(xmin,ymin,dx,dy,nx,ny, curpt, endptgrad )
     segment = __NP.vstack((curpt,endptgrad))
@@ -852,7 +862,10 @@ def buildtomomat(gridpar,rays, ttpick) :
 
     :param gridpar: grid parameters dictionary (as defined by setupgrid())    
     :param rays: seismic rays, as outputted by traceallrays()
-    :param ttpick: traveltime picks at the receivers
+    :param ttpick: traveltime picks at the receivers. [These are needed 
+                   only to provide the vector of traveltime picks 
+                   flattened for performing tomography in the same order 
+                   than the tomography matrix]
 
     :returns: the 'tomography' matrix and the vector of traveltime picks 
                   (flattened for performing tomography)
