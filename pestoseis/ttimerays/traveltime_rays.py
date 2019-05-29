@@ -28,10 +28,10 @@ import sys as __sys
 from scipy import linalg as __LA
 from scipy import interpolate as __SPINT
 
-from ttimerays.fmm2D import forwtt as _forwtt
+from .fmm2D import forwtt as _forwtt
 
 ### important!
-tolerance = 1e-6
+fmmtolerance = 1e-6
 
 ###########################################################################
 
@@ -263,8 +263,8 @@ def __seg_intersect(a1,a2, b1,b2) :
 
     #print 'denom,numer_a,numer_b',denom,numer_a,numer_b
     status = 0
-    if (abs(denom)<=tolerance) :
-        if abs(numer_a)<=tolerance and abs(numer_b)<=tolerance :
+    if (abs(denom)<=fmmtolerance) :
+        if abs(numer_a)<=fmmtolerance and abs(numer_b)<=fmmtolerance :
             status = -1 #'coincident'ua,ub
         else :
             status = -2 #'parallel'
@@ -304,7 +304,7 @@ def __pointisonLINE(a,b, pointc):
     ## a, b points of line
     ## c test point
     crossproduct = (pointc[1] - a[1]) * (b[0] - a[0]) - (pointc[0] - a[0]) * (b[1] - a[1])
-    if abs(crossproduct) > tolerance :
+    if abs(crossproduct) > fmmtolerance :
         return False   # (or != 0 if using integers)
     return True
 
@@ -354,11 +354,11 @@ def __findclosestnode(xmin,ymin,dx,dy,pt) :
     xcp = ix*dx + xmin
     ycp = iy*dy + ymin
     #print '\n$$$$$',x,y,ix,iy,rx,ry,xcp,ycp
-    if abs(ycp-pt[1])<=tolerance and abs(xcp-pt[0])<=tolerance :
+    if abs(ycp-pt[1])<=fmmtolerance and abs(xcp-pt[0])<=fmmtolerance :
         side = 'corner' 
-    elif abs(ycp-pt[1])<=tolerance :
+    elif abs(ycp-pt[1])<=fmmtolerance :
         side = 'edge_right' if xcp<pt[0] else 'edge_left'
-    elif abs(xcp-pt[0])<=tolerance :
+    elif abs(xcp-pt[0])<=fmmtolerance :
         side = 'edge_above' if ycp<pt[1] else 'edge_below'
     else :
         side1 = 'right' if xcp<pt[0] else 'left'
@@ -621,7 +621,7 @@ def _traceray(gridpar,recpos,coordsrc, ttime) :
 
     #steplen = 1.5*__NP.sqrt(dx**2+dy**2)
     steplen = 10.0*__NP.sqrt(dx**2+dy**2)
-    nearsource = tolerance #__NP.sqrt(dx/2.0**2+dy/2.0**2) #tolerance
+    nearsource = fmmtolerance #__NP.sqrt(dx/2.0**2+dy/2.0**2) #fmmtolerance
 
     ## find cell including source
     endptgrad = __nextptgrad(fxgrad,fygrad,steplen, coordsrc )
@@ -759,7 +759,7 @@ def _trace_straight_ray(gridpar,srcpos,recpos) :
     
  
     steplen = 1.5*__NP.sqrt(dx**2+dy**2)
-    nearsource = tolerance #__NP.sqrt(dx/2.0**2+dy/2.0**2) #tolerance
+    nearsource = fmmtolerance #__NP.sqrt(dx/2.0**2+dy/2.0**2) #fmmtolerance
 
     ## find cell including source
     # endptgrad = __nextptgrad(fxgrad,fygrad,steplen, coordsrc )

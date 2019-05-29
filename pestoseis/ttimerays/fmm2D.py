@@ -22,7 +22,7 @@
 .. moduleauthor:: Andrea Zunino
 """
 
-from ttimerays.binheap import BinHeapMin 
+from .binheap import BinHeapMin 
 
 import numpy as __NP
 

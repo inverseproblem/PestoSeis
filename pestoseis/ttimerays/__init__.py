@@ -2,9 +2,9 @@
 
 
 
-from ttimerays.traveltime_rays import *
+from .traveltime_rays import *
 
-from ttimerays.rayhorlayers import *
+from .rayhorlayers import *
   
 
 # __all__ = ["__version__","ttimerays.traveltime_rays"]
