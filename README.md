@@ -1,6 +1,5 @@
-##############################
-PestoSeis's documentation
-##############################
+
+# PestoSeis's documentation #
 
 
 The PestoSeis package is a set of functions to perform calculations of seismic traveltimes, rays and wave propagation in two dimensions (2D).
@@ -17,9 +16,8 @@ The functions contained in this package aim at the following:
 
 [PestoSeis' docs](docs/build/html/index.html)
 
-:Authors:
+## Authors: ##
    Andrea Zunino
 
-A Python package to learn about seismic rays and traveltime computations.
 
 
