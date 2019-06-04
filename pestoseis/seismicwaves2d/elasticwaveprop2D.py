@@ -67,7 +67,31 @@ def calc_Kab_CPML(nptspml,gridspacing,dt,Npower,d0,
 
 def solveelastic2D(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) :
     """
-      Wrapper function for various boundary conditions.
+      Solve the elastic wave equation in 2D using finite differences on a staggered grid. Wrapper function for various boundary conditions.
+       
+    Args:
+        inpar (dict): dictionary containing various input parameters:\n
+                      inpar["ntimesteps"] (int) number of time steps\n
+                      inpar["nx"] (int) number of grid nodes in the x direction\n
+                      inpar["nz"] (int) number of grid nodes in the z direction\n
+                      inpar["dt"] (float) time step for the simulation\n
+                      inpar["dh"] (float) grid spacing (same in x and z)\n
+                      inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield\n
+                      inpar["snapevery"] (int) save snapshots every "snapevery" iterations\n
+                      inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML\n
+                      inpar["boundcond"] (string) Type of boundary conditions "PML" or "ReflBou"\n
+        rockprops (dict): rho (ndarray) density array
+                          lambda (ndarray) lambda module array
+                          mu (ndarray) shear module array
+        ijsrc (ndarray(int,int)): integers representing the position of the source on the grid
+        sourcetf (ndarray): source time function
+        srcdomfreq (float): source dominant frequency
+        recpos (ndarray): position of the receivers, a two-column array [x,z]
+
+    Returns: 
+        receiv (ndarray): seismograms, Vx and Vz components, recorded at the receivers
+        (vxsave,vzsave) (ndarray,ndarray): set of Vx and Vz snapshots of the wavefield (if inpar["savesnapshot"]==True)
+
     """
     if inpar["boundcond"]=="PML" :
         receiv,vxzsave = solveelawaveq2D_CPML(inpar, rockprops, ijsrc,
@@ -82,8 +106,35 @@ def solveelastic2D(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) :
 #############################################################################
 
 
-def solveelawaveq2D_CPML(inpar, rockprops, ijsrc,
-                              sourcetf, srcdomfreq, recpos) :
+def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) :
+    """
+    Solve the elastic wave equation in 2D using finite differences on a staggered grid. 
+    CPML boundary conditions.
+
+    Args:
+        inpar (dict): dictionary containing various input parameters:\n
+                      inpar["ntimesteps"] (int) number of time steps\n
+                      inpar["nx"] (int) number of grid nodes in the x direction\n
+                      inpar["nz"] (int) number of grid nodes in the z direction\n
+                      inpar["dt"] (float) time step for the simulation\n
+                      inpar["dh"] (float) grid spacing (same in x and z)\n
+                      inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield\n
+                      inpar["snapevery"] (int) save snapshots every "snapevery" iterations\n
+                      inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML\n
+                      inpar["boundcond"] (string) Type of boundary conditions "PML"\n
+        rockprops (dict): rho (ndarray) density array
+                          lambda (ndarray) lambda module array
+                          mu (ndarray) shear module array
+        ijsrc (ndarray(int,int)): integers representing the position of the source on the grid
+        sourcetf (ndarray): source time function
+        srcdomfreq (float): source dominant frequency
+        recpos (ndarray): position of the receivers, a two-column array [x,z]
+
+    Returns: 
+        receiv (ndarray): seismograms, Vx and Vz components, recorded at the receivers
+        (vxsave,vzsave) (ndarray,ndarray): set of Vx and Vz snapshots of the wavefield (if inpar["savesnapshot"]==True)
+
+    """
     #  
     # Wave elastic staggered grid 2D solver 
     #
@@ -138,6 +189,10 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc,
     # | vz(i,j)           | vz(i+1/2,j+1/2)          |
     # ------------------------------------------------
         
+    assert(inpar["boundcond"]=="PML")
+    print("Starting ELASTIC solver with CPML boundary condition.")
+
+
     ##############################  
     # Lame' parameters
     ##############################
@@ -177,9 +232,10 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc,
     ## pml = c-pml, else reflsurf
     ## freesur = free surf for top
     if inpar["freesurface"]==True :
-        print("freesurface at the top")
+        print(" * Free surface at the top *")
         freeboundtop=True
     else :
+        print(" * Absorbing boundary at the top *")
         freeboundtop=False
 
     f0 = srcdomfreq # source
@@ -193,7 +249,11 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc,
     ##############################
     nptspml_x = 21 ## 21 ref coeff set for 21 absorbing nodes
     nptspml_z = 21 ## 21
-
+    assert(nptspml_x<ijsrc[0]<(nx-1-nptspml_x))
+    assert(ijsrc[1]<(nz-1-nptspml_z))
+    if freeboundtop==False:
+        assert(nptspml_z<ijsrc[1])
+        
     print(" Size of PML layers in grid points: {} in x and {} in z".format(nptspml_x,nptspml_z))
     
     Npower = 2.0
@@ -240,39 +300,67 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc,
     K_x     = NP.ones(nx)
     a_x     = NP.zeros(nx)
     b_x     = NP.ones(nx)
+    K_x_half = NP.ones(nx)
+    a_x_half = NP.zeros(nx)
+    b_x_half = NP.ones(nx)
     
     # reverse coefficients to get increasing damping away from inner model
     # left boundary
     K_x[:nptspml_x]  = K_xpml[::-1] #[end:-1:1]
     a_x[:nptspml_x]  = a_xpml[::-1]
     b_x[:nptspml_x]  = b_xpml[::-1]
-
+    # half stuff...
+    # reverse coefficients to get increasing damping away from inner model
+    #  One less element on left boundary (end-1...)
+    #    because of the staggered grid
+    K_x_half[:nptspml_x-1] = K_xpml_half[-2::-1] #[end:-1:1]
+    a_x_half[:nptspml_x-1] = a_xpml_half[-2::-1]
+    b_x_half[:nptspml_x-1] = b_xpml_half[-2::-1]
+    
     # right boundary 
     rightpml = nx-nptspml_x  # julia: nx-nptspml_x+1 
     K_x[rightpml:]   = K_xpml
     a_x[rightpml:]   = a_xpml
     b_x[rightpml:]   = b_xpml
-
+    # half
+    K_x_half[rightpml:]   = K_xpml_half
+    a_x_half[rightpml:]   = a_xpml_half
+    b_x_half[rightpml:]   = b_xpml_half
+    
     #######################
     #  z direction
     #######################
     K_z     = NP.ones(nz)
     a_z     = NP.zeros(nz)
     b_z     = NP.zeros(nz)
-
+    # half
+    K_z_half   = NP.ones(nz)
+    a_z_half   = NP.zeros(nz)
+    b_z_half   = NP.zeros(nz)
+    
     # bottom 
     bottompml=nz-nptspml_z  # julia: nz-nptspml_z+1
     K_z[bottompml:]  = K_zpml
     a_z[bottompml:]  = a_zpml
     b_z[bottompml:]  = b_zpml
-
+    # half
+    K_z_half[bottompml:]  = K_zpml_half
+    a_z_half[bottompml:]  = a_zpml_half
+    b_z_half[bottompml:]  = b_zpml_half
+    
     # if PML also on top of model...
     if freeboundtop==False :
         # on grid
         K_z[:nptspml_z]  = K_zpml[::-1]
         a_z[:nptspml_z]  = a_zpml[::-1]
         b_z[:nptspml_z]  = b_zpml[::-1]    
-
+        # half
+        #  One less element on top boundary (end-1...)
+        #    because of the staggered grid
+        K_z_half[:nptspml_z-1]  = K_zpml_half[-2::-1]
+        a_z_half[:nptspml_z-1]  = a_zpml_half[-2::-1]
+        b_z_half[:nptspml_z-1]  = b_zpml_half[-2::-1]
+        
     #####################################################
 
     ## Arrays to export snapshots
@@ -378,10 +466,10 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc,
      
     ## time loop
     dt = inpar["dt"]
-    print(" Time step: {}".format(dt))
+    print(" Time step dt: {}".format(dt))
     for t in range(inpar["ntimesteps"]) :
 
-        if t%50==0 :
+        if t%100==0 :
             sys.stdout.write("\r Time step {} of {}".format(t,inpar["ntimesteps"]))
             sys.stdout.flush()
             #print("\r Time step {} of {}".format(t,inpar["ntimesteps"]))
@@ -567,8 +655,35 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc,
 #####################################################################
 
 
-def solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc,
-                              sourcetf, srcdomfreq, recpos) :
+def solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) :
+    """
+    Solve the elastic wave equation in 2D using finite differences on a staggered grid. 
+    Reflective boundary conditions.
+
+    Args:
+        inpar (dict): dictionary containing various input parameters:
+                      inpar["ntimesteps"] (int) number of time steps
+                      inpar["nx"] (int) number of grid nodes in the x direction
+                      inpar["nz"] (int) number of grid nodes in the z direction
+                      inpar["dt"] (float) time step for the simulation
+                      inpar["dh"] (float) grid spacing (same in x and z)
+                      inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield
+                      inpar["snapevery"] (int) save snapshots every "snapevery" iterations
+                      inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML
+                      inpar["boundcond"] (string) Type of boundary conditions "ReflBou"
+        rockprops (dict): rho (ndarray) density array
+                          lambda (ndarray) lambda module array
+                          mu (ndarray) shear module array
+        ijsrc (ndarray(int,int)): integers representing the position of the source on the grid
+        sourcetf (ndarray): source time function
+        srcdomfreq (float): source dominant frequency
+        recpos (ndarray): position of the receivers, a two-column array [x,z]
+
+    Returns: 
+        receiv (ndarray): seismograms, Vx and Vz components, recorded at the receivers
+        (vxsave,vzsave) (ndarray,ndarray): set of Vx and Vz snapshots of the wavefield (if inpar["savesnapshot"]==True)
+
+    """
     #  
     # Wave elastic staggered grid 2D solver 
     #
@@ -620,6 +735,9 @@ def solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc,
     # | vz(i,j)           | vz(i+1/2,j+1/2)          |
     # ------------------------------------------------
         
+    assert(inpar["boundcond"]=="ReflBou")
+    print("Starting ELASTIC solver with reflective boundary condition all around.")
+
     ##############################  
     # Lame' parameters
     ##############################
@@ -738,10 +856,10 @@ def solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc,
 
     ## time loop
     dt = inpar["dt"]
-    print(" Time step: {}".format(dt))
+    print(" Time step dt: {}".format(dt))
     for t in range(inpar["ntimesteps"]) :
 
-        if t%50==0 :
+        if t%100==0 :
             sys.stdout.write("\r Time step {} of {}".format(t,inpar["ntimesteps"]))
             sys.stdout.flush()
             #print("\r Time step {} of {}".format(t,inpar["ntimesteps"]))

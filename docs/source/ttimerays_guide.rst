@@ -1,56 +1,24 @@
 
 
-.. _userguide:
+.. _ttimerays_guide:
 
-User guide
-=============
+*******************************************
+Traveltimes and rays -- using ``ttimerays``
+*******************************************
 
-
-Installation --- loading the module
--------------------------------------
-
-.. warning:: Installing the package globally with, for instance, ``pip`` is still untested.
-	     
-A simple way to load the package/module from a local folder is to start a script with adding to the path the location the folder containing the package. This way Python will be able to find the module and therefore load it.
-
-If we currently are in the directory ``dir1`` and the package is located in the directory ``pyteachseismo`` ::
-
-  dir1/
-     myscript.py
-     
-     pyteachseismo/
-         ttimerays/
-	    ttimerays.py
-	    ...
-	
-Then something along the along the following lines in ``myscript.py`` should work: ::
- 
-  import sys
-  # add location of ttimerays package to path
-  sys.path.append('pyteachseismo/')
-  import ttimerays as TR
-
-At this point, the functions from ``ttimerays`` should be available as, for instance::
-
-  TR.traceallrays(gridpar, srccoo, reccoo, grdsttime)
-
-
-Using ``ttimerays``
----------------------
-
-
+====================================
 Setup of grid parameters and models
-++++++++++++++++++++++++++++++++++++
+====================================
 
 In order to compute traveltimes and rays, a 2D grid must be set up by defining its dimensions in terms of number of cells in the two ``x`` and ``y`` directions and cell size.
-See :func:`ttimerays.setupgrid` for how to create the *dictionary* holding the grid parameters needed for subsequent computations.
+See :func:`pestoseis.ttimerays.setupgrid` for how to create the *dictionary* holding the grid parameters needed for subsequent computations.
 
 Example::
   
   import sys
   # add location of ttimerays package to path
   sys.path.append('pyteachseismo/')
-  import ttimerays as TR
+  import pestoseis.ttimerays as TR
   # import the plotting library
   import matplotlib.pyplot as PL
 
@@ -64,16 +32,17 @@ Example::
   # create the dictionary containing the grid parameters
   gridpar = TR.setupgrid(nx, ny, dh, xinit, yinit)
 
-Visualization
-++++++++++++++++++
+==================
+ Visualization
+==================
 
 Some functions for different kinds of plots are provided (click on the function
 name to get the docstring):
 
-* plot the grid: :func:`ttimerays.plotgrid` 
-* plot the traveltime array: :func:`ttimerays.plotttimemod` 
-* plot the velocity model: :func:`ttimerays.plotvelmod`
-* plot (previously traced) rays: :func:`ttimerays.plotrays`  
+* plot the grid: :func:`pestoseis.ttimerays.plotgrid` 
+* plot the traveltime array: :func:`pestoseis.ttimerays.plotttimemod` 
+* plot the velocity model: :func:`pestoseis.ttimerays.plotvelmod`
+* plot (previously traced) rays: :func:`pestoseis.ttimerays.plotrays`  
 
 
 Example of plotting the grid::
@@ -81,7 +50,7 @@ Example of plotting the grid::
   import sys
   # add location of ttimerays package to path
   sys.path.append('pyteachseismo/')
-  import ttimerays as TR
+  import pestoseis.ttimerays as TR
   # import the plotting library
   import matplotlib.pyplot as PL
 
@@ -107,10 +76,11 @@ which produces the following image
    :width: 400px
 
 
+==================
 Traveltimes
-++++++++++++++++
+==================
 
-Traveltime calculation given a velocity model and one or more sources and related receivers can be performed using the function :func:`ttimerays.traveltime`. By default the function returns both the traveltimes at the receivers and also the entire 2D traveltime array(s) for subsequent ray tracing.
+Traveltime calculation given a velocity model and one or more sources and related receivers can be performed using the function :func:`pestoseis.ttimerays.traveltime`. By default the function returns both the traveltimes at the receivers and also the entire 2D traveltime array(s) for subsequent ray tracing.
 Example::
 
   [...]
@@ -127,13 +97,15 @@ Example::
   ttpick,ttime = TR.traveltime(velmod,gridpar,sources,receivers)
 
 
+==================  
 Rays 
-++++++++++++++++
+==================
 
-Trace rays in a 2D model
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------------------
+Trace rays in a 2D heterogeneus model
+-------------------------------------------
 
-In order to trace rays in a 2D model, the traveltime arrays are needed first. So, after computing traveltimes, it is possible to trace (approximatively) the rays using the function :func:`ttimerays.traceallrays`
+In order to trace rays in a 2D model, the traveltime arrays are needed first. So, after computing traveltimes, it is possible to trace (approximatively) the rays using the function :func:`pestoseis.ttimerays.traceallrays`
 
 Example::
 
@@ -142,12 +114,25 @@ Example::
   ttpick,ttime = TR.traveltime(velmod,gridpar,sources,receivers)
   ## now trace rays (ttime contains a set of 2D traveltime arrays)
   rays = TR.traceallrays(gridpar,sources,receivers,ttime)
+
+-------------------------------------------  
+Trace *straight* rays 
+-------------------------------------------
+
+The function :func:`pestoseis.ttimerays.traceall_straight_rays` traces rays simply as a straight lines between source and receiver.
+
+Example::
+
+  [...]
+  ## now trace straight rays 
+  rays = TR.traceall_straight_rays(gridpar,sources,receivers)
+
   
+-----------------------------------------------
+Trace rays in a *horizontally layered* medium
+-----------------------------------------------
 
-Trace rays in a horizontally layered medium
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The function :func:`ttimerays.tracerayhorlay` provides a way to compute ray paths, traveltime and distance covered in a horizontally layered medium, provided depths of layers and their velocity. The geometrical setup is as following::
+The function :func:`pestoseis.ttimerays.tracerayhorlay` provides a way to compute ray paths, traveltime and distance covered in a horizontally layered medium, provided depths of layers and their velocity. The geometrical setup is as following::
 
     #
     # v1,theta1
@@ -185,11 +170,11 @@ Example::
   # trace a single ray
   TR.tracerayhorlay(laydep, vel, xystart, takeoffangle)
 
-
+-----------------
 Ray tomography
-++++++++++++++++
+-----------------
 
-A function to perform simple linear inversion under Gaussian assumptions (least squares approach) is provided in :func:`ttimerays.lininv`. In order to run the inversion the `tomography matrix` (containing the length of the rays in each cell), the prior mean model and covariances for observed data and model parameters are needed. The rays can be calcutated using :func:`ttimerays.traceallrays` and subsequently the tomography matrix can be built using :func:`ttimerays.buildtomomat`. This kind of inversion is quite primitive and therefore often unstable. The result are the posterior mean model and covariance matrix (we are under Gaussian assumptions).
+A function to perform simple linear inversion under Gaussian assumptions (least squares approach) is provided in :func:`pestoseis.ttimerays.lininv`. In order to run the inversion the `tomography matrix` (containing the length of the rays in each cell), the prior mean model and covariances for observed data and model parameters are needed. The rays can be calcutated using :func:`ttimerays.traceallrays` and subsequently the tomography matrix can be built using :func:`pestoseis.ttimerays.buildtomomat`. This kind of inversion is quite primitive and therefore often unstable. The result are the posterior mean model and covariance matrix (we are under Gaussian assumptions).
 
 .. math::
    
@@ -228,11 +213,13 @@ Example::
   postm,postC_m = TR.lininv(tomomat,cov_m,cov_d,mprior,residualsvector)
 
 
-API, list of functions
------------------------------
-.. automodule:: ttimerays
+
+======================================
+API ``ttimerays``, list of functions
+======================================
+
+.. automodule:: pestoseis.ttimerays
    :members:
    :imported-members:  
 .. Need to use :imported-members: since ttimerays imports
    the functions in __init__.py, so has no own members.
-

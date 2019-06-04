@@ -1,22 +1,26 @@
 
+.. _developerdocs:
+
+###################
 Developer zone
-=====================================
+###################
 
+====================================
 All members including private ones
--------------------------------------------------------
+====================================
 
-.. automodule:: ttimerays.traveltime_rays
+.. automodule:: pestoseis.ttimerays.traveltime_rays
    :noindex:
    :members: 
    :private-members:
       
-.. automodule:: ttimerays.fmm2D
+.. automodule:: pestoseis.ttimerays.fmm2D
    :noindex:
    :members: 
    :private-members:
 
       
-.. automodule:: ttimerays.binheap
+.. automodule:: pestoseis.ttimerays.binheap
    :noindex:
    :members: 
    :private-members:

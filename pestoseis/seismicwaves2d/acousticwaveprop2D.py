@@ -37,6 +37,9 @@ import sys
 #############################################################################
 
 def bilinear_interp(f,hgrid, pt):
+    """
+     Bilinear interpolation (2D).
+    """
     xreq=pt[0]
     yreq=pt[1]
     xh=xreq/hgrid
@@ -51,19 +54,26 @@ def bilinear_interp(f,hgrid, pt):
 
 #############################################################################
 
-def initGaussboundcon(nptsgau=50 ) :
-
+def initGaussboundcon(nptsgau=60 ) :
+    
     ## Damping region size in grid points
     ##nptsgau = 50 #21
-    decay = 0.24/nptsgau  #2.3/nptsgau
+    ### decay = 0.015 and 20-30 pts is a tipical value found in literature...
+    ### decay = 0.0053 and 60 pts was found on the web...
+    decay = 0.25/nptsgau  ## 0.24/nptsgau  #0.48/nptsgau
     
     xdist = NP.arange(1,nptsgau+1)
     damp = NP.exp( -((decay * (nptsgau - xdist))**2))
-    
+
     leftdp   = damp.copy()
     rightdp  = damp[::-1].copy()
     bottomdp = damp[::-1].copy()
     topdp    = damp.copy()
+
+    import matplotlib.pyplot as plt
+    plt.figure()
+    plt.plot(damp)
+    plt.show()
 
     return nptsgau,leftdp,rightdp,bottomdp,topdp
 
@@ -94,36 +104,117 @@ def calc_Kab_CPML(nptspml,gridspacing,dt,Npower,d0,
 
 ###################################################################
 
-def solveacoustic2D( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ):
+def solveacoustic2D( inpar, ijsrc, velmod, sourcetf, srcdomfreq, recpos ):
+    """
+    Solve the acoustic wave equation in 2D using finite differences on a staggered grid. 
+    Wrapper function for various boundary conditions.
+
+    Args:
+        inpar (dict): dictionary containing various input parameters\n
+                      inpar["ntimesteps"] (int) number of time steps\n
+                      inpar["nx"] (int) number of grid nodes in the x direction\n
+                      inpar["nz"] (int) number of grid nodes in the z direction\n
+                      inpar["dt"] (float) time step for the simulation\n
+                      inpar["dh"] (float) grid spacing (same in x and z)\n
+                      inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield\n
+                      inpar["snapevery"] (int) save snapshots every "snapevery" iterations\n
+                      inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML\n
+                      inpar["boundcond"] (string) Type of boundary conditions "PML","GaussTap" or "ReflBou"\n
+        ijsrc (ndarray(int,int)): integers representing the position of the source on the grid
+        velmod (ndarray(nx,nz)): two-dimensional velocity model
+        sourcetf (ndarray): source time function
+        srcdomfreq (float): source dominant frequency
+        recpos (ndarray): position of the receivers, a two-column array [x,z]
+
+    Returns:
+        seism (ndarray): seismograms recorded at the receivers
+        psave (ndarray): set of snapshots of the wavefield (if inpar["savesnapshot"]==True)
+
+    """
 
     if inpar["boundcond"]=="PML" :
-        seism,psave       = solveacouwaveq2D_CPML( inpar, ijsrc, velmod, sourcetf, f0, recpos ) 
+        seism,psave       = solveacouwaveq2D_CPML( inpar, ijsrc, velmod, sourcetf, srcdomfreq, recpos ) 
 
     elif inpar["boundcond"]=="GaussTap" :
-        seism,psave = solveacouwaveq2D_GaussTaper( inpar, ijsrc, velmod, sourcetf, f0, recpos ) 
+        seism,psave = solveacouwaveq2D_GaussTaper( inpar, ijsrc, velmod, sourcetf, srcdomfreq, recpos ) 
 
     elif inpar["boundcond"]=="ReflBou" :
-        seism,psave  = solvewacouaveq2D_ReflBound( inpar, ijsrc, velmod, sourcetf, f0, recpos )
+        seism,psave  = solveacouwaveq2D_ReflBound( inpar, ijsrc, velmod, sourcetf, srcdomfreq, recpos )
 
+    else :
+        raise("Wrong boundary condition type")
+   
     return seism,psave
 
 ###################################################################
 
 def solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
 
+    """
+    Solve the acoustic wave equation in 2D using finite differences on a staggered grid. 
+    CPML boundary conditions.
+
+    Args:
+        inpar (dict): dictionary containing various input parameters:\n
+                      inpar["ntimesteps"] (int) number of time steps\n
+                      inpar["nx"] (int) number of grid nodes in the x direction\n
+                      inpar["nz"] (int) number of grid nodes in the z direction\n
+                      inpar["dt"] (float) time step for the simulation\n
+                      inpar["dh"] (float) grid spacing (same in x and z)\n
+                      inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield\n
+                      inpar["snapevery"] (int) save snapshots every "snapevery" iterations\n
+                      inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML\n
+                      inpar["boundcond"] (string) Type of boundary conditions "PML"\n 
+        ijsrc (ndarray(int,int)): integers representing the position of the source on the grid
+        vel (ndarray(nx,nz)): two-dimensional velocity model
+        sourcetf (ndarray): source time function
+        srcdomfreq (float): source dominant frequency
+        recpos (ndarray): position of the receivers, a two-column array [x,z]
+
+    Returns:
+        seism (ndarray): seismograms recorded at the receivers
+        psave (ndarray): set of snapshots of the wavefield (if inpar["savesnapshot"]==True)
+
+    """
+
     assert(inpar["boundcond"]=="PML")
+    print("Starting ACOUSTIC solver with CPML boundary condition.")
+    
+    ##
+    ## The second-order staggered-grid formulation of Madariaga (1976) and Virieux (1986) is used:
+    ##
+    ##          p          dp/dx       p   
+    ##            +---------+---------+ ---> x  
+    ##            |         |         |
+    ##            |         |         |
+    ##            |         |         |
+    ##            |         |         |
+    ##            |         |         |
+    ##      dp/dz +---------+         |
+    ##            |                   |
+    ##            |                   |
+    ##            |                   |
+    ##            |                   |
+    ##            |                   |
+    ##            +-------------------+  
+    ##           p                     p
+    ##            |
+    ##            |
+    ##            \/ z
+    ##
+
 
     #############################
     dh = inpar["dh"]
     dx = dh
     dz = dh
     dt = inpar["dt"]
-    
+
     ##############################
     ## Check stability criterion
     ##############################
     maxvp = vel.max()
-    print(" Stability criterion ???????????",(maxvp*dt*NP.sqrt(1/dx**2+1/dz**2)))
+    print(" Stability criterion, CFL number:",(maxvp*dt*NP.sqrt(1/dx**2+1/dz**2)))
     assert(maxvp*dt*NP.sqrt(1/dx**2 + 1/dz**2) < 1.0)
     
 
@@ -133,9 +224,10 @@ def solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
     ## pml = c-pml, else reflsurf
     ## freesur = free surf for top
     if inpar["freesurface"]==True :
-        print("freesurface at the top")
+        print(" * Free surface at the top *")
         freeboundtop=True
     else :
+        print(" * Absorbing boundary at the top *")
         freeboundtop=False
 
     ##---------------------------
@@ -150,6 +242,10 @@ def solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
     ##############################
     nptspml_x = 21 ## 21 ref coeff set for 21 absorbing nodes
     nptspml_z = 21
+    assert(nptspml_x<ijsrc[0]<(nx-1-nptspml_x))
+    assert(ijsrc[1]<(nz-1-nptspml_z))
+    if freeboundtop==False:
+        assert(nptspml_z<ijsrc[1])
 
     print((" Size of PML layers in grid points: {} in x and {} in z".format(nptspml_x,nptspml_z)))
     
@@ -189,6 +285,7 @@ def solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
     K_zpml,a_zpml,b_zpml = calc_Kab_CPML(nptspml_z,dh,dt,Npower,d0_z,alpha_max_pml,K_max_pml,"grdpts")
     # damping profile at half the grid points
     K_zpml_half,a_zpml_half,b_zpml_half = calc_Kab_CPML(nptspml_z,dh,dt,Npower,d0_z,alpha_max_pml,K_max_pml,"halfgrdpts")
+
     
     #######################
     #  x direction
@@ -196,38 +293,66 @@ def solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
     K_x     = NP.ones(nx)
     a_x     = NP.zeros(nx)
     b_x     = NP.ones(nx)
+    K_x_half = NP.ones(nx)
+    a_x_half = NP.zeros(nx)
+    b_x_half = NP.ones(nx)
     
     # reverse coefficients to get increasing damping away from inner model
     # left boundary
-    K_x[:nptspml_x]     = K_xpml[::-1] #[end:-1:1]
-    a_x[:nptspml_x]     = a_xpml[::-1]
-    b_x[:nptspml_x]     = b_xpml[::-1]
-
-    # right boundary
+    K_x[:nptspml_x]  = K_xpml[::-1] #[end:-1:1]
+    a_x[:nptspml_x]  = a_xpml[::-1]
+    b_x[:nptspml_x]  = b_xpml[::-1]
+    # half stuff...
+    # reverse coefficients to get increasing damping away from inner model
+    #  One less element on left boundary (end-1...)
+    #    because of the staggered grid
+    K_x_half[:nptspml_x-1] = K_xpml_half[-2::-1] #[end:-1:1]
+    a_x_half[:nptspml_x-1] = a_xpml_half[-2::-1]
+    b_x_half[:nptspml_x-1] = b_xpml_half[-2::-1]
+    
+    # right boundary 
     rightpml = nx-nptspml_x  # julia: nx-nptspml_x+1 
-    K_x[rightpml:]     = K_xpml
-    a_x[rightpml:]     = a_xpml
-    b_x[rightpml:]     = b_xpml
-
+    K_x[rightpml:]   = K_xpml
+    a_x[rightpml:]   = a_xpml
+    b_x[rightpml:]   = b_xpml
+    # half
+    K_x_half[rightpml:]   = K_xpml_half
+    a_x_half[rightpml:]   = a_xpml_half
+    b_x_half[rightpml:]   = b_xpml_half
+    
     #######################
     #  z direction
     #######################
     K_z     = NP.ones(nz)
     a_z     = NP.zeros(nz)
     b_z     = NP.zeros(nz)
-
+    # half
+    K_z_half   = NP.ones(nz)
+    a_z_half   = NP.zeros(nz)
+    b_z_half   = NP.zeros(nz)
+    
     # bottom 
     bottompml=nz-nptspml_z  # julia: nz-nptspml_z+1
-    K_z[bottompml:]     = K_zpml
-    a_z[bottompml:]     = a_zpml
-    b_z[bottompml:]     = b_zpml
-
+    K_z[bottompml:]  = K_zpml
+    a_z[bottompml:]  = a_zpml
+    b_z[bottompml:]  = b_zpml
+    # half
+    K_z_half[bottompml:]  = K_zpml_half
+    a_z_half[bottompml:]  = a_zpml_half
+    b_z_half[bottompml:]  = b_zpml_half
+    
     # if PML also on top of model...
     if freeboundtop==False :
         # on grid
-        K_z[:nptspml_z]     = K_zpml[::-1]
-        a_z[:nptspml_z]     = a_zpml[::-1]
-        b_z[:nptspml_z]     = b_zpml[::-1]
+        K_z[:nptspml_z]  = K_zpml[::-1]
+        a_z[:nptspml_z]  = a_zpml[::-1]
+        b_z[:nptspml_z]  = b_zpml[::-1]    
+        # half
+        #  One less element on top boundary (end-1...)
+        #    because of the staggered grid
+        K_z_half[:nptspml_z-1]  = K_zpml_half[-2::-1]
+        a_z_half[:nptspml_z-1]  = a_zpml_half[-2::-1]
+        b_z_half[:nptspml_z-1]  = b_zpml_half[-2::-1]
 
     #####################################################
 
@@ -258,21 +383,26 @@ def solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
     # Arrays with size of PML areas would be sufficient and save memory,
     #   however allocating arrays with same size than model simplifies
     #   the code in the loops
-    psi_dpdx = NP.zeros((nx,nz))
-    psi_dpdz = NP.zeros((nx,nz))
+    psi_x = NP.zeros((nx,nz))
+    psi_z = NP.zeros((nx,nz))
+    xi_x = NP.zeros((nx,nz))
+    xi_z = NP.zeros((nx,nz))
 
     ##---------------------------------------------------
     ## to make the Numpy broadcast Hadamard product correct along x
     a_x = a_x.reshape(-1,1)
     b_x = b_x.reshape(-1,1)
     K_x = K_x.reshape(-1,1)
-
+    a_x_half = a_x_half.reshape(-1,1)
+    b_x_half = b_x_half.reshape(-1,1)
+    K_x_half = K_x_half.reshape(-1,1)
+    
     ################################
     fact = vel**2 * (dt**2/dh**2)
 
        
     ## time loop
-    print((" Time step: {}".format(dt)))
+    print((" Time step dt: {}".format(dt)))
 
     for t in range(inpar["ntimesteps"]) :
 
@@ -293,18 +423,28 @@ def solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
 
         ##=================================================
         ## second order stencil
-        dpdx = pcur[2:,1:-1]-2.0*pcur[1:-1,1:-1]+pcur[:-2,1:-1]
-        dpdz = pcur[1:-1,2:]-2.0*pcur[1:-1,1:-1]+pcur[1:-1,:-2]
+        ##-----------------------------------------
+        ## first derivatives
+        dpdx = pcur[2:,1:-1]-pcur[1:-1,1:-1] # forward 
+        dpdz = pcur[1:-1,2:]-pcur[1:-1,1:-1]
+        psi_x[1:-1,1:-1] = b_x_half[1:-1] / K_x_half[1:-1] * psi_x[1:-1,1:-1] + a_x_half[1:-1]*dpdx
+        psi_z[1:-1,1:-1] = b_z_half[1:-1] / K_z_half[1:-1] * psi_z[1:-1,1:-1] + a_z_half[1:-1]*dpdz
+
+        # second derivatives 
+        dpdx2 = pcur[2:,1:-1]-2.0*pcur[1:-1,1:-1]+pcur[:-2,1:-1]
+        dpdz2 = pcur[1:-1,2:]-2.0*pcur[1:-1,1:-1]+pcur[1:-1,:-2]
+
+        dpsidx = psi_x[1:-1,1:-1] - psi_x[:-2,1:-1]
+        dpsidz = psi_z[1:-1,1:-1] - psi_z[1:-1,:-2]
+        xi_x[1:-1,1:-1] = b_x[1:-1] / K_x[1:-1] * xi_x[1:-1,1:-1] + a_x[1:-1] * (dpdx2 + dpsidx)
+        xi_z[1:-1,1:-1] = b_z[1:-1] / K_z[1:-1] * xi_z[1:-1,1:-1] + a_z[1:-1] * (dpdz2 + dpsidz)
         
-        # C-PML stuff 
-        psi_dpdx[1:-1,1:-1] = b_x[1:-1] * psi_dpdx[1:-1,1:-1] + a_x[1:-1]*dpdx
-        psi_dpdz[1:-1,1:-1] = b_z[1:-1] * psi_dpdz[1:-1,1:-1] + a_z[1:-1]*dpdz
+        damp = fact[1:-1,1:-1] * (dpsidx + dpsidz + xi_x[1:-1,1:-1] + xi_z[1:-1,1:-1])
         
-        dpdx = dpdx / K_x[1:-1] + psi_dpdx[1:-1,1:-1]
-        dpdz = dpdz / K_z[1:-1] + psi_dpdz[1:-1,1:-1]
-        
+
         # update pressure
-        pnew[1:-1,1:-1] = 2.0*pcur[1:-1,1:-1] -pold[1:-1,1:-1] + fact[1:-1,1:-1]*(dpdx) + fact[1:-1,1:-1]*(dpdz) 
+        pnew[1:-1,1:-1] = 2.0*pcur[1:-1,1:-1] -pold[1:-1,1:-1] + fact[1:-1,1:-1]*(dpdx2 + dpdz2) + damp
+
         
 
         # inject source
@@ -333,13 +473,370 @@ def solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
         
     return receiv,psave
   
+###################################################################
+
+def solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcdomfreq, recpos ) :
+    """
+    Solve the acoustic wave equation in 2D using finite differences on a staggered grid. 
+    Velocity and density as input parameters. CPML boundary conditions.
+
+    Args:
+        inpar (dict): dictionary containing various input parameters:\n
+                      inpar["ntimesteps"] (int) number of time steps\n
+                      inpar["nx"] (int) number of grid nodes in the x direction\n
+                      inpar["nz"] (int) number of grid nodes in the z direction\n
+                      inpar["dt"] (float) time step for the simulation\n
+                      inpar["dh"] (float) grid spacing (same in x and z)\n
+                      inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield\n
+                      inpar["snapevery"] (int) save snapshots every "snapevery" iterations\n
+                      inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML\n
+                      inpar["boundcond"] (string) Type of boundary conditions "PML"\n
+        ijsrc (ndarray(int,int)): integers representing the position of the source on the grid
+        density (ndarray(nx,nz)): two-dimensional density model
+        Vp (ndarray(nx,nz)): two-dimensional velocity model
+        sourcetf (ndarray): source time function
+        srcdomfreq (float): source dominant frequency
+        recpos (ndarray): position of the receivers, a two-column array [x,z]
+
+    Returns:
+        seism (ndarray): seismograms recorded at the receivers
+        psave (ndarray): set of snapshots of the wavefield (if inpar["savesnapshot"]==True)
+
+    """
+    assert(inpar["boundcond"]=="PML")
+    print("\n WARNING: UNTESTED!!!!! \nStarting ACOUSTIC 'Vp_density' solver with CPML boundary condition.")
+    
+    ##
+    ## The second-order staggered-grid formulation of Madariaga (1976) and Virieux (1986) is used:
+    ##
+    ##          p          dp/dx       p   
+    ##            +---------+---------+ ---> x  
+    ##            |         |         |
+    ##            |         |         |
+    ##            |         |         |
+    ##            |         |         |
+    ##            |         |         |
+    ##      dp/dz +---------+         |
+    ##            |                   |
+    ##            |                   |
+    ##            |                   |
+    ##            |                   |
+    ##            |                   |
+    ##            +-------------------+  
+    ##           p                     p
+    ##            |
+    ##            |
+    ##            \/ z
+    ##
 
 
+    #############################
+    dh = inpar["dh"]
+    dx = dh
+    dz = dh
+    dt = inpar["dt"]
+    kappa = density * Vp**2
+
+    ##############################
+    ## Check stability criterion
+    ##############################
+    maxvp = Vp.max()
+    print(" Stability criterion, CFL number:",(maxvp*dt*NP.sqrt(1/dx**2+1/dz**2)))
+    assert(maxvp*dt*NP.sqrt(1/dx**2 + 1/dz**2) < 1.0)
+    
+
+    ##############################
+    #   Parameters
+    ##############################
+    ## pml = c-pml, else reflsurf
+    ## freesur = free surf for top
+    if inpar["freesurface"]==True :
+        print(" * Free surface at the top *")
+        freeboundtop=True
+    else :
+        print(" * Absorbing boundary at the top *")
+        freeboundtop=False
+
+    ##---------------------------
+    f0 = srcdomfreq # source
+    
+    ## keep it simple for now...
+    nx = inpar["nx"]
+    nz = inpar["nz"]
+    
+    ##############################
+    #   Parameters for PML
+    ##############################
+    nptspml_x = 21 ## 21 ref coeff set for 21 absorbing nodes
+    nptspml_z = 21
+    assert(nptspml_x<ijsrc[0]<(nx-1-nptspml_x))
+    assert(ijsrc[1]<(nz-1-nptspml_z))
+    if freeboundtop==False:
+        assert(nptspml_z<ijsrc[1])
+
+    print((" Size of PML layers in grid points: {} in x and {} in z".format(nptspml_x,nptspml_z)))
+    
+    Npower = 2.0
+    assert Npower >= 1
+    
+    K_max_pml = 1.0
+    alpha_max_pml = 2.0*NP.pi*(f0/2.0) 
+    
+    # reflection coefficient (INRIA report section 6.1)
+    # http://hal.inria.fr/docs/00/07/32/19/PDF/RR-3471.pdf
+    Rcoef = 0.0001  # for 20 nodes   ## 0.001 for a PML thickness of 10 nodes
+       
+    # thickness of the PML layer in meters
+    thickness_pml_x = nptspml_x * dx
+    thickness_pml_z = nptspml_z * dz
+    
+    # compute d0 from INRIA report section 6.1 http://hal.inria.fr/docs/00/07/32/19/PDF/RR-3471.pdf
+    d0_x = - (Npower + 1) * maxvp * NP.log(Rcoef) / (2.0 * thickness_pml_x)
+    d0_z = - (Npower + 1) * maxvp * NP.log(Rcoef) / (2.0 * thickness_pml_z)
+    
+    ##############################
+    #   Damping parameters
+    ##############################    
+    # --- damping in the x direction ---
+    # assuming the number of grid points for PML is the same on 
+    #    both sides    
+    # damping profile at the grid points
+    K_xpml,a_xpml,b_xpml = calc_Kab_CPML(nptspml_x,dh,dt,Npower,d0_x,alpha_max_pml,K_max_pml,"grdpts")
+    # damping profile at half the grid points
+    K_xpml_half,a_xpml_half,b_xpml_half = calc_Kab_CPML(nptspml_x,dh,dt,Npower,d0_x,alpha_max_pml,K_max_pml,"halfgrdpts")
+    
+    # --- damping in the z direction ---
+    # assuming the number of grid points for PML is the same on
+    # both sides    
+    # damping profile at the grid points
+    K_zpml,a_zpml,b_zpml = calc_Kab_CPML(nptspml_z,dh,dt,Npower,d0_z,alpha_max_pml,K_max_pml,"grdpts")
+    # damping profile at half the grid points
+    K_zpml_half,a_zpml_half,b_zpml_half = calc_Kab_CPML(nptspml_z,dh,dt,Npower,d0_z,alpha_max_pml,K_max_pml,"halfgrdpts")
+
+    
+    #######################
+    #  x direction
+    #######################
+    K_x     = NP.ones(nx)
+    a_x     = NP.zeros(nx)
+    b_x     = NP.ones(nx)
+    K_x_half = NP.ones(nx)
+    a_x_half = NP.zeros(nx)
+    b_x_half = NP.ones(nx)
+    
+    # reverse coefficients to get increasing damping away from inner model
+    # left boundary
+    K_x[:nptspml_x]  = K_xpml[::-1] #[end:-1:1]
+    a_x[:nptspml_x]  = a_xpml[::-1]
+    b_x[:nptspml_x]  = b_xpml[::-1]
+    # half stuff...
+    # reverse coefficients to get increasing damping away from inner model
+    #  One less element on left boundary (end-1...)
+    #    because of the staggered grid
+    K_x_half[:nptspml_x-1] = K_xpml_half[-2::-1] #[end:-1:1]
+    a_x_half[:nptspml_x-1] = a_xpml_half[-2::-1]
+    b_x_half[:nptspml_x-1] = b_xpml_half[-2::-1]
+    
+    # right boundary 
+    rightpml = nx-nptspml_x  # julia: nx-nptspml_x+1 
+    K_x[rightpml:]   = K_xpml
+    a_x[rightpml:]   = a_xpml
+    b_x[rightpml:]   = b_xpml
+    # half
+    K_x_half[rightpml:]   = K_xpml_half
+    a_x_half[rightpml:]   = a_xpml_half
+    b_x_half[rightpml:]   = b_xpml_half
+    
+    #######################
+    #  z direction
+    #######################
+    K_z     = NP.ones(nz)
+    a_z     = NP.zeros(nz)
+    b_z     = NP.zeros(nz)
+    # half
+    K_z_half   = NP.ones(nz)
+    a_z_half   = NP.zeros(nz)
+    b_z_half   = NP.zeros(nz)
+    
+    # bottom 
+    bottompml=nz-nptspml_z  # julia: nz-nptspml_z+1
+    K_z[bottompml:]  = K_zpml
+    a_z[bottompml:]  = a_zpml
+    b_z[bottompml:]  = b_zpml
+    # half
+    K_z_half[bottompml:]  = K_zpml_half
+    a_z_half[bottompml:]  = a_zpml_half
+    b_z_half[bottompml:]  = b_zpml_half
+    
+    # if PML also on top of model...
+    if freeboundtop==False :
+        # on grid
+        K_z[:nptspml_z]  = K_zpml[::-1]
+        a_z[:nptspml_z]  = a_zpml[::-1]
+        b_z[:nptspml_z]  = b_zpml[::-1]    
+        # half
+        #  One less element on top boundary (end-1...)
+        #    because of the staggered grid
+        K_z_half[:nptspml_z-1]  = K_zpml_half[-2::-1]
+        a_z_half[:nptspml_z-1]  = a_zpml_half[-2::-1]
+        b_z_half[:nptspml_z-1]  = b_zpml_half[-2::-1]
+
+    #####################################################
+
+    ## Arrays to export snapshots
+    if inpar["savesnapshot"]==True :
+        ntsave = inpar["ntimesteps"]//inpar["snapevery"]
+        psave = NP.zeros((inpar["nx"],inpar["nz"],ntsave+1))
+        tsave=1
+
+    ## Arrays to return seismograms
+    nrecs = recpos.shape[0]
+    receiv = NP.zeros((inpar["ntimesteps"],nrecs))
+
+    # Source time function
+    #lensrctf = sourcetf.size
+    isrc = ijsrc[0]
+    jsrc = ijsrc[1]
+    
+    ## Initialize arrays
+    dpdx = NP.zeros((nx,nz))
+    dpdz = NP.zeros((nx,nz))
+    pcur = NP.zeros((nx,nz))
+    pold = NP.zeros((nx,nz))
+    pnew = NP.zeros((nx,nz))
+    
+    ##--------------------------------------------
+    # PML arrays
+    # Arrays with size of PML areas would be sufficient and save memory,
+    #   however allocating arrays with same size than model simplifies
+    #   the code in the loops
+    psi_x = NP.zeros((nx,nz))
+    psi_z = NP.zeros((nx,nz))
+    xi_x = NP.zeros((nx,nz))
+    xi_z = NP.zeros((nx,nz))
+
+    ##---------------------------------------------------
+    ## to make the Numpy broadcast Hadamard product correct along x
+    a_x = a_x.reshape(-1,1)
+    b_x = b_x.reshape(-1,1)
+    K_x = K_x.reshape(-1,1)
+    a_x_half = a_x_half.reshape(-1,1) 
+    b_x_half = b_x_half.reshape(-1,1)
+    K_x_half = K_x_half.reshape(-1,1)
+    
+    ################################
+    
+    fact = dt**2/dh**2
+    
+    density_ihalf = (density[1:,:]+density[:-1,:])/2.0
+    density_jhalf = (density[:,1:]+density[:,:-1])/2.0
+
+    print(density_ihalf.shape,density_jhalf.shape) 
+
+    ## time loop
+    print((" Time step dt: {}".format(dt)))
+
+    for t in range(inpar["ntimesteps"]) :
+
+        if t%100==0 :
+            sys.stdout.write("\r Time step {} of {}".format(t,inpar["ntimesteps"]))
+            sys.stdout.flush()
+
+
+        if freeboundtop==True :
+            ##-------------------------------------------
+            ## free surface boundary cond.
+            pcur[:,0] = 0.0
+            #dpdx = pcur[2:,0]-2.0*pcur[1:-1,0]+pcur[:-2,0]
+            #dpdz = pcur[1:-1,1]-2.0*pcur[1:-1,0] +0.0 #pcur[1:-1,:-2]
+            pnew[:,0] = 0.0 #2.0*pcur[1:-1,0] -pold[1:-1,0] + fact[1:-1,0]*(dpdx) + fact[1:-1,0]*(dpdz) 
+            ##-------------------------------------------
+
+
+        ##=================================================
+        ## second order stencil
+        ##  ACOUSTIC 'Vp_density'
+        ##-----------------------------------------
+        ## first derivatives
+        dpdx = (pcur[2:,1:-1]-pcur[1:-1,1:-1]) / density_ihalf[:-1,1:-1] # forward 
+        dpdz = (pcur[1:-1,2:]-pcur[1:-1,1:-1]) / density_jhalf[1:-1,:-1]
+        psi_x[1:-1,1:-1] = b_x_half[1:-1] / K_x_half[1:-1] * psi_x[1:-1,1:-1] + a_x_half[1:-1]*dpdx
+        psi_z[1:-1,1:-1] = b_z_half[1:-1] / K_z_half[1:-1] * psi_z[1:-1,1:-1] + a_z_half[1:-1]*dpdz
+
+        # second derivatives 
+        dpdx2 = pcur[2:,1:-1]-2.0*pcur[1:-1,1:-1]+pcur[:-2,1:-1]
+        dpdz2 = pcur[1:-1,2:]-2.0*pcur[1:-1,1:-1]+pcur[1:-1,:-2]
+
+        dpsidx = psi_x[1:-1,1:-1] - psi_x[:-2,1:-1]
+        dpsidz = psi_z[1:-1,1:-1] - psi_z[1:-1,:-2]
+        xi_x[1:-1,1:-1] = b_x[1:-1] / K_x[1:-1] * xi_x[1:-1,1:-1] + a_x[1:-1] * (dpdx2 + dpsidx)
+        xi_z[1:-1,1:-1] = b_z[1:-1] / K_z[1:-1] * xi_z[1:-1,1:-1] + a_z[1:-1] * (dpdz2 + dpsidz)
+        
+        damp = fact * (dpsidx + dpsidz + xi_x[1:-1,1:-1] + xi_z[1:-1,1:-1])
+        
+
+        # update pressure
+        pnew[1:-1,1:-1] = 2.0*pcur[1:-1,1:-1] -pold[1:-1,1:-1] + fact*(dpdx2+dpdz2)*kappa[1:-1,1:-1] + damp
+        
+
+        # inject source
+        pnew[isrc,jsrc] = pnew[isrc,jsrc] + dt**2*sourcetf[t]
+
+        # assign the new pold and pcur
+        pold[:,:] = pcur[:,:]
+        pcur[:,:] = pnew[:,:]
+
+        ##=================================================
+        
+        ##### receivers
+        for r in range(nrecs) :
+            rec_press = bilinear_interp(pcur,dh,recpos[r,:])
+            receiv[t,r] = rec_press
+        
+        #### save snapshots
+        if (inpar["savesnapshot"]==True) and (t%inpar["snapevery"]==0) :
+            psave[:,:,tsave] = pcur
+            tsave=tsave+1
+
+    ##================================
+    print(" ")
+    if inpar["savesnapshot"]==False :
+        psave = None
+        
+    return receiv,psave
+  
 #########################################################
 
 def solveacouwaveq2D_ReflBound( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
+    """
+    Solve the acoustic wave equation in 2D using finite differences on a staggered grid. 
+    Reflective boundary conditions.
+
+    Args:
+        inpar (dict): dictionary containing various input parameters:
+                      inpar["ntimesteps"] (int) number of time steps
+                      inpar["nx"] (int) number of grid nodes in the x direction
+                      inpar["nz"] (int) number of grid nodes in the z direction
+                      inpar["dt"] (float) time step for the simulation
+                      inpar["dh"] (float) grid spacing (same in x and z)
+                      inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield
+                      inpar["snapevery"] (int) save snapshots every "snapevery" iterations
+                      inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML
+                      inpar["boundcond"] (string) Type of boundary conditions "ReflBou" 
+        ijsrc (ndarray(int,int)): integers representing the position of the source on the grid
+        vel (ndarray(nx,nz)): two-dimensional velocity model
+        sourcetf (ndarray): source time function
+        srcdomfreq (float): source dominant frequency
+        recpos (ndarray): position of the receivers, a two-column array [x,z]
+
+    Returns:
+        seism (ndarray): seismograms recorded at the receivers
+        psave (ndarray): set of snapshots of the wavefield (if inpar["savesnapshot"]==True)
+
+    """
 
     assert(inpar["boundcond"]=="ReflBou")
+    print("Starting ACOUSTIC solver with reflective boundaries all around.")
 
     #############################
     dh = inpar["dh"]
@@ -351,7 +848,9 @@ def solveacouwaveq2D_ReflBound( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos 
     ## Check stability criterion
     ##############################
     maxvp = vel.max()
-    assert (maxvp * dt*  NP.sqrt(1/dh**2 + 1/dh**2) < 1.0)
+    print(" Stability criterion, CFL number:",(maxvp*dt*NP.sqrt(1/dx**2+1/dz**2)))
+    assert(maxvp*dt*NP.sqrt(1/dx**2 + 1/dz**2) < 1.0)
+    
 
     ##############################
     #   Parameters
@@ -390,7 +889,7 @@ def solveacouwaveq2D_ReflBound( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos 
     fact = vel**2 * (dt**2/dh**2)
        
     ## time loop
-    print((" Time step: {}".format(dt)))
+    print((" Time step dt: {}".format(dt)))
 
     for t in range(inpar["ntimesteps"]) :
 
@@ -437,6 +936,34 @@ def solveacouwaveq2D_ReflBound( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos 
 #########################################################
 
 def solveacouwaveq2D_GaussTaper( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
+    """
+    Solve the acoustic wave equation in 2D using finite differences on a staggered grid. 
+    Gaussian taper boundary conditions.
+
+    Args:
+        inpar (dict): dictionary containing various input parameters:\n
+                      inpar["ntimesteps"] (int) number of time steps\n
+                      inpar["nx"] (int) number of grid nodes in the x direction\n
+                      inpar["nz"] (int) number of grid nodes in the z direction\n
+                      inpar["dt"] (float) time step for the simulation\n
+                      inpar["dh"] (float) grid spacing (same in x and z)\n
+                      inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield\n
+                      inpar["snapevery"] (int) save snapshots every "snapevery" iterations\n
+                      inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML\n
+                      inpar["boundcond"] (string) Type of boundary conditions "GaussTap"\n 
+        ijsrc (ndarray(int,int)): integers representing the position of the source on the grid
+        vel (ndarray(nx,nz)): two-dimensional velocity model
+        sourcetf (ndarray): source time function
+        srcdomfreq (float): source dominant frequency
+        recpos (ndarray): position of the receivers, a two-column array [x,z]
+
+    Returns:
+        seism (ndarray): seismograms recorded at the receivers
+        psave (ndarray): set of snapshots of the wavefield (if inpar["savesnapshot"]==True)
+
+    """
+    assert(inpar["boundcond"]=="GaussTap")
+    print("Starting ACOUSTIC solver with Gaussian taper boundary condition.")
 
     #############################
     dh = inpar["dh"]
@@ -469,8 +996,16 @@ def solveacouwaveq2D_GaussTaper( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos
     nz = inpar["nz"]
     
     ## Gaussian taper
-    nptsgau = 40
+    nptsgau = 50
+    assert(nptsgau<ijsrc[0]<(nx-1-nptsgau))
+    assert(ijsrc[1]<(nz-1-nptsgau))
+    if freeboundtop==False:
+        assert(nptsgau<ijsrc[1])
+
+        
     nptsgau,gtleft,gtright,gtbottom,gttop = initGaussboundcon(nptsgau=nptsgau )
+
+    print((" Size of GaussTaper layers in grid points: {} in both x and z".format(nptsgau)))
 
     #####################################################
     
@@ -500,7 +1035,7 @@ def solveacouwaveq2D_GaussTaper( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos
     fact = vel**2 * (dt**2/dh**2)
        
     ## time loop
-    print((" Time step: {}".format(dt)))
+    print((" Time step dt: {}".format(dt)))
 
     for t in range(inpar["ntimesteps"]) :
 
@@ -509,16 +1044,19 @@ def solveacouwaveq2D_GaussTaper( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos
             sys.stdout.flush()
 
         ##=================================================
+                         
         ## second order stencil
-        dpdx = pcur[2:,1:-1]-2.0*pcur[1:-1,1:-1]+pcur[:-2,1:-1]
-        dpdz = pcur[1:-1,2:]-2.0*pcur[1:-1,1:-1]+pcur[1:-1,:-2]
-        
+        dpdx2 = pcur[2:,1:-1]-2.0*pcur[1:-1,1:-1]+pcur[:-2,1:-1]
+        dpdz2 = pcur[1:-1,2:]-2.0*pcur[1:-1,1:-1]+pcur[1:-1,:-2]
+
         # update pressure
-        pnew[1:-1,1:-1] = 2.0*pcur[1:-1,1:-1] -pold[1:-1,1:-1] + fact[1:-1,1:-1]*(dpdx) + fact[1:-1,1:-1]*(dpdz) 
-        
+        pnew[1:-1,1:-1] = 2.0*pcur[1:-1,1:-1] -pold[1:-1,1:-1] + fact[1:-1,1:-1]*(dpdx2 + dpdz2) 
+             
+        # inject source
+        pnew[isrc,jsrc] = pnew[isrc,jsrc] + dt**2*sourcetf[t]
+
         ##---------------------------------------------
         ## Damp using Gaussian taper function
-        # print("shapes: ",pnew[:nptsgau,:].shape,gtleft.reshape(-1,1).shape)
         pnew[:nptsgau,:]  *= gtleft.reshape(-1,1)
         pnew[-nptsgau:,:] *= gtright.reshape(-1,1)
         pnew[:,-nptsgau:] *= gtbottom.reshape(1,-1)
@@ -528,12 +1066,9 @@ def solveacouwaveq2D_GaussTaper( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos
         pcur[:,-nptsgau:] *= gtbottom.reshape(1,-1)
 
         if freeboundtop==False :
-             pnew[:,:nptsgau]  *= gttop.reshape(-1,1)
-             pcur[:,:nptsgau]  *= gttop.reshape(-1,1)
+             pnew[:,:nptsgau]  *= gttop.reshape(1,-1)
+             pcur[:,:nptsgau]  *= gttop.reshape(1,-1)
         ##----------------------------------------------
-             
-        # inject source
-        pnew[isrc,jsrc] = pnew[isrc,jsrc] + dt**2*sourcetf[t]
 
         # assign the new pold and pcur
         pold[:,:] = pcur[:,:] ## using [:,:] there is an explicit copy
