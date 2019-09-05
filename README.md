@@ -18,7 +18,7 @@ The functions contained in this package aim at the following:
 PestoSeis' docs: <https://github.com/inverseproblem/PestoSeis.git>
 
 
-## Authors: ##
+### Authors: ###
    Andrea Zunino
 
 
