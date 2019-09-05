@@ -132,24 +132,11 @@ Example::
 Trace rays in a *horizontally layered* medium
 -----------------------------------------------
 
-The function :func:`pestoseis.ttimerays.tracerayhorlay` provides a way to compute ray paths, traveltime and distance covered in a horizontally layered medium, provided depths of layers and their velocity. The geometrical setup is as following::
+The function :func:`pestoseis.ttimerays.tracerayhorlay` provides a way to compute ray paths, traveltime and distance covered in a horizontally layered medium, provided depths of layers and their velocity. The geometrical setup is as following:
 
-    #
-    # v1,theta1
-    #  
-    # --------xpt1------------
-    #           \
-    # v2,theta2  \
-    #             \  
-    # ------------xpt2--------
-    #        
-    #  
-    #   |\
-    #   | \   theta
-    #   |  \
-    #   |-->\
-    #   |    *
-    #
+.. figure::  images/geom-rays-horlayers.png
+   :align:   center
+   :width: 300px
     
 The angle *theta* is the take off angle, measured anti-clockwise from the vertical.
 Example::

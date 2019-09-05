@@ -26,11 +26,17 @@ import sys
 #############################################################################
 #############################################################################
 
-def bilinear_interp(f,hgrid, pt):
+def bilinear_interp(f,hgrid, pt, gridshift_xy=NP.array([0.0,0.0])):
+    xshift = gridshift_xy[0] 
+    yshift = gridshift_xy[1]
     xreq=pt[0]
     yreq=pt[1]
-    xh=xreq/hgrid
-    yh=yreq/hgrid
+    xh=(xreq-xshift)/hgrid
+    yh=(yreq-yshift)/hgrid
+    assert(xh>=0.0)
+    assert(xh<=(hgrid*(f.shape[0]-1)))
+    assert(yh>=0.0)
+    assert(yh<=(hgrid*(f.shape[1]-1)))
     i=int(NP.floor(xh)) # index starts from 0 so no +1
     j=int(NP.floor(yh)) # index starts from 0 so no +1
     xd=xh-i
@@ -70,16 +76,17 @@ def solveelastic2D(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) :
       Solve the elastic wave equation in 2D using finite differences on a staggered grid. Wrapper function for various boundary conditions.
        
     Args:
-        inpar (dict): dictionary containing various input parameters:\n
-                      inpar["ntimesteps"] (int) number of time steps\n
-                      inpar["nx"] (int) number of grid nodes in the x direction\n
-                      inpar["nz"] (int) number of grid nodes in the z direction\n
-                      inpar["dt"] (float) time step for the simulation\n
-                      inpar["dh"] (float) grid spacing (same in x and z)\n
-                      inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield\n
-                      inpar["snapevery"] (int) save snapshots every "snapevery" iterations\n
-                      inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML\n
-                      inpar["boundcond"] (string) Type of boundary conditions "PML" or "ReflBou"\n
+        inpar (dict): dictionary containing various input parameters:
+
+                      * inpar["ntimesteps"] (int) number of time steps
+                      * inpar["nx"] (int) number of grid nodes in the x direction
+                      * inpar["nz"] (int) number of grid nodes in the z direction\n
+                      * inpar["dt"] (float) time step for the simulation
+                      * inpar["dh"] (float) grid spacing (same in x and z)
+                      * inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield
+                      * inpar["snapevery"] (int) save snapshots every "snapevery" iterations
+                      * inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML\n
+                      * inpar["boundcond"] (string) Type of boundary conditions "PML" or "ReflBou"
         rockprops (dict): rho (ndarray) density array
                           lambda (ndarray) lambda module array
                           mu (ndarray) shear module array
@@ -99,6 +106,8 @@ def solveelastic2D(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) :
     elif inpar["boundcond"]=="ReflBou" :
         receiv,vxzsave = solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc,
                                                    sourcetf, srcdomfreq, recpos)
+    else :
+        raise ValueError("Error, wrong inpar['boundcond']: {}".format(inpar['boundcond']))
 
     return receiv,vxzsave
 
@@ -112,16 +121,17 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) 
     CPML boundary conditions.
 
     Args:
-        inpar (dict): dictionary containing various input parameters:\n
-                      inpar["ntimesteps"] (int) number of time steps\n
-                      inpar["nx"] (int) number of grid nodes in the x direction\n
-                      inpar["nz"] (int) number of grid nodes in the z direction\n
-                      inpar["dt"] (float) time step for the simulation\n
-                      inpar["dh"] (float) grid spacing (same in x and z)\n
-                      inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield\n
-                      inpar["snapevery"] (int) save snapshots every "snapevery" iterations\n
-                      inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML\n
-                      inpar["boundcond"] (string) Type of boundary conditions "PML"\n
+        inpar (dict): dictionary containing various input parameters:
+
+                      * inpar["ntimesteps"] (int) number of time steps
+                      * inpar["nx"] (int) number of grid nodes in the x direction
+                      * inpar["nz"] (int) number of grid nodes in the z direction
+                      * inpar["dt"] (float) time step for the simulation
+                      * inpar["dh"] (float) grid spacing (same in x and z)
+                      * inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield
+                      * inpar["snapevery"] (int) save snapshots every "snapevery" iterations
+                      * inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML
+                      * inpar["boundcond"] (string) Type of boundary conditions "PML"
         rockprops (dict): rho (ndarray) density array
                           lambda (ndarray) lambda module array
                           mu (ndarray) shear module array
@@ -455,7 +465,8 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) 
     ##======================================##
 
     fact = 1.0/(24.0*inpar["dh"])
-
+    gridshift_vz = NP.array([dh/2.0,dh/2.0])
+    
     ## to make the Numpy broadcast Hadamard product correct along x
     a_x = a_x.reshape(-1,1)
     b_x = b_x.reshape(-1,1)
@@ -635,7 +646,7 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) 
         ##### receivers
         for r in range(nrecs) :
             rec_vx = bilinear_interp(vx,dh,recpos[r,:])
-            rec_vz = bilinear_interp(vz,dh,recpos[r,:]-dh/2.0)
+            rec_vz = bilinear_interp(vz,dh,recpos[r,:],gridshift_xy=gridshift_vz)
             receiv[t,r,:] = NP.array([rec_vx, rec_vz])
         
         #### save snapshots
@@ -662,15 +673,16 @@ def solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, rec
 
     Args:
         inpar (dict): dictionary containing various input parameters:
-                      inpar["ntimesteps"] (int) number of time steps
-                      inpar["nx"] (int) number of grid nodes in the x direction
-                      inpar["nz"] (int) number of grid nodes in the z direction
-                      inpar["dt"] (float) time step for the simulation
-                      inpar["dh"] (float) grid spacing (same in x and z)
-                      inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield
-                      inpar["snapevery"] (int) save snapshots every "snapevery" iterations
-                      inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML
-                      inpar["boundcond"] (string) Type of boundary conditions "ReflBou"
+
+                      * inpar["ntimesteps"] (int) number of time steps
+                      * inpar["nx"] (int) number of grid nodes in the x direction
+                      * inpar["nz"] (int) number of grid nodes in the z direction
+                      * inpar["dt"] (float) time step for the simulation
+                      * inpar["dh"] (float) grid spacing (same in x and z)
+                      * inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield
+                      * inpar["snapevery"] (int) save snapshots every "snapevery" iterations
+                      * inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML
+                      * inpar["boundcond"] (string) Type of boundary conditions "ReflBou"
         rockprops (dict): rho (ndarray) density array
                           lambda (ndarray) lambda module array
                           mu (ndarray) shear module array
@@ -853,6 +865,7 @@ def solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, rec
     ##======================================##
     
     fact = 1.0/(24.0*inpar["dh"])
+    gridshift_vz = NP.array([dh/2.0,dh/2.0])
 
     ## time loop
     dt = inpar["dt"]
@@ -939,7 +952,7 @@ def solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, rec
         ##### receivers
         for r in range(nrecs) :
             rec_vx = bilinear_interp(vx,dh,recpos[r,:])
-            rec_vz = bilinear_interp(vz,dh,recpos[r,:]-dh/2.0)
+            rec_vz = bilinear_interp(vz,dh,recpos[r,:],gridshift_xy=gridshift_vz)
             receiv[t,r,:] = NP.array([rec_vx, rec_vz])
         
         #### save snapshots
@@ -961,120 +974,120 @@ def solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, rec
 #####################################################################
                          
 
-def testela() :
+# def testela() :
     
-    # time
-    nt = 4000
-    dt = 0.0002 #s
-    t = NP.arange(0.0,nt*dt,dt) # s
+#     # time
+#     nt = 4000
+#     dt = 0.0002 #s
+#     t = NP.arange(0.0,nt*dt,dt) # s
     
-    # space
-    nx = 250
-    nz = 250
-    dh = 5.0 # m
+#     # space
+#     nx = 250
+#     nz = 250
+#     dh = 5.0 # m
 
 
-    # source
-    t0 = 0.03 # s
-    f0 = 32.0 # 20.0 # Hz
-    ijsrc = NP.array([109,109])
+#     # source
+#     t0 = 0.03 # s
+#     f0 = 32.0 # 20.0 # Hz
+#     ijsrc = NP.array([109,109])
 
 
-    ###############################3
-    from sourcetimefuncs import gaussource, rickersource
-    sourcetf = rickersource1D( t, t0, f0 )
-    #sourcetf = gaussource1D( t, t0, f0 )
+#     ###############################3
+#     from sourcetimefuncs import gaussource, rickersource
+#     sourcetf = rickersource1D( t, t0, f0 )
+#     #sourcetf = gaussource1D( t, t0, f0 )
 
-    srctype = "MomTensor"
-    MTens = dict(xx=1.0, xz=0.0, zz=1.0)
+#     srctype = "MomTensor"
+#     MTens = dict(xx=1.0, xz=0.0, zz=1.0)
 
-    # srctype = "ExtForce"
-    # ExtForce= dict(x= , z= )
+#     # srctype = "ExtForce"
+#     # ExtForce= dict(x= , z= )
 
 
-    ## lambda,mu,rho
-    rho = 2700.0*NP.ones((nx,nz))
-    rho[:,nx//2:] = 2950.0
-    rho[nx//2:,nz//2:nz//2+20] = 2350.0
+#     ## lambda,mu,rho
+#     rho = 2700.0*NP.ones((nx,nz))
+#     rho[:,nx//2:] = 2950.0
+#     rho[nx//2:,nz//2:nz//2+20] = 2350.0
     
-    P_wav = 3900.0*NP.ones((nx,nz))
-    P_wav[:,nz//2:] = 4500.0
-    P_wav[nx//2:,nz//2:nz//2+20] = 4100.0
+#     P_wav = 3900.0*NP.ones((nx,nz))
+#     P_wav[:,nz//2:] = 4500.0
+#     P_wav[nx//2:,nz//2:nz//2+20] = 4100.0
 
-    S_wav = 2500.0*NP.ones((nx,nz))
-    S_wav[:,nz//2:] = 2700.0
-    S_wav[nx//2:,nz//2:nz//2+20] = 2100.0
+#     S_wav = 2500.0*NP.ones((nx,nz))
+#     S_wav[:,nz//2:] = 2700.0
+#     S_wav[nx//2:,nz//2:nz//2+20] = 2100.0
 
-    lamb = rho*(P_wav**2-2.0*S_wav**2) # P-wave modulus
-    mu = rho*S_wav**2 # S-wave modulus (shear modulus)
+#     lamb = rho*(P_wav**2-2.0*S_wav**2) # P-wave modulus
+#     mu = rho*S_wav**2 # S-wave modulus (shear modulus)
     
 
-    ###############################
-    nrec = 4
-    recpos = NP.zeros((nrec,2))
-    recpos[:,1] = 600.0
-    recpos[:,0] = NP.linspace(200.0,nx*dh-200.0,nrec)
-    print("Receiver positions: \n{}".format(recpos))
+#     ###############################
+#     nrec = 4
+#     recpos = NP.zeros((nrec,2))
+#     recpos[:,1] = 600.0
+#     recpos[:,0] = NP.linspace(200.0,nx*dh-200.0,nrec)
+#     print("Receiver positions: \n{}".format(recpos))
 
     
-    # pressure field in space and time
-    inpar={}
-    inpar["ntimesteps"] = nt
-    inpar["nx"] = nx
-    inpar["nz"] = nz
-    inpar["dt"] = dt
-    inpar["dh"] = dh
-    inpar["sourcetype"] = srctype
-    inpar["momtensor"] = MTens
-    #inpar["extforce"]  = ExtForce 
-    inpar["savesnapshot"] = True
-    inpar["snapevery"] = 10
-    inpar["seismogrkind"] = "velocity"    
-    inpar["topbound"]   = "freesurf"
-    inpar["leftbound"]  = "pml"
-    inpar["rightbound "]= "pml"
-    inpar["bottombound"]= "pml"
+#     # pressure field in space and time
+#     inpar={}
+#     inpar["ntimesteps"] = nt
+#     inpar["nx"] = nx
+#     inpar["nz"] = nz
+#     inpar["dt"] = dt
+#     inpar["dh"] = dh
+#     inpar["sourcetype"] = srctype
+#     inpar["momtensor"] = MTens
+#     #inpar["extforce"]  = ExtForce 
+#     inpar["savesnapshot"] = True
+#     inpar["snapevery"] = 10
+#     inpar["seismogrkind"] = "velocity"    
+#     inpar["topbound"]   = "freesurf"
+#     inpar["leftbound"]  = "pml"
+#     inpar["rightbound "]= "pml"
+#     inpar["bottombound"]= "pml"
 
-    #--------------------------
-    rockprops = {}
-    rockprops["lambda"] = lamb
-    rockprops["mu"] = mu
-    rockprops["rho"] = rho
+#     #--------------------------
+#     rockprops = {}
+#     rockprops["lambda"] = lamb
+#     rockprops["mu"] = mu
+#     rockprops["rho"] = rho
 
-    import time
-    t1 = time.time()
+#     import time
+#     t1 = time.time()
 
-    seism,vxzsave = solveelastic2D(inpar, rockprops,ijsrc, sourcetf,f0, recpos)
+#     seism,vxzsave = solveelastic2D(inpar, rockprops,ijsrc, sourcetf,f0, recpos)
         
-    t2 = time.time()
-    print("Solver time: {}".format(t2-t1))
+#     t2 = time.time()
+#     print("Solver time: {}".format(t2-t1))
         
-    ##############################
-    ## save stuff
-    import h5py as H5
-    hf = H5.File("ela_imgs_python.h5","w")
-    if inpar["savesnapshot"]==True :
-        hf["vx"] = vxzsave[0]
-        hf["vz"] = vxzsave[1]
-    hf["seismogrkind"] = inpar["seismogrkind"]
-    hf["seism"] = seism
-    hf["srctf"] = sourcetf
-    hf["dh"] = dh
-    hf["lambda"] = lamb
-    hf["mu"] = mu
-    hf["rho"] = rho
-    hf["dt"] = dt
-    hf["nx"] = nx
-    hf["nz"] = nz
-    hf["recpos"] = recpos
-    hf["srcij"] = ijsrc
-    hf["snapevery"] = inpar["snapevery"]
-    hf.close()
+#     ##############################
+#     ## save stuff
+#     import h5py as H5
+#     hf = H5.File("ela_imgs_python.h5","w")
+#     if inpar["savesnapshot"]==True :
+#         hf["vx"] = vxzsave[0]
+#         hf["vz"] = vxzsave[1]
+#     hf["seismogrkind"] = inpar["seismogrkind"]
+#     hf["seism"] = seism
+#     hf["srctf"] = sourcetf
+#     hf["dh"] = dh
+#     hf["lambda"] = lamb
+#     hf["mu"] = mu
+#     hf["rho"] = rho
+#     hf["dt"] = dt
+#     hf["nx"] = nx
+#     hf["nz"] = nz
+#     hf["recpos"] = recpos
+#     hf["srcij"] = ijsrc
+#     hf["snapevery"] = inpar["snapevery"]
+#     hf.close()
 
-    return
+#     return
     
-###################################################
+# ###################################################
     
-if __name__  == "__main__" :
+# if __name__  == "__main__" :
 
-    testela()
+#     testela()

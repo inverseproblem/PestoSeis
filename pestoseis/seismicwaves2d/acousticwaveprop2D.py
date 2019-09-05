@@ -110,16 +110,17 @@ def solveacoustic2D( inpar, ijsrc, velmod, sourcetf, srcdomfreq, recpos ):
     Wrapper function for various boundary conditions.
 
     Args:
-        inpar (dict): dictionary containing various input parameters\n
-                      inpar["ntimesteps"] (int) number of time steps\n
-                      inpar["nx"] (int) number of grid nodes in the x direction\n
-                      inpar["nz"] (int) number of grid nodes in the z direction\n
-                      inpar["dt"] (float) time step for the simulation\n
-                      inpar["dh"] (float) grid spacing (same in x and z)\n
-                      inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield\n
-                      inpar["snapevery"] (int) save snapshots every "snapevery" iterations\n
-                      inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML\n
-                      inpar["boundcond"] (string) Type of boundary conditions "PML","GaussTap" or "ReflBou"\n
+        inpar (dict): dictionary containing various input parameters
+
+                      * inpar["ntimesteps"] (int) number of time steps
+                      * inpar["nx"] (int) number of grid nodes in the x direction
+                      * inpar["nz"] (int) number of grid nodes in the z direction
+                      * inpar["dt"] (float) time step for the simulation
+                      * inpar["dh"] (float) grid spacing (same in x and z)
+                      * inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield
+                      * inpar["snapevery"] (int) save snapshots every "snapevery" iterations
+                      * inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML
+                      * inpar["boundcond"] (string) Type of boundary conditions "PML","GaussTap" or "ReflBou"
         ijsrc (ndarray(int,int)): integers representing the position of the source on the grid
         velmod (ndarray(nx,nz)): two-dimensional velocity model
         sourcetf (ndarray): source time function
@@ -155,16 +156,17 @@ def solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
     CPML boundary conditions.
 
     Args:
-        inpar (dict): dictionary containing various input parameters:\n
-                      inpar["ntimesteps"] (int) number of time steps\n
-                      inpar["nx"] (int) number of grid nodes in the x direction\n
-                      inpar["nz"] (int) number of grid nodes in the z direction\n
-                      inpar["dt"] (float) time step for the simulation\n
-                      inpar["dh"] (float) grid spacing (same in x and z)\n
-                      inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield\n
-                      inpar["snapevery"] (int) save snapshots every "snapevery" iterations\n
-                      inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML\n
-                      inpar["boundcond"] (string) Type of boundary conditions "PML"\n 
+        inpar (dict): dictionary containing various input parameters:
+
+                      * inpar["ntimesteps"] (int) number of time steps
+                      * inpar["nx"] (int) number of grid nodes in the x direction
+                      * inpar["nz"] (int) number of grid nodes in the z direction
+                      * inpar["dt"] (float) time step for the simulation
+                      * inpar["dh"] (float) grid spacing (same in x and z)
+                      * inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield
+                      * inpar["snapevery"] (int) save snapshots every "snapevery" iterations
+                      * inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML
+                      * inpar["boundcond"] (string) Type of boundary conditions "PML" 
         ijsrc (ndarray(int,int)): integers representing the position of the source on the grid
         vel (ndarray(nx,nz)): two-dimensional velocity model
         sourcetf (ndarray): source time function
@@ -481,16 +483,17 @@ def solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcdo
     Velocity and density as input parameters. CPML boundary conditions.
 
     Args:
-        inpar (dict): dictionary containing various input parameters:\n
-                      inpar["ntimesteps"] (int) number of time steps\n
-                      inpar["nx"] (int) number of grid nodes in the x direction\n
-                      inpar["nz"] (int) number of grid nodes in the z direction\n
-                      inpar["dt"] (float) time step for the simulation\n
-                      inpar["dh"] (float) grid spacing (same in x and z)\n
-                      inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield\n
-                      inpar["snapevery"] (int) save snapshots every "snapevery" iterations\n
-                      inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML\n
-                      inpar["boundcond"] (string) Type of boundary conditions "PML"\n
+        inpar (dict): dictionary containing various input parameters:
+
+                      * inpar["ntimesteps"] (int) number of time steps
+                      * inpar["nx"] (int) number of grid nodes in the x direction
+                      * inpar["nz"] (int) number of grid nodes in the z direction
+                      * inpar["dt"] (float) time step for the simulation
+                      * inpar["dh"] (float) grid spacing (same in x and z)
+                      * inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield
+                      * inpar["snapevery"] (int) save snapshots every "snapevery" iterations
+                      * inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML
+                      * inpar["boundcond"] (string) Type of boundary conditions "PML"
         ijsrc (ndarray(int,int)): integers representing the position of the source on the grid
         density (ndarray(nx,nz)): two-dimensional density model
         Vp (ndarray(nx,nz)): two-dimensional velocity model
@@ -814,15 +817,16 @@ def solveacouwaveq2D_ReflBound( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos 
 
     Args:
         inpar (dict): dictionary containing various input parameters:
-                      inpar["ntimesteps"] (int) number of time steps
-                      inpar["nx"] (int) number of grid nodes in the x direction
-                      inpar["nz"] (int) number of grid nodes in the z direction
-                      inpar["dt"] (float) time step for the simulation
-                      inpar["dh"] (float) grid spacing (same in x and z)
-                      inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield
-                      inpar["snapevery"] (int) save snapshots every "snapevery" iterations
-                      inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML
-                      inpar["boundcond"] (string) Type of boundary conditions "ReflBou" 
+
+                      * inpar["ntimesteps"] (int) number of time steps
+                      * inpar["nx"] (int) number of grid nodes in the x direction
+                      * inpar["nz"] (int) number of grid nodes in the z direction
+                      * inpar["dt"] (float) time step for the simulation
+                      * inpar["dh"] (float) grid spacing (same in x and z)
+                      * inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield
+                      * inpar["snapevery"] (int) save snapshots every "snapevery" iterations
+                      * inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML
+                      * inpar["boundcond"] (string) Type of boundary conditions "ReflBou" 
         ijsrc (ndarray(int,int)): integers representing the position of the source on the grid
         vel (ndarray(nx,nz)): two-dimensional velocity model
         sourcetf (ndarray): source time function
@@ -942,15 +946,16 @@ def solveacouwaveq2D_GaussTaper( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos
 
     Args:
         inpar (dict): dictionary containing various input parameters:\n
-                      inpar["ntimesteps"] (int) number of time steps\n
-                      inpar["nx"] (int) number of grid nodes in the x direction\n
-                      inpar["nz"] (int) number of grid nodes in the z direction\n
-                      inpar["dt"] (float) time step for the simulation\n
-                      inpar["dh"] (float) grid spacing (same in x and z)\n
-                      inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield\n
-                      inpar["snapevery"] (int) save snapshots every "snapevery" iterations\n
-                      inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML\n
-                      inpar["boundcond"] (string) Type of boundary conditions "GaussTap"\n 
+
+                      * inpar["ntimesteps"] (int) number of time steps\n
+                      * inpar["nx"] (int) number of grid nodes in the x direction\n
+                      * inpar["nz"] (int) number of grid nodes in the z direction\n
+                      * inpar["dt"] (float) time step for the simulation\n
+                      * inpar["dh"] (float) grid spacing (same in x and z)\n
+                      * inpar["savesnapshot"] (bool) switch to save snapshots of the entire wavefield\n
+                      * inpar["snapevery"] (int) save snapshots every "snapevery" iterations\n
+                      * inpar["freesurface"] (bool) True for free surface boundary condition at the top, False for PML\n
+                      * inpar["boundcond"] (string) Type of boundary conditions "GaussTap"\n 
         ijsrc (ndarray(int,int)): integers representing the position of the source on the grid
         vel (ndarray(nx,nz)): two-dimensional velocity model
         sourcetf (ndarray): source time function
