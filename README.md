@@ -15,7 +15,7 @@ The functions contained in this package aim at the following:
 * Performing very simple traveltime tomography using rays;
 * Computing acoustic and elastic wave propagation in 2D by finite differences. 
 
-PestoSeis' docs: <https://github.com/inverseproblem/pyteachseismo.git>
+PestoSeis' docs: <https://github.com/inverseproblem/PestoSeis.git>
 
 
 ## Authors: ##
