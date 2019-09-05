@@ -1,6 +1,7 @@
 
-# PestoSeis's documentation #
+# PestoSeis #
 
+[![Docs](https://img.shields.io/badge/docs-blue.svg)](https://inverseproblem.github.io/PestoSeis/)
 
 The PestoSeis package is a set of functions to perform calculations of seismic traveltimes, rays and wave propagation in two dimensions (2D).
 
@@ -14,7 +15,8 @@ The functions contained in this package aim at the following:
 * Performing very simple traveltime tomography using rays;
 * Computing acoustic and elastic wave propagation in 2D by finite differences. 
 
-[PestoSeis' docs](docs/build/html/index.html)
+PestoSeis' docs: <https://github.com/inverseproblem/pyteachseismo.git>
+
 
 ## Authors: ##
    Andrea Zunino
