@@ -10,12 +10,12 @@ Installation --- loading the module
 	     
 A simple way to load the package/module from a local folder is to start a script with adding to the path the location the folder containing the package. This way Python will be able to find the module and therefore load it.
 
-If we currently are in the directory ``dir1`` and the package is located in the directory ``pyteachseismo`` ::
+If we currently are in the directory ``dir1`` and the package is located in the directory ``PestoSeis`` ::
 
   dir1/
      myscript.py
      
-     pyteachseismo/
+     PestoSeis/
          pestoseis/
 	     ttimerays/
 	     ttimerays.py
@@ -30,7 +30,7 @@ Then something along the along the following lines in ``myscript.py`` should wor
  
   import sys
   # add location of ttimerays package to path
-  sys.path.append('pyteachseismo/')
+  sys.path.append('PestoSeis/')
   import pestoseis as PS
 
 At this point, the functions from ``pestoseis`` should be available as, for instance::
