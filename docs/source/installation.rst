@@ -6,30 +6,15 @@
 Installation --- loading the module
 ************************************
 
-.. warning:: Installing the package globally with, for instance, ``pip`` is still untested.
-	     
-A simple way to load the package/module from a local folder is to start a script with adding to the path the location the folder containing the package. This way Python will be able to find the module and therefore load it.
+The simplest way is to use the `pip` installer:
+::
+   pip install git+https://gitlab.com/anzun/PestoSeis
 
-If we currently are in the directory ``dir1`` and the package is located in the directory ``PestoSeis`` ::
-
-  dir1/
-     myscript.py
-     
-     PestoSeis/
-         pestoseis/
-	     ttimerays/
-	     ttimerays.py
-	     ...
-	     
-	     seismicwaves2d/
-	     elasticwaveprop2D.py
-	     ...
-	     
-	
+Otherwise, if a local copy is available, a simple way to load the package/module from a local folder is to start a script with adding to the path the location the folder containing the package. This way Python will be able to find the module and therefore load it.
 Then something along the along the following lines in ``myscript.py`` should work: ::
  
   import sys
-  # add location of ttimerays package to path
+  # add location of PestoSeis package to path
   sys.path.append('PestoSeis/')
   import pestoseis as PS
 
