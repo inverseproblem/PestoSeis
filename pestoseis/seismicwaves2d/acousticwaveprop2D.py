@@ -32,6 +32,11 @@
 
 import numpy as np
 import sys
+import h5py as h5
+
+import matplotlib.pyplot as plt
+from matplotlib import animation
+from matplotlib import gridspec
 
 #############################################################################
 #######################################################################
@@ -120,8 +125,8 @@ def animateacousticwaves(inpfile,clipamplitude=0.1) :
     ###
     ani = animation.FuncAnimation(fig1, updatefig_acou, frames=range(0,N,every), interval=150, blit=False)
 
-    Writer = animation.writers['ffmpeg']
-    mywriter = Writer(fps=15, metadata=dict(artist='PestoSeis'), bitrate=1800)
+    # Writer = animation.writers['ffmpeg']
+    # mywriter = Writer(fps=15, metadata=dict(artist='PestoSeis'), bitrate=1800)
     mywriter = animation.FFMpegWriter()
     ani.save('animation_{}.mp4'.format(kind),dpi=96,writer=mywriter)
 
@@ -1240,9 +1245,9 @@ def testacou():
     ijsrc = np.array([280,290])
  
     # source type
-    from sourcetimefuncs import gaussource, rickersource
-    sourcetf = rickersource1D( t, t0, f0 )
-    #sourcetf = gaussource1D( t, t0, f0 )
+    from pestoseis.seismicwaves2d.sourcetimefuncs import gaussource, rickersource
+    sourcetf = rickersource( t, t0, f0 )
+    #sourcetf = gaussource( t, t0, f0 )
 
     ## velocity model
     velmod = 2000.0*np.ones((nx,nz))
@@ -1274,7 +1279,7 @@ def testacou():
     import time
     t1 = time.time()
     
-    seism,psave = solveacoustic2D( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos )
+    seism,psave = solveacoustic2D( inpar, ijsrc, velmod, sourcetf, f0, recpos )
         
     t2 = time.time()
     print(("Solver time: {}".format(t2-t1)))
