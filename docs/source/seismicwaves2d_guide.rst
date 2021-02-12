@@ -11,11 +11,10 @@ Seismic wave propagation -- using ``seismicwaves2d``
 Acoustic wave equation in 2D
 =============================================
 
-We model acoustic wave propagation through a medium by relating the time and space dependent pressure wavefield $p(\mathbf{x},t)$ to some external force $f(\mathbf{x},t)$ via the scalar acoustic wave equation for loss-less media
-\begin{equation}
--\frac{1}{c(\mathbf{x})^2}\frac{\partial}{\partial t^2}p(\mathbf{x},t)+\rho(\mathbf{x})\nabla\frac{1}{\rho(\mathbf{x})}\nabla p(\mathbf{x},t)=f(\mathbf{x},t).
-\label{eq:acoustic_wave_eq}
-\end{equation}
+We model acoustic wave propagation through a medium by relating the time and space dependent pressure wavefield :math:`p(\mathbf{x},t)` to some external force :math:`f(\mathbf{x},t)` via the scalar acoustic wave equation for loss-less media
+
+.. math:: -\frac{1}{c(\mathbf{x})^2}\frac{\partial}{\partial t^2}p(\mathbf{x},t)+\rho(\mathbf{x})\nabla\frac{1}{\rho(\mathbf{x})}\nabla p(\mathbf{x},t)=f(\mathbf{x},t).
+
 Here, the properties of the medium are parametrized in terms of velocity $c(\mathbf{x},t)$ and density $\rho(\mathbf{x})$. In 2D, $\mathbf{x}=[x,y]^{\text{T}}$ and the spatial derivatives are given by $\nabla=\partial_x(\cdot)+\partial_y(\cdot)$. The acoustic wave equation \ref{eq:acoustic_wave_eq} explicitly shows the relationship between parameters of the medium $[c(\mathbf{x},t);\rho(\mathbf{x})]$ and the pressure wavefield $p(\mathbf{x},t)$. Equation \eqref{eq:acoustic_wave_eq} describes the forward problem of simulating the propagation of acoustic waves in a medium, hence solving this equation means that we are interested in obtaining the pressure wavefield given a specific velocity and density model.
 
 In tomography, one is interested in unraveling the properties of the medium from some measurements of the wavefield, hence going in the reverse direction of the forward equation \eqref{eq:acoustic_wave_eq}. Here we ask the question: given some measurements of the time dependent pressure wavefield, what is the velocity structure of the medium? One simple and frequently applied method that allows us to relate our observations to the velocity of the medium is straight-ray tomography. As the name suggests, the fundamental assumption in straight-ray tomography is that waves can be modelled as rays of infinite frequency and that they propagate along straight lines from a source to a receiver. Introducing the slowness as $s=c^{-1}$, the observed travel time $t_i$- hence the first arrival of the wave in the seismogram - between a source and a receiver can now be related to the structure of the medium by the line integral 
