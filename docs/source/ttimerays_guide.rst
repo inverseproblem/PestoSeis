@@ -1,10 +1,52 @@
-
-
+.. role:: raw-math(raw)
+    :format: latex html
 .. _ttimerays_guide:
 
 *******************************************
 Traveltimes and rays -- using ``ttimerays``
 *******************************************
+
+One possible way to model wave propagation in a medium is to assume that waves can be approximated by rays of infinite frequency along the path between a source and a receiver. If we consider a specific ray :math:`i` along a path :math:`\Gamma_i`, then we can obtain the travel time :math:`t_i` belonging to that ray by solving the line integral
+
+.. math::
+
+   t_i=\int_{\Gamma_i(s(\mathbf{x}))}s(\mathbf{x}(l))dl,
+    
+where :math:`s=s(\mathbf{x})` is the slowness map of the medium and is related to the speed of sound by :math:`s(\mathbf{x})=\frac{1}{c(\mathbf{x})}`, :math:`dl` is an infinitesimal line segment on the path and :math:`\mathbf{x(}l)` is the parametrization of the spatial variable in terms of :math:`l`. To solve the continuous line integral, one commonly discretizes the domain by approximating the continuous slowness map with a finite grid in which the slowness within each cell is constant. The travel times of an entire ray :math:`i` between two points is then given by the line connecting them and is calculated by the sum of the cell segments as
+
+.. math::   
+
+   t_i=\sum_{j=1}^nl_{ij}s_j,
+	
+where :math:`l_{ij}` is the line of ray :math:`i` in cell :math:`j` and :math:`n` is the total number of cells. In general, the path itself depends on the slowness structure of the medium, hence the equation is non-linear in the path. 
+
+One common approach to simplify the problem is to linearize about some reference model and to assume that variations in the speed of sound are small, which means that the speed-of-sound map can be approximated by :math:`s(\mathbf{x})\approx 1/c_0`. With this, rays are fixed to straight lines between a source and a receiver and the path becomes independent of the slowness distribution of the medium. This simplifies the line integral to
+
+.. math::
+   
+   t_i=\int_{\Gamma_i}s(\mathbf{x}(l))dl.
+
+With the straight-ray approximation we model wave propagation by performing the simplest ray tracing approach for which Snell’s law at all cell boundaries is ignored so that waves traveling from sources to receivers are approximated by straight lines. If we imagine to perform an experiment using a grid of :math:`n` cells and a total number of :math:`m` source-receiver pairs, resulting in :math:`m` rays, then we can leverage the benefit of the linear forward problem by building a linear system of equations 
+
+.. math::
+
+   \begin{eqnarray}
+      \begin{gathered}
+         t_1=l_{11}s_1+\dots+l_{1j}s_{j}+\dots+l_{1n}s_n \\ 
+         \vdots \\
+         t_i=l_{i1}s_1+\dots+l_{ij}s_{j}+\dots+l_{in}s_n \\ 
+         \vdots \\
+         t_m=l_{m1}s_1+\dots+l_{mj}s_{j}+\dots+l_{mn}s_n. 
+      \end{gathered}
+   \end{eqnarray}
+
+This can be condensed to matrix vector notation by introducing the forward modelling matrix :math:`\mathbf{F}` of dimensions :math:`m\cross n` that collects all line segments :math:`l_{ij}` for every source-receiver pair as
+
+.. math::
+
+      \mathbf{t}=\mathbf{F}\mathbf{s},
+
+where :math:`\mathbf{t}` is the vector of travel times from every source to every receiver and :math:`\mathbf{s}` is a vector containing the slowness map. 
 
 ====================================
 Setup of grid parameters and models
