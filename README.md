@@ -17,8 +17,6 @@ The functions contained in this package aim at the following:
 PestoSeis' docs: <https://anzun.gitlab.io/PestoSeis/>
 
 
-### Authors: ###
-   Andrea Zunino
 
 
 
