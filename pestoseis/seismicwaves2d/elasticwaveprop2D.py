@@ -510,7 +510,7 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) 
         #########################################
 
         if freeboundtop==True :
-            ## j=0,1
+            ## j=0,1 
 
             ### Vx
             Dxb_Txx = fact * ( Txx[:-3,:2] -27.0*Txx[1:-2,:2] +27.0*Txx[2:-1,:2] -Txx[3:,:2] )

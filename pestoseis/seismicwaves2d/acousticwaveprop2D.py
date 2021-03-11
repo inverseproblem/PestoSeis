@@ -22,14 +22,6 @@
 #######################################################################
 #######################################################################
 
-# -*- coding: utf-8 -*
-
-#
-# Andrea Zunino
-#  zunino[at]nbi[dot]dk
-# 
-#
-
 import numpy as np
 import sys
 import h5py as h5
@@ -172,10 +164,10 @@ def _initGaussboundcon(nptsgau=60 ) :
     bottomdp = damp[::-1].copy()
     topdp    = damp.copy()
 
-    import matplotlib.pyplot as plt
-    plt.figure()
-    plt.plot(damp)
-    plt.show()
+    # import matplotlib.pyplot as plt
+    # plt.figure()
+    # plt.plot(damp)
+    # plt.show()
 
     return nptsgau,leftdp,rightdp,bottomdp,topdp
 
@@ -711,7 +703,7 @@ def _solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcd
     
     # reflection coefficient (INRIA report section 6.1)
     # http://hal.inria.fr/docs/00/07/32/19/PDF/RR-3471.pdf
-    Rcoef = 0.0001  # for 20 nodes   ## 0.001 for a PML thickness of 10 nodes
+    Rcoef = 0.0001  # 0.0001 for 20 nodes   ## 0.001 for a PML thickness of 10 nodes
        
     # thickness of the PML layer in meters
     thickness_pml_x = nptspml_x * dx
