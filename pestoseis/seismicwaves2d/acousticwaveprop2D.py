@@ -97,6 +97,15 @@ def _calc_Kab_CPML(nptspml,gridspacing,dt,Npower,d0,
 
 ###################################################################
 
+def solveacoustic2D(inpar, ijsrc, Vp, density, sourcetf, srcdomfreq, recpos,saveh5=True,
+                    outfileh5="acoustic_snapshots.h5"):
+
+    raise("Acoustic - density and Vp: To be implemented...")
+    #_solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcdomfreq, recpos )
+    return
+
+###################################################################
+
 def solveacoustic2D( inpar, ijsrc, velmod, sourcetf, srcdomfreq, recpos, saveh5=True,
                      outfileh5="acoustic_snapshots.h5"):
     """
