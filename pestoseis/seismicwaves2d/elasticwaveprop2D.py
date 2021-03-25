@@ -525,12 +525,10 @@ def _solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos)
                 # vx(i,j) = vx(i,j) + force_x * DELTAT / rho(i,j)
                 # vy(i,j) = vy(i,j) + force_y * DELTAT / rho_half_x_half_y
                 
-                vx[isrc,jsrc] = vx[isrc,jsrc] + ExtForce['x'] * dt / rho[i,j]
-                rho_half_x_half_y = 0.25 * (rho[i,j] + rho[i+1,j] + rho[i+1,j+1] + rho[i,j+1])
-                vz[isrc,jsrc] = vz[isrc,jsrc] + ExtForce['z'] * dt / rho_ihalf_jhalf[i,j]
+                vx[isrc,jsrc] = vx[isrc,jsrc] + ExtForce['x'] * dt / rho[isrc,jsrc]
+                rho_half_x_half_y = 0.25 * (rho[isrc,jsrc] + rho[isrc+1,jsrc] + rho[isrc+1,jsrc+1] + rho[isrc,jsrc+1])
+                vz[isrc,jsrc] = vz[isrc,jsrc] + ExtForce['z'] * dt / rho_ihalf_jhalf[isrc,jsrc]
 
-                raise ValueError("ExtForce source not yet implemented! .Exiting.")
-            
             else :
                 print("Error source type badly defined.")
                 return
@@ -1027,10 +1025,10 @@ def testela() :
     from sourcetimefuncs import gaussource, rickersource
     sourcetf = rickersource( t, t0, f0 )
     #sourcetf = gaussource1D( t, t0, f0 )
-
-    srctype = "MomTensor"
+    srctype = "ExtForce" # "MomTensor" "ExtForce"
     MTens = dict(xx=1.0, xz=0.0, zz=1.0)
-
+    ExtForce= dict(x=1.0 , z=3.5)
+    
     # srctype = "ExtForce"
     # ExtForce= dict(x= , z= )
 
@@ -1069,12 +1067,12 @@ def testela() :
     inpar["dh"] = dh
     inpar["sourcetype"] = srctype
     inpar["momtensor"] = MTens
-    #inpar["extforce"]  = ExtForce 
+    inpar["extforce"]  = ExtForce 
     inpar["savesnapshot"] = True
     inpar["snapevery"] = 50
     inpar["seismogrkind"] = "velocity"    
     inpar["freesurface"]  = True
-    inpar["boundcond"] = "PML"
+    inpar["boundcond"] = "PML"  #"PML" "ReflBou"
 
     #--------------------------
     rockprops = {}
