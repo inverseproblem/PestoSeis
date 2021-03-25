@@ -248,7 +248,8 @@ def _solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos)
         MTens = inpar['momtensor']
     elif  inpar["sourcetype"] == "ExtForce" :
         ExtForce = inpar['extforce']
-    
+    print(" Source type: ",inpar["sourcetype"])
+
     ##############################
     ## Check stability criterion
     ##############################
@@ -799,7 +800,8 @@ def _solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, re
         MTens = inpar['momtensor']
     elif  inpar["sourcetype"] == "ExtForce" :
         ExtForce = inpar['extforce']
-        
+    print(" Source type: ",inpar["sourcetype"])
+    
     ##############################
     ## Check stability criterion
     ##############################
@@ -1025,9 +1027,8 @@ def testela() :
     from sourcetimefuncs import gaussource, rickersource
     sourcetf = rickersource( t, t0, f0 )
     #sourcetf = gaussource1D( t, t0, f0 )
-    srctype = "ExtForce" # "MomTensor" "ExtForce"
     MTens = dict(xx=1.0, xz=0.0, zz=1.0)
-    ExtForce= dict(x=1.0 , z=3.5)
+    ExtForce= dict(x=1.0, z=3.5)
     
     # srctype = "ExtForce"
     # ExtForce= dict(x= , z= )
@@ -1065,7 +1066,7 @@ def testela() :
     inpar["nz"] = nz
     inpar["dt"] = dt
     inpar["dh"] = dh
-    inpar["sourcetype"] = srctype
+    inpar["sourcetype"] = "MomTensor" # "MomTensor" "ExtForce"
     inpar["momtensor"] = MTens
     inpar["extforce"]  = ExtForce 
     inpar["savesnapshot"] = True
