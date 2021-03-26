@@ -16,6 +16,11 @@ plt.rcParams["font.family"] = "serif"
 plt.rcParams.update({"font.size": 15})
 plt.rcParams["xtick.major.pad"] = "12"
 plt.rcParams["ytick.major.pad"] = "12"
+
+# +
+# import IPython.nbformat.current as nbf
+# nb = nbf.read(open('breastPhantom.py', 'r'), 'py')
+# nbf.write(nb, open('breastPhantom.ipynb', 'w'), 'ipynb')
 # -
 
 # # Problem Setup
@@ -49,6 +54,7 @@ y_rec = rrec * np.sin(phi)
 
 sources = np.array([x_src, y_src])
 receivers = np.vstack((np.array([(x_rec[0], y_rec[0])]), np.array([(x_rec[50], y_rec[50])])))
+# receivers = np.vstack((np.array([(x_rec[0], y_rec[0])]), np.array([(x_rec[5], y_rec[5])])))
 # -
 
 ### setup grid object
