@@ -26,108 +26,7 @@ import numpy as np
 import sys
 import h5py as h5
 
-import matplotlib.pyplot as plt
-from matplotlib import animation
-from matplotlib import gridspec
-
 #############################################################################
-#######################################################################
-
-def animateacousticwaves(inpfile,clipamplitude=0.1) :
-    """
-     Function to 'animate' the results of a 2D acoustic finite difference simulation. It produces (and saves to a file) an .mp4 movie.
-
-    :parameter inpfile: input HDF5 file name
-    :parameter clipamplitude: amplitude clipping factor
-
-    
-    """
-    ##============================
-    every = 1 
-    kind = "acoustic"
-    fl=inpfile #"outdata/acoustic_snapshots.h5"
-
-    ##=========================================
-
-    h=h5.File(fl,"r")
-    press = h["press"][:,:,:].copy()
-    srctf = h["srctf"][:].copy()
-    dt = h["dt"].value
-    dh = h["dh"].value #[()]
-    nx = h["nx"].value
-    nz = h["nz"].value
-    vel = h["vel"][:,:]
-    snapevery = h["snapevery"].value
-    recs = h["recpos"][:,:].copy()
-    h.close()
-    x = press
-
-    N=x.shape[2]
-    pmax = clipamplitude*abs(x).max()
-    pmin = -pmax
-    cmap = plt.cm.RdGy_r #hot_r #gray_r #jet #RdGy_r #viridis
-
-    ######################################################
-
-    def updatefig_acou(n):
-        reddot.set_data(t[(n-1)*snapevery],srctf[(n-1)*snapevery])
-        sp2.set_title("Iter {}".format(n))
-        wav.set_array(x[:,:,n].T)
-        return (wav,reddot,sp2)
-
-    ######################################################
-    
-    def updatefig_ela(n):
-        reddot.set_data(t[(n-1)*snapevery],srctf[(n-1)*snapevery])
-        sp2.set_title(title1+"  Snapshot: {} ".format(n))
-        wav1.set_array(data1[:,:,n].T)
-        sp3.set_title(title2+"  Snapshot: {} ".format(n))
-        wav2.set_array(data2[:,:,n].T)
-        return (wav1,sp2,wav2,sp3)
-
-    ######################################################
-
-    nt = srctf.size
-    t = np.arange(0.0,dt*nt,dt)
-
-    gs = gridspec.GridSpec(1, 4)
-    gs.update(left=0.05, right=0.99, wspace=0.15,hspace=0.25)
-
-    fig1 = plt.figure(figsize=(12,5))
-
-    sp1 = plt.subplot(gs[0, 0])
-    plt.title("Source time function")
-    sep1 = plt.plot(t,srctf,'k')
-    reddot, = plt.plot(0,srctf[0],'or')
-
-
-    sp2 = plt.subplot(gs[0, 1:])
-    plt.title("Amplitude scaling factor: {}".format(clipamplitude))
-    # sp2 = plt.subplot(122)
-    extent = [0.0,dh*(nx-1),dh*(nz-1),0.0]
-    vp = plt.imshow(vel[:,:].T,cmap=plt.cm.jet,extent=extent,
-                     interpolation="nearest", alpha=0.5)
-    #srcpos, = plt.plot(  ,'^b')
-    plt.scatter(recs[:,0],recs[:,1],marker="v",color="k")
-    wav = plt.imshow(x[:,:,1].T,vmin=pmin,vmax=pmax,cmap=cmap,extent=extent,
-                     interpolation="nearest", animated=True, alpha=0.8)
-    plt.colorbar()
-    #plt.tight_layout()
-
-    ###
-    ani = animation.FuncAnimation(fig1, updatefig_acou, frames=range(0,N,every), interval=150, blit=False)
-
-    # Writer = animation.writers['ffmpeg']
-    # mywriter = Writer(fps=15, metadata=dict(artist='PestoSeis'), bitrate=1800)
-    mywriter = animation.FFMpegWriter()
-    ani.save('animation_{}.mp4'.format(kind),dpi=96,writer=mywriter)
-
-
-    ##################
-    plt.show()
-
-    return ani
-
 #############################################################################
 
 def _bilinear_interp(f,hgrid, pt):
@@ -195,6 +94,15 @@ def _calc_Kab_CPML(nptspml,gridspacing,dt,Npower,d0,
     
     return K,a,b
 
+
+###################################################################
+
+def solveacoustic2D(inpar, ijsrc, Vp, density, sourcetf, srcdomfreq, recpos,saveh5=True,
+                    outfileh5="acoustic_snapshots.h5"):
+
+    raise("Acoustic - density and Vp: To be implemented...")
+    #_solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcdomfreq, recpos )
+    return
 
 ###################################################################
 
