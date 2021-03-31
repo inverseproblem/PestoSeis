@@ -10,7 +10,7 @@ Computing travel times and rays through a velocity model is comprised of two mai
 1. Discretizing the velocity model on a numerical grid.
 2. Formulating the forward problem of wave propagation and finding a solution for the discretized model numerically.
 
-PestoSeis offers functions to that perform both steps and provids additional visualization tools. 
+PestoSeis offers functions performing both steps and provids additional visualization tools. 
 
 ====================================
 Setup of grid parameters and models
