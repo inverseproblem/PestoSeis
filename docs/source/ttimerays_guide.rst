@@ -97,7 +97,7 @@ where :math:`\mathbf{x}=[x,y]^{\text{T}}` in :math:`\mathbb{R}^2` and :math:`s=s
 
 .. math::
    
-   \left|\nabla t(\mathbf{x})\right|^2=\bbig(\frac{\partial t(\mathbf{x})}{\partial x}\bbig)^2+\bbig(\frac{\partial t(\mathbf{x})}{\partial y}\bbig)^2=s(\mathbf{x})^2,
+   \left|\nabla t(\mathbf{x})\right|^2=\bigg(\frac{\partial t(\mathbf{x})}{\partial x}\bigg)^2+\bigg(\frac{\partial t(\mathbf{x})}{\partial y}\bigg)^2=s(\mathbf{x})^2,
 
 where :math:`t(\mathbf{x})` is the traveltime of the wavefront. Note that due to the absolute value, this equation is also non-linear but there exist efficient methods that allow us to solve this partial differential equation equation numerically on a grid. PestoSeis makes use of the Fast Marching Method (FMM), which obtains the traveltime from a source point in a grid to all the other grid points for a given slowness field. In PestoSeis, traveltime calculation given a velocity model and one or more sources and related receivers can be performed using the function :func:`pestoseis.ttimerays.traveltime`. By default the function returns both the traveltimes at the receivers and also the entire 2D traveltime array(s) for subsequent ray tracing.
 
