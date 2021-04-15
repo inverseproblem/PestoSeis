@@ -32,6 +32,9 @@ setup(
     # https://packaging.python.org/specifications/core-metadata/#name
     name='pestoseis',  # Required
 
+    license = "GPL3",
+    license_files = ('LICENSE',),
+    
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/
     #
@@ -134,7 +137,7 @@ setup(
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['numpy','scipy','matplotlib'],  # Optional
+    install_requires=['numpy','scipy','matplotlib','h5py'],  # Optional
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"

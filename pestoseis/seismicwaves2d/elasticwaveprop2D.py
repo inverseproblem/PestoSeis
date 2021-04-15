@@ -2,7 +2,7 @@
 
 #------------------------------------------------------------------------
 #
-#    Copyright (C) 2019  Andrea Zunino 
+#    Copyright (C) 2021  Andrea Zunino 
 #
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,13 +20,14 @@
 #
 #------------------------------------------------------------------------
  
-import numpy as NP
+import numpy as np
 import sys
+import h5py as h5
 
 #############################################################################
 #############################################################################
 
-def bilinear_interp(f,hgrid, pt, gridshift_xy=NP.array([0.0,0.0])):
+def bilinear_interp(f,hgrid, pt, gridshift_xy=np.array([0.0,0.0])):
     xshift = gridshift_xy[0] 
     yshift = gridshift_xy[1]
     xreq=pt[0]
@@ -37,8 +38,8 @@ def bilinear_interp(f,hgrid, pt, gridshift_xy=NP.array([0.0,0.0])):
     assert(xh<=(hgrid*(f.shape[0]-1)))
     assert(yh>=0.0)
     assert(yh<=(hgrid*(f.shape[1]-1)))
-    i=int(NP.floor(xh)) # index starts from 0 so no +1
-    j=int(NP.floor(yh)) # index starts from 0 so no +1
+    i=int(np.floor(xh)) # index starts from 0 so no +1
+    j=int(np.floor(yh)) # index starts from 0 so no +1
     xd=xh-i
     yd=yh-j
     intval=f[i,j]*(1.0-xd)*(1.0-yd)+f[i+1,j]*(1.0-yd)*xd+f[i,j+1]*(1.0-xd)*yd+f[i+1,j+1]*xd*yd
@@ -54,24 +55,25 @@ def calc_Kab_CPML(nptspml,gridspacing,dt,Npower,d0,
     if onwhere=="grdpts" :
         L = nptspml*gridspacing
         # distances 
-        x = NP.arange(0.0,nptspml*gridspacing,gridspacing)
+        x = np.arange(0.0,nptspml*gridspacing,gridspacing)
     elif onwhere=="halfgrdpts" :
         L = nptspml*gridspacing
         # distances 
-        x = NP.arange(gridspacing/2.0,nptspml*gridspacing,gridspacing)
+        x = np.arange(gridspacing/2.0,nptspml*gridspacing,gridspacing)
         
     d = d0 * (x/L)**Npower    
     alpha =  alpha_max_pml * (1.0 - (x/L)) # + 0.1 * alpha_max_pml ????
 
     K = 1.0 + (K_max_pml - 1.0) * (x/L)**Npower
-    b = NP.exp( - (d / K + alpha) * dt )
+    b = np.exp( - (d / K + alpha) * dt )
     a = d * (b-1.0)/(K*(d+K*alpha))
     
     return K,a,b
 
 #############################################################################
 
-def solveelastic2D(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) :
+def solveelastic2D(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos, saveh5=True,
+                     outfileh5="elastic_snapshots.h5") :
     """
       Solve the elastic wave equation in 2D using finite differences on a staggered grid. Wrapper function for various boundary conditions.
        
@@ -94,6 +96,8 @@ def solveelastic2D(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) :
         sourcetf (ndarray): source time function
         srcdomfreq (float): source dominant frequency
         recpos (ndarray): position of the receivers, a two-column array [x,z]
+        saveh5 (bool): whether to save results to HDF5 file or not
+        outfileh5 (string): name of the output HDF5 file
 
     Returns: 
         receiv (ndarray): seismograms, Vx and Vz components, recorded at the receivers
@@ -101,13 +105,35 @@ def solveelastic2D(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) :
 
     """
     if inpar["boundcond"]=="PML" :
-        receiv,vxzsave = solveelawaveq2D_CPML(inpar, rockprops, ijsrc,
+        receiv,vxzsave = _solveelawaveq2D_CPML(inpar, rockprops, ijsrc,
                                               sourcetf, srcdomfreq, recpos)
     elif inpar["boundcond"]=="ReflBou" :
-        receiv,vxzsave = solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc,
+        receiv,vxzsave = _solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc,
                                                    sourcetf, srcdomfreq, recpos)
     else :
         raise ValueError("Error, wrong inpar['boundcond']: {}".format(inpar['boundcond']))
+
+     ##############################
+    if saveh5:
+        ## save stuff
+        hf = h5.File(outfileh5,"w")
+        if inpar["savesnapshot"]==True :
+            hf["vx"] = vxzsave[0]
+            hf["vz"] = vxzsave[1]
+        hf["snapevery"] = inpar["snapevery"]
+        hf["seismogrkind"] = inpar["seismogrkind"]
+        hf["srctf"] = sourcetf
+        hf["dh"] = inpar["dh"]
+        hf["lambda"] = rockprops["lambda"]
+        hf["mu"]  = rockprops["mu"]
+        hf["rho"] = rockprops["rho"]
+        hf["dt"]  = inpar["dt"]
+        hf["nx"]  = inpar["nx"]
+        hf["nz"]  = inpar["nz"]
+        hf["recpos"] = recpos
+        hf["srcij"] = ijsrc
+        hf.close()
+        print("Saved elastic simulation and parameters to ",outfileh5)
 
     return receiv,vxzsave
 
@@ -115,7 +141,7 @@ def solveelastic2D(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) :
 #############################################################################
 
 
-def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) :
+def _solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) :
     """
     Solve the elastic wave equation in 2D using finite differences on a staggered grid. 
     CPML boundary conditions.
@@ -200,7 +226,7 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) 
     # ------------------------------------------------
         
     assert(inpar["boundcond"]=="PML")
-    print("Starting ELASTIC solver with CPML boundary condition.")
+    print("Starting ELASTIC solver with CPML boundary conditions.")
 
 
     ##############################  
@@ -222,12 +248,13 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) 
         MTens = inpar['momtensor']
     elif  inpar["sourcetype"] == "ExtForce" :
         ExtForce = inpar['extforce']
-    
+    print(" Source type: ",inpar["sourcetype"])
+
     ##############################
     ## Check stability criterion
     ##############################
-    maxvp = ( NP.sqrt( (lamb+2.0*mu)/rho )).max()
-    Courant_number = maxvp * inpar["dt"] * NP.sqrt(1.0/dx**2 + 1.0/dz**2)
+    maxvp = ( np.sqrt( (lamb+2.0*mu)/rho )).max()
+    Courant_number = maxvp * inpar["dt"] * np.sqrt(1.0/dx**2 + 1.0/dz**2)
     if Courant_number > 1.0 :
         println(" The stability criterion is violated. Quitting.")
         return
@@ -269,7 +296,7 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) 
     Npower = 2.0
     assert Npower >= 1
     K_max_pml = 1.0
-    alpha_max_pml = 2.0*NP.pi*(f0/2.0) 
+    alpha_max_pml = 2.0*np.pi*(f0/2.0) 
     
     # reflection coefficient (INRIA report section 6.1)
     # http://hal.inria.fr/docs/00/07/32/19/PDF/RR-3471.pdf
@@ -280,8 +307,8 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) 
     thickness_pml_z = nptspml_z * dz
     
     # compute d0 from INRIA report section 6.1 http://hal.inria.fr/docs/00/07/32/19/PDF/RR-3471.pdf
-    d0_x = - (Npower + 1) * maxvp * NP.log(Rcoef) / (2.0 * thickness_pml_x)
-    d0_z = - (Npower + 1) * maxvp * NP.log(Rcoef) / (2.0 * thickness_pml_z)
+    d0_x = - (Npower + 1) * maxvp * np.log(Rcoef) / (2.0 * thickness_pml_x)
+    d0_z = - (Npower + 1) * maxvp * np.log(Rcoef) / (2.0 * thickness_pml_z)
     
     
     ##############################
@@ -307,12 +334,12 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) 
     #######################
     #  x direction
     #######################
-    K_x     = NP.ones(nx)
-    a_x     = NP.zeros(nx)
-    b_x     = NP.ones(nx)
-    K_x_half = NP.ones(nx)
-    a_x_half = NP.zeros(nx)
-    b_x_half = NP.ones(nx)
+    K_x     = np.ones(nx)
+    a_x     = np.zeros(nx)
+    b_x     = np.ones(nx)
+    K_x_half = np.ones(nx)
+    a_x_half = np.zeros(nx)
+    b_x_half = np.ones(nx)
     
     # reverse coefficients to get increasing damping away from inner model
     # left boundary
@@ -340,13 +367,13 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) 
     #######################
     #  z direction
     #######################
-    K_z     = NP.ones(nz)
-    a_z     = NP.zeros(nz)
-    b_z     = NP.zeros(nz)
+    K_z     = np.ones(nz)
+    a_z     = np.zeros(nz)
+    b_z     = np.zeros(nz)
     # half
-    K_z_half   = NP.ones(nz)
-    a_z_half   = NP.zeros(nz)
-    b_z_half   = NP.zeros(nz)
+    K_z_half   = np.ones(nz)
+    a_z_half   = np.zeros(nz)
+    b_z_half   = np.zeros(nz)
     
     # bottom 
     bottompml=nz-nptspml_z  # julia: nz-nptspml_z+1
@@ -376,14 +403,14 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) 
     ## Arrays to export snapshots
     if inpar["savesnapshot"]==True :
         ntsave = inpar["ntimesteps"]//inpar["snapevery"]
-        vxsave = NP.zeros((inpar["nx"],inpar["nz"],ntsave+1))
-        vzsave = NP.zeros((inpar["nx"],inpar["nz"],ntsave+1))
+        vxsave = np.zeros((inpar["nx"],inpar["nz"],ntsave+1))
+        vzsave = np.zeros((inpar["nx"],inpar["nz"],ntsave+1))
         tsave=1
 
 
     ## Arrays to return seismograms
     nrecs = recpos.shape[0]
-    receiv = NP.zeros((inpar["ntimesteps"],nrecs,2))
+    receiv = np.zeros((inpar["ntimesteps"],nrecs,2))
 
 
     # Source time function
@@ -393,38 +420,38 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) 
 
     
     ## Initialize arrays
-    vx = NP.zeros((nx,nz))
-    vz = NP.zeros((nx,nz))
-    Txx = NP.zeros((nx,nz))
-    Tzz = NP.zeros((nx,nz))
-    Txz = NP.zeros((nx,nz))
+    vx = np.zeros((nx,nz))
+    vz = np.zeros((nx,nz))
+    Txx = np.zeros((nx,nz))
+    Tzz = np.zeros((nx,nz))
+    Txz = np.zeros((nx,nz))
 
     ## derivatives
-    Dxb_Txx = NP.zeros((nx-3,nz-3))
-    Dzb_Txz = NP.zeros((nx-3,nz-3))
-    Dxf_Txz = NP.zeros((nx-3,nz-3))
-    Dzf_Tzz = NP.zeros((nx-3,nz-3))
-    Dxf_vx  = NP.zeros((nx-3,nz-3))
-    Dzb_vz  = NP.zeros((nx-3,nz-3))
-    Dzf_vx  = NP.zeros((nx-3,nz-3))
-    Dxb_vz  = NP.zeros((nx-3,nz-3))
+    Dxb_Txx = np.zeros((nx-3,nz-3))
+    Dzb_Txz = np.zeros((nx-3,nz-3))
+    Dxf_Txz = np.zeros((nx-3,nz-3))
+    Dzf_Tzz = np.zeros((nx-3,nz-3))
+    Dxf_vx  = np.zeros((nx-3,nz-3))
+    Dzb_vz  = np.zeros((nx-3,nz-3))
+    Dzf_vx  = np.zeros((nx-3,nz-3))
+    Dxb_vz  = np.zeros((nx-3,nz-3))
 
 
     # PML arrays
     # Arrays with size of PML areas would be sufficient and save memory,
     #   however allocating arrays with same size than model simplifies
     #   the code in the loops
-    psi_DxTxx = NP.zeros((nx,nz))
-    psi_DzTxz = NP.zeros((nx,nz))
+    psi_DxTxx = np.zeros((nx,nz))
+    psi_DzTxz = np.zeros((nx,nz))
     
-    psi_DxTxz = NP.zeros((nx,nz))
-    psi_DzTzz = NP.zeros((nx,nz))
+    psi_DxTxz = np.zeros((nx,nz))
+    psi_DzTzz = np.zeros((nx,nz))
     
-    psi_DxVx = NP.zeros((nx,nz))
-    psi_DzVz = NP.zeros((nx,nz))
+    psi_DxVx = np.zeros((nx,nz))
+    psi_DzVz = np.zeros((nx,nz))
 
-    psi_DzVx = NP.zeros((nx,nz))
-    psi_DxVz = NP.zeros((nx,nz))
+    psi_DzVx = np.zeros((nx,nz))
+    psi_DxVz = np.zeros((nx,nz))
 
     
     ##############################
@@ -465,7 +492,7 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) 
     ##======================================##
 
     fact = 1.0/(24.0*inpar["dh"])
-    gridshift_vz = NP.array([dh/2.0,dh/2.0])
+    gridshift_vz = np.array([dh/2.0,dh/2.0])
     
     ## to make the Numpy broadcast Hadamard product correct along x
     a_x = a_x.reshape(-1,1)
@@ -495,10 +522,14 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) 
                 Txz[isrc,jsrc] = Txz[isrc,jsrc] + MTens['xz'] * sourcetf[t]* dt 
 
             elif inpar["sourcetype"]=="ExtForce":
-                # ExtForce['x'] = # dt/rho *
-                # Extforce['z'] =  
-                raise ValueError("ExtForce source not yet implemented! .Exiting.")
-            
+                # rho_half_x_half_y = 0.25d0 * (rho(i,j) + rho(i+1,j) + rho(i+1,j+1) + rho(i,j+1))
+                # vx(i,j) = vx(i,j) + force_x * DELTAT / rho(i,j)
+                # vy(i,j) = vy(i,j) + force_y * DELTAT / rho_half_x_half_y
+                
+                vx[isrc,jsrc] = vx[isrc,jsrc] + ExtForce['x'] * dt / rho[isrc,jsrc]
+                rho_half_x_half_y = 0.25 * (rho[isrc,jsrc] + rho[isrc+1,jsrc] + rho[isrc+1,jsrc+1] + rho[isrc,jsrc+1])
+                vz[isrc,jsrc] = vz[isrc,jsrc] + ExtForce['z'] * dt / rho_ihalf_jhalf[isrc,jsrc]
+
             else :
                 print("Error source type badly defined.")
                 return
@@ -510,7 +541,7 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) 
         #########################################
 
         if freeboundtop==True :
-            ## j=0,1
+            ## j=0,1 
 
             ### Vx
             Dxb_Txx = fact * ( Txx[:-3,:2] -27.0*Txx[1:-2,:2] +27.0*Txx[2:-1,:2] -Txx[3:,:2] )
@@ -647,7 +678,7 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) 
         for r in range(nrecs) :
             rec_vx = bilinear_interp(vx,dh,recpos[r,:])
             rec_vz = bilinear_interp(vz,dh,recpos[r,:],gridshift_xy=gridshift_vz)
-            receiv[t,r,:] = NP.array([rec_vx, rec_vz])
+            receiv[t,r,:] = np.array([rec_vx, rec_vz])
         
         #### save snapshots
         if (inpar["savesnapshot"]==True) and (t%inpar["snapevery"]==0) :
@@ -666,7 +697,7 @@ def solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) 
 #####################################################################
 
 
-def solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) :
+def _solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) :
     """
     Solve the elastic wave equation in 2D using finite differences on a staggered grid. 
     Reflective boundary conditions.
@@ -769,12 +800,13 @@ def solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, rec
         MTens = inpar['momtensor']
     elif  inpar["sourcetype"] == "ExtForce" :
         ExtForce = inpar['extforce']
-        
+    print(" Source type: ",inpar["sourcetype"])
+    
     ##############################
     ## Check stability criterion
     ##############################
-    maxvp = ( NP.sqrt( (lamb+2.0*mu)/rho )).max()
-    Courant_number = maxvp * inpar["dt"] * NP.sqrt(1.0/dx**2 + 1.0/dz**2)
+    maxvp = ( np.sqrt( (lamb+2.0*mu)/rho )).max()
+    Courant_number = maxvp * inpar["dt"] * np.sqrt(1.0/dx**2 + 1.0/dz**2)
     if Courant_number > 1.0 :
         println(" The stability criterion is violated. Quitting.")
         return
@@ -798,13 +830,13 @@ def solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, rec
     ## Arrays to export snapshots
     if inpar["savesnapshot"]==True :
         ntsave = inpar["ntimesteps"]//inpar["snapevery"]
-        vxsave = NP.zeros((inpar["nx"],inpar["nz"],ntsave+1))
-        vzsave = NP.zeros((inpar["nx"],inpar["nz"],ntsave+1))
+        vxsave = np.zeros((inpar["nx"],inpar["nz"],ntsave+1))
+        vzsave = np.zeros((inpar["nx"],inpar["nz"],ntsave+1))
         tsave=1
 
     ## Arrays to return seismograms
     nrecs = recpos.shape[0]
-    receiv = NP.zeros((inpar["ntimesteps"],nrecs,2))
+    receiv = np.zeros((inpar["ntimesteps"],nrecs,2))
 
     # Source time function
     lensrctf = sourcetf.size
@@ -812,21 +844,21 @@ def solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, rec
     jsrc = ijsrc[1]
     
     ## Initialize arrays
-    vx = NP.zeros((nx,nz))
-    vz = NP.zeros((nx,nz))
-    Txx = NP.zeros((nx,nz))
-    Tzz = NP.zeros((nx,nz))
-    Txz = NP.zeros((nx,nz))
+    vx = np.zeros((nx,nz))
+    vz = np.zeros((nx,nz))
+    Txx = np.zeros((nx,nz))
+    Tzz = np.zeros((nx,nz))
+    Txz = np.zeros((nx,nz))
 
     ## derivatives
-    Dxb_Txx = NP.zeros((nx-3,nz-3))
-    Dzb_Txz = NP.zeros((nx-3,nz-3))
-    Dxf_Txz = NP.zeros((nx-3,nz-3))
-    Dzf_Tzz = NP.zeros((nx-3,nz-3))
-    Dxf_vx  = NP.zeros((nx-3,nz-3))
-    Dzb_vz  = NP.zeros((nx-3,nz-3))
-    Dzf_vx  = NP.zeros((nx-3,nz-3))
-    Dxb_vz  = NP.zeros((nx-3,nz-3))
+    Dxb_Txx = np.zeros((nx-3,nz-3))
+    Dzb_Txz = np.zeros((nx-3,nz-3))
+    Dxf_Txz = np.zeros((nx-3,nz-3))
+    Dzf_Tzz = np.zeros((nx-3,nz-3))
+    Dxf_vx  = np.zeros((nx-3,nz-3))
+    Dzb_vz  = np.zeros((nx-3,nz-3))
+    Dzf_vx  = np.zeros((nx-3,nz-3))
+    Dxb_vz  = np.zeros((nx-3,nz-3))
     
     ##############################
     #   Derivative operators
@@ -865,7 +897,7 @@ def solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, rec
     ##======================================##
     
     fact = 1.0/(24.0*inpar["dh"])
-    gridshift_vz = NP.array([dh/2.0,dh/2.0])
+    gridshift_vz = np.array([dh/2.0,dh/2.0])
 
     ## time loop
     dt = inpar["dt"]
@@ -953,7 +985,7 @@ def solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, rec
         for r in range(nrecs) :
             rec_vx = bilinear_interp(vx,dh,recpos[r,:])
             rec_vz = bilinear_interp(vz,dh,recpos[r,:],gridshift_xy=gridshift_vz)
-            receiv[t,r,:] = NP.array([rec_vx, rec_vz])
+            receiv[t,r,:] = np.array([rec_vx, rec_vz])
         
         #### save snapshots
         if (inpar["savesnapshot"]==True) and (t%inpar["snapevery"]==0) :
@@ -974,120 +1006,93 @@ def solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, rec
 #####################################################################
                          
 
-# def testela() :
+def testela() :
     
-#     # time
-#     nt = 4000
-#     dt = 0.0002 #s
-#     t = NP.arange(0.0,nt*dt,dt) # s
+    # time
+    nt = 4000
+    dt = 0.0002 #s
+    t = np.arange(0.0,nt*dt,dt) # s
     
-#     # space
-#     nx = 250
-#     nz = 250
-#     dh = 5.0 # m
+    # space
+    nx = 250
+    nz = 250
+    dh = 5.0 # m
 
+    # source
+    t0 = 0.03 # s
+    f0 = 32.0 # 20.0 # Hz
+    ijsrc = np.array([109,109])
 
-#     # source
-#     t0 = 0.03 # s
-#     f0 = 32.0 # 20.0 # Hz
-#     ijsrc = NP.array([109,109])
-
-
-#     ###############################3
-#     from sourcetimefuncs import gaussource, rickersource
-#     sourcetf = rickersource1D( t, t0, f0 )
-#     #sourcetf = gaussource1D( t, t0, f0 )
-
-#     srctype = "MomTensor"
-#     MTens = dict(xx=1.0, xz=0.0, zz=1.0)
-
-#     # srctype = "ExtForce"
-#     # ExtForce= dict(x= , z= )
-
-
-#     ## lambda,mu,rho
-#     rho = 2700.0*NP.ones((nx,nz))
-#     rho[:,nx//2:] = 2950.0
-#     rho[nx//2:,nz//2:nz//2+20] = 2350.0
+    ###############################3
+    from sourcetimefuncs import gaussource, rickersource
+    sourcetf = rickersource( t, t0, f0 )
+    #sourcetf = gaussource1D( t, t0, f0 )
+    MTens = dict(xx=1.0, xz=0.0, zz=1.0)
+    ExtForce= dict(x=1.0, z=3.5)
     
-#     P_wav = 3900.0*NP.ones((nx,nz))
-#     P_wav[:,nz//2:] = 4500.0
-#     P_wav[nx//2:,nz//2:nz//2+20] = 4100.0
+    # srctype = "ExtForce"
+    # ExtForce= dict(x= , z= )
 
-#     S_wav = 2500.0*NP.ones((nx,nz))
-#     S_wav[:,nz//2:] = 2700.0
-#     S_wav[nx//2:,nz//2:nz//2+20] = 2100.0
 
-#     lamb = rho*(P_wav**2-2.0*S_wav**2) # P-wave modulus
-#     mu = rho*S_wav**2 # S-wave modulus (shear modulus)
+    ## lambda,mu,rho
+    rho = 2700.0*np.ones((nx,nz))
+    rho[:,nx//2:] = 2950.0
+    rho[nx//2:,nz//2:nz//2+20] = 2350.0
+    
+    P_wav = 3900.0*np.ones((nx,nz))
+    P_wav[:,nz//2:] = 4500.0
+    P_wav[nx//2:,nz//2:nz//2+20] = 4100.0
+
+    S_wav = 2500.0*np.ones((nx,nz))
+    S_wav[:,nz//2:] = 2700.0
+    S_wav[nx//2:,nz//2:nz//2+20] = 2100.0
+
+    lamb = rho*(P_wav**2-2.0*S_wav**2) # P-wave modulus
+    mu = rho*S_wav**2 # S-wave modulus (shear modulus)
     
 
-#     ###############################
-#     nrec = 4
-#     recpos = NP.zeros((nrec,2))
-#     recpos[:,1] = 600.0
-#     recpos[:,0] = NP.linspace(200.0,nx*dh-200.0,nrec)
-#     print("Receiver positions: \n{}".format(recpos))
+    ###############################
+    nrec = 4
+    recpos = np.zeros((nrec,2))
+    recpos[:,1] = 600.0
+    recpos[:,0] = np.linspace(200.0,nx*dh-200.0,nrec)
+    #print("Receiver positions: \n{}".format(recpos))
 
     
-#     # pressure field in space and time
-#     inpar={}
-#     inpar["ntimesteps"] = nt
-#     inpar["nx"] = nx
-#     inpar["nz"] = nz
-#     inpar["dt"] = dt
-#     inpar["dh"] = dh
-#     inpar["sourcetype"] = srctype
-#     inpar["momtensor"] = MTens
-#     #inpar["extforce"]  = ExtForce 
-#     inpar["savesnapshot"] = True
-#     inpar["snapevery"] = 10
-#     inpar["seismogrkind"] = "velocity"    
-#     inpar["topbound"]   = "freesurf"
-#     inpar["leftbound"]  = "pml"
-#     inpar["rightbound "]= "pml"
-#     inpar["bottombound"]= "pml"
+    # pressure field in space and time
+    inpar={}
+    inpar["ntimesteps"] = nt
+    inpar["nx"] = nx
+    inpar["nz"] = nz
+    inpar["dt"] = dt
+    inpar["dh"] = dh
+    inpar["sourcetype"] = "MomTensor" # "MomTensor" "ExtForce"
+    inpar["momtensor"] = MTens
+    inpar["extforce"]  = ExtForce 
+    inpar["savesnapshot"] = True
+    inpar["snapevery"] = 50
+    inpar["seismogrkind"] = "velocity"    
+    inpar["freesurface"]  = True
+    inpar["boundcond"] = "PML"  #"PML" "ReflBou"
 
-#     #--------------------------
-#     rockprops = {}
-#     rockprops["lambda"] = lamb
-#     rockprops["mu"] = mu
-#     rockprops["rho"] = rho
+    #--------------------------
+    rockprops = {}
+    rockprops["lambda"] = lamb
+    rockprops["mu"] = mu
+    rockprops["rho"] = rho
 
-#     import time
-#     t1 = time.time()
+    import time
+    t1 = time.time()
 
-#     seism,vxzsave = solveelastic2D(inpar, rockprops,ijsrc, sourcetf,f0, recpos)
+    seism,vxzsave = solveelastic2D(inpar, rockprops,ijsrc, sourcetf,f0, recpos)
         
-#     t2 = time.time()
-#     print("Solver time: {}".format(t2-t1))
+    t2 = time.time()
+    print("Solver time: {}".format(t2-t1))
         
-#     ##############################
-#     ## save stuff
-#     import h5py as H5
-#     hf = H5.File("ela_imgs_python.h5","w")
-#     if inpar["savesnapshot"]==True :
-#         hf["vx"] = vxzsave[0]
-#         hf["vz"] = vxzsave[1]
-#     hf["seismogrkind"] = inpar["seismogrkind"]
-#     hf["seism"] = seism
-#     hf["srctf"] = sourcetf
-#     hf["dh"] = dh
-#     hf["lambda"] = lamb
-#     hf["mu"] = mu
-#     hf["rho"] = rho
-#     hf["dt"] = dt
-#     hf["nx"] = nx
-#     hf["nz"] = nz
-#     hf["recpos"] = recpos
-#     hf["srcij"] = ijsrc
-#     hf["snapevery"] = inpar["snapevery"]
-#     hf.close()
-
-#     return
+    return
     
-# ###################################################
+###################################################
     
-# if __name__  == "__main__" :
+if __name__  == "__main__" :
 
-#     testela()
+    testela()

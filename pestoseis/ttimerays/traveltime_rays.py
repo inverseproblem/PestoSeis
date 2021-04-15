@@ -23,7 +23,6 @@
 """
 import numpy as __NP
 import matplotlib.pyplot as __PL
-#import fdtime2d as TT
 import sys as __sys
 from scipy import linalg as __LA
 from scipy import interpolate as __SPINT
@@ -31,7 +30,7 @@ from scipy import interpolate as __SPINT
 from .fmm2D import forwtt as _forwtt
 
 ### important!
-fmmtolerance = 1e-6
+fmmtolerance = __NP.finfo(float).resolution
 
 ###########################################################################
 
@@ -312,7 +311,7 @@ def __pointisonLINE(a,b, pointc):
 
 def __segintersRECT(rect,seg,rectangle=True) :
     """
-    Find intersection of segments and a polygon.
+    Find intersection of a segment and a polygon or rectangle if 'rectangle=True'.
 
     """
     if rectangle==True :
@@ -642,8 +641,8 @@ def _traceray(gridpar,recpos,coordsrc, ttime) :
     rect,pos = __findcelledge(xmin,ymin,dx,dy,nx,ny, curpt, endptgrad )
     segment = __NP.vstack((curpt,endptgrad))
     status,itspt = __segintersRECT(rect,segment,rectangle=True)
+    #print("status: ",status)
 
-    
     idx = __NP.where(status==0)[0][0]
     curpt = itspt[idx].copy()
     assert __ptinbounds(gridpar,curpt)
@@ -664,7 +663,7 @@ def _traceray(gridpar,recpos,coordsrc, ttime) :
         rect,pos = __findcelledge(xmin,ymin,dx,dy,nx,ny, curpt, endptgrad ) 
         segment = __NP.vstack((curpt,endptgrad))
 
-        status,itspt = __segintersRECT(rect,segment,rectangle=True)
+        status,itspt = __segintersRECT(rect,segment,rectangle=True)         
         idx = __NP.where(status==0)[0][0]
 
         curpt = itspt[idx].copy()
