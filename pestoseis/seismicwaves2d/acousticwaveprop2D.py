@@ -525,6 +525,7 @@ def _solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
     
     ################################
     fact = vel**2 * (dt**2/dh**2)
+    mean_vel_sq = np.mean(vel)**2
 
        
     ## time loop
@@ -574,7 +575,8 @@ def _solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
         
 
         # inject source
-        pnew[isrc,jsrc] = pnew[isrc,jsrc] + dt**2*sourcetf[t]
+        # pnew[isrc,jsrc] = pnew[isrc,jsrc] + dt**2*sourcetf[t]
+        pnew[isrc,jsrc] = pnew[isrc,jsrc] + dt**2*sourcetf[t]*mean_vel_sq
 
         # assign the new pold and pcur
         pold[:,:] = pcur[:,:]
