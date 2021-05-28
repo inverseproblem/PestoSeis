@@ -481,8 +481,8 @@ def _solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos)
     # mu_ihalf (nx-1,ny) ??
     # mu_jhalf (nx,ny-1) ??
     if harmonicaver_mu==True :
-        mu_ihalf = 1.0/( 1.0/mu[1:,:] + 1.0/mu[:-1,:] )
-        mu_jhalf = 1.0/( 1.0/mu[:,1:] + 1.0/mu[:,:-1] )
+        mu_ihalf = 2.0/( 1.0/mu[1:,:] + 1.0/mu[:-1,:] )
+        mu_jhalf = 2.0/( 1.0/mu[:,1:] + 1.0/mu[:,:-1] )
     else :
         mu_ihalf = (mu[1:,:]+mu[:-1,:])/2.0 ###?????
         mu_jhalf = (mu[:,1:]+mu[:,:-1])/2.0 ###?????
@@ -517,9 +517,9 @@ def _solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos)
         if t<=lensrctf :
             
             if inpar["sourcetype"]=="MomTensor":
-                Txx[isrc,jsrc] = Txx[isrc,jsrc] + MTens['xx'] * sourcetf[t]* dt 
-                Tzz[isrc,jsrc] = Tzz[isrc,jsrc] + MTens['zz'] * sourcetf[t]* dt 
-                Txz[isrc,jsrc] = Txz[isrc,jsrc] + MTens['xz'] * sourcetf[t]* dt 
+                Txx[isrc,jsrc] = Txx[isrc,jsrc] + MTens['xx'] * sourcetf[t]* dt / dh**2
+                Tzz[isrc,jsrc] = Tzz[isrc,jsrc] + MTens['zz'] * sourcetf[t]* dt / dh**2
+                Txz[isrc,jsrc] = Txz[isrc,jsrc] + MTens['xz'] * sourcetf[t]* dt / dh**2
 
             elif inpar["sourcetype"]=="ExtForce":
                 # rho_half_x_half_y = 0.25d0 * (rho(i,j) + rho(i+1,j) + rho(i+1,j+1) + rho(i,j+1))
@@ -545,14 +545,20 @@ def _solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos)
 
             ### Vx
             Dxb_Txx = fact * ( Txx[:-3,:2] -27.0*Txx[1:-2,:2] +27.0*Txx[2:-1,:2] -Txx[3:,:2] )
-            Dzb_Txz = fact * ( -Txz[2:-1,1:3] +27.0*Txz[2:-1,:2] +27.0*Txz[2:-1,:2] -Txz[2:-1,1:3] )
+            # Dzb_Txz = fact * ( -Txz[2:-1,1:3] +27.0*Txz[2:-1,:2] +27.0*Txz[2:-1,:2] -Txz[2:-1,1:3] )
+            Dzb_Txz = np.zeros_like(Txz[2:-1,:2])
+            Dzb_Txz[:, 0] = fact * ( -Txz[2:-1,1] +27.0*Txz[2:-1,0] +27.0*Txz[2:-1,0] -Txz[2:-1,1] )
+            Dzb_Txz[:, 1] = fact * ( -Txz[2:-1,0] -27.0*Txz[2:-1,0] +27.0*Txz[2:-1,1] -Txz[2:-1,2] )
             # vx
             vx[2:-1,:2] = vx[2:-1,:2] + (dt/rho[2:-1,:2]) * (Dxb_Txx + Dzb_Txz)
 
             ###---------------------------------------------------
             # Vz
             Dxf_Txz = fact * ( Txz[:-3,:2] -27.0*Txz[1:-2,:2] +27.0*Txz[2:-1,:2] -Txz[3:,:2] )
-            Dzf_Tzz = fact * ( -Tzz[1:-2,2:4] +27.0*Tzz[1:-2,1:3] +27.0*Tzz[1:-2,1:3] -Tzz[1:-2,2:4] )
+            # Dzf_Tzz = fact * ( -Tzz[1:-2,2:4] +27.0*Tzz[1:-2,1:3] +27.0*Tzz[1:-2,1:3] -Tzz[1:-2,2:4] )
+            Dzf_Tzz = np.zeros_like(Tzz[1:-2,2:4])
+            Dzf_Tzz[:, 0] = fact * ( -Tzz[1:-2,2] +27.0*Tzz[1:-2,1] +27.0*Tzz[1:-2,1] -Tzz[1:-2,2] )
+            Dzf_Tzz[:, 1] = fact * ( -Tzz[1:-2,1] -27.0*Tzz[1:-2,1] +27.0*Tzz[1:-2,2] -Tzz[1:-2,3] )
     
             # update velocity (rho has been interpolated in advance)
             # rho_ihalf_jhalf[1:-1,1:-1] because its size is (nx-1,ny-1) 
@@ -606,7 +612,9 @@ def _solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos)
             Dxf_vx = fact * (vx[:-3,0] -27.0*vx[1:-2,0] +27.0*vx[2:-1,0] -vx[3:,0])
             Dzb_vz = -(1.0-2.0*mu_ihalf[1:-1,0]/lamb_ihalf[1:-1,0])*Dxf_vx
             # Txx
-            Txx[1:-2,0] = Txx[1:-2,0] + (lamb_ihalf[1:-1,0]+2.0*mu_ihalf[1:-1,0]) * dt * Dxf_vx + lamb_ihalf[1:-1,0] * dt * Dzb_vz
+            # Txx[1:-2,0] = Txx[1:-2,0] + (lamb_ihalf[1:-1,0]+2.0*mu_ihalf[1:-1,0]) * dt * Dxf_vx + lamb_ihalf[1:-1,0] * dt * Dzb_vz
+            Txx[1:-2,0] = Txx[1:-2,0] + (lamb_ihalf[1:-1,0] - lamb_ihalf[1:-1,0] / (lamb_ihalf[1:-1,0] + 2 * mu_ihalf[1:-1,0]) + 2 * mu_ihalf[1:-1,0]) * dt * Dxf_vx
+            # Txx[1:-2,0] = Txx[1:-2,0] + dt * (4 * mu_ihalf[1:-1,0] - (2 * mu_ihalf[1:-1,0]) ** 2 / (lamb_ihalf[1:-1,0] + 2 * mu_ihalf[1:-1,0])) * Dxf_vx
             # Tzz
             Tzz[1:-2,0] = 0.0
 
@@ -629,7 +637,7 @@ def _solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos)
             Dxb_vz = fact * (vz[:-3,0] -27.0*vz[1:-2,0] +27.0*vz[2:-1,0] -vz[3:,0]) 
             # Txz
             Txz[2:-1,0] = Txz[2:-1,0] + mu_jhalf[2:-1,0] * dt * (Dzf_vx + Dxb_vz)
-
+            # Txz[2:-1,0] = 0.0
             ##--------------------------------------------
 
             ## END free surface
@@ -914,9 +922,9 @@ def _solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, re
         if t<=lensrctf :
             
             if inpar["sourcetype"]=="MomTensor":
-                Txx[isrc,jsrc] = Txx[isrc,jsrc] + MTens['xx'] * sourcetf[t]* dt 
-                Tzz[isrc,jsrc] = Tzz[isrc,jsrc] + MTens['zz'] * sourcetf[t]* dt 
-                Txz[isrc,jsrc] = Txz[isrc,jsrc] + MTens['xz'] * sourcetf[t]* dt 
+                Txx[isrc,jsrc] = Txx[isrc,jsrc] + MTens['xx'] * sourcetf[t]* dt / dh**2
+                Tzz[isrc,jsrc] = Tzz[isrc,jsrc] + MTens['zz'] * sourcetf[t]* dt / dh**2
+                Txz[isrc,jsrc] = Txz[isrc,jsrc] + MTens['xz'] * sourcetf[t]* dt / dh**2
 
             elif inpar["sourcetype"]=="ExtForce":
                 # ExtForce['x'] = # dt/rho *
