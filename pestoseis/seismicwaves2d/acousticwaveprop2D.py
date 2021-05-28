@@ -476,7 +476,7 @@ def _solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
 
         # inject source
         # pnew[isrc,jsrc] = pnew[isrc,jsrc] + dt**2*sourcetf[t]
-        pnew[isrc,jsrc] = pnew[isrc,jsrc] + dt**2*sourcetf[t]*mean_vel_sq
+        pnew[isrc,jsrc] = pnew[isrc,jsrc] + dt**2*sourcetf[t]*mean_vel_sq / dh**2
 
         # assign the new pold and pcur
         pold[:,:] = pcur[:,:]
@@ -917,6 +917,7 @@ def _solveacouwaveq2D_ReflBound( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos
 
     ################################
     fact = vel**2 * (dt**2/dh**2)
+    mean_vel_sq = np.mean(vel)**2
        
     ## time loop
     print((" Time step dt: {}".format(dt)))
@@ -936,7 +937,7 @@ def _solveacouwaveq2D_ReflBound( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos
         pnew[1:-1,1:-1] = 2.0*pcur[1:-1,1:-1] -pold[1:-1,1:-1] + fact[1:-1,1:-1]*(dpdx) + fact[1:-1,1:-1]*(dpdz) 
         
         # inject source
-        pnew[isrc,jsrc] = pnew[isrc,jsrc] + dt**2*sourcetf[t]
+        pnew[isrc,jsrc] = pnew[isrc,jsrc] + dt**2*sourcetf[t]*mean_vel_sq / dh**2
 
         # assign the new pold and pcur
         pold[:,:] = pcur[:,:]
@@ -1064,6 +1065,7 @@ def _solveacouwaveq2D_GaussTaper( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpo
 
     ################################
     fact = vel**2 * (dt**2/dh**2)
+    mean_vel_sq = np.mean(vel)**2
        
     ## time loop
     print((" Time step dt: {}".format(dt)))
@@ -1084,7 +1086,7 @@ def _solveacouwaveq2D_GaussTaper( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpo
         pnew[1:-1,1:-1] = 2.0*pcur[1:-1,1:-1] -pold[1:-1,1:-1] + fact[1:-1,1:-1]*(dpdx2 + dpdz2) 
              
         # inject source
-        pnew[isrc,jsrc] = pnew[isrc,jsrc] + dt**2*sourcetf[t]
+        pnew[isrc,jsrc] = pnew[isrc,jsrc] + dt**2*sourcetf[t]*mean_vel_sq / dh**2
 
         ##---------------------------------------------
         ## Damp using Gaussian taper function
