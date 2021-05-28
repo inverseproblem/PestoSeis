@@ -18,10 +18,9 @@
 PestoSeis's documentation
 ##############################
 
-The PestoSeis package is a set of functions to perform calculations of seismic traveltimes, rays and wave propagation in two dimensions (2D).
+The PestoSeis package is a set of functions to perform calculations of seismic traveltimes, rays and wave propagation in two dimensions (2D). PestoSeis covers the range from forward modeling wave propagation through a known model to reconstructing the structural map of an unknown medium from some observed (synthetic) data by providing algorithms to solve a 2D inverse problem by simple means.
 
-Its main purpose is educational, it aims to be a simple tool to play around with some aspects of seismology. Because of that, no optimization of the code for speed has been perfomed and it has *not* been tested extensively. Therefore, do not use this code for research.
-
+Its main purpose is educational, it aims to be a simple tool to play around with some aspects of seismology. Due to the fact that many fields of research use the fundamentals of wave propagation, the functionalities within PestoSeis are not limited to seismology, but can also be applied for instance to problems in medical ultrasound (check out the tutorial on medical ultrasound). Due to the educational purpose of the code, no optimization for speed has been perfomed and it has *not* been tested extensively. Therefore, do not use this code for research.
 
 The functions contained in this package aim at the following:
 
