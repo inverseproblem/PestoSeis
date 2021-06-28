@@ -32,10 +32,10 @@ The functions contained in this package aim at the following:
 * Performing basic seismic processing for exploration seismology. 
 
 
-:Authors:
-   Andrea Zunino
-   Patrick Marty
-   Ines E. Ulrich
+:Authors: 
+   - Andrea Zunino 
+   - Patrick Marty 
+   - Ines E. Ulrich
 
 ==============
 Installation
