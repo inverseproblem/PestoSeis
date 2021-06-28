@@ -28,11 +28,14 @@ The functions contained in this package aim at the following:
 * Computing traveltimes for given sources and receivers, optionally providing the entire 2D traveltime model;
 * Tracing seismic rays given a 2D traveltime array and position of sources and receivers;
 * Performing very simple traveltime tomography using rays;
-* Computing acoustic and elastic wave propagation in 2D by finite differences. 
+* Computing acoustic and elastic wave propagation in 2D by finite differences;
+* Performing basic seismic processing for exploration seismology. 
 
 
 :Authors:
    Andrea Zunino
+   Patrick Marty
+   Ines E. Ulrich
 
 ==============
 Installation
