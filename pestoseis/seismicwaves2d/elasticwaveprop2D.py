@@ -410,7 +410,7 @@ def _solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos)
 
     ## Arrays to return seismograms
     nrecs = recpos.shape[0]
-    receiv = np.zeros((inpar["ntimesteps"],nrecs,2))
+    receiv = np.zeros((nrecs,inpar["ntimesteps"],2))
 
 
     # Source time function
@@ -686,7 +686,7 @@ def _solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos)
         for r in range(nrecs) :
             rec_vx = bilinear_interp(vx,dh,recpos[r,:])
             rec_vz = bilinear_interp(vz,dh,recpos[r,:],gridshift_xy=gridshift_vz)
-            receiv[t,r,:] = np.array([rec_vx, rec_vz])
+            receiv[r,t,:] = np.array([rec_vx, rec_vz])
         
         #### save snapshots
         if (inpar["savesnapshot"]==True) and (t%inpar["snapevery"]==0) :
@@ -844,7 +844,7 @@ def _solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, re
 
     ## Arrays to return seismograms
     nrecs = recpos.shape[0]
-    receiv = np.zeros((inpar["ntimesteps"],nrecs,2))
+    receiv = np.zeros((nrecs,inpar["ntimesteps"],2))
 
     # Source time function
     lensrctf = sourcetf.size
@@ -993,7 +993,7 @@ def _solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, re
         for r in range(nrecs) :
             rec_vx = bilinear_interp(vx,dh,recpos[r,:])
             rec_vz = bilinear_interp(vz,dh,recpos[r,:],gridshift_xy=gridshift_vz)
-            receiv[t,r,:] = np.array([rec_vx, rec_vz])
+            receiv[r,t,:] = np.array([rec_vx, rec_vz])
         
         #### save snapshots
         if (inpar["savesnapshot"]==True) and (t%inpar["snapevery"]==0) :

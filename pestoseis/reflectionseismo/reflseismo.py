@@ -26,6 +26,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.interpolate import CubicSpline 
 
 #######################################################################
 
@@ -100,17 +101,17 @@ def imgshotgath(seisdata,dt,offset,amplitudeclip=1.0):
     Create an image of a shotgather.
 
     Args:
-       seisdata (ndarray): seismic data, i.e., shotgather
+       seisdata (ndarray): seismic data, i.e., shotgather, *rows* contain traces
        dt (float): time interval
        offset (ndarray): array of offsets 
        amplitudeclip (float,optional): clip the amplitude to a desired value
 
     """
-    twt = np.array([i*dt for i in range(seisdata.shape[0])])  
+    twt = np.array([i*dt for i in range(seisdata.shape[1])])  
     vmax = amplitudeclip*np.abs(seisdata).max()
     vmin = -vmax
     extent = [offset.min(),offset.max(),twt.max(),twt.min()]
-    plt.imshow(seisdata,vmin=vmin,vmax=vmax,cmap=plt.cm.RdGy_r,
+    plt.imshow(seisdata.T,vmin=vmin,vmax=vmax,cmap=plt.cm.RdGy_r,
                extent=extent,aspect='auto',interpolation='bilinear')
     plt.colorbar()
     plt.xlabel('Offset [m]')
@@ -119,22 +120,22 @@ def imgshotgath(seisdata,dt,offset,amplitudeclip=1.0):
 
 ################################################################
 
-def wiggle(data,dt,offset=None,skiptr=1,title=None):
+def wiggle(data,dt,offset=None,skiptr=1,scal=None,title=None,filltrace=True):
 
     """
     Create a 'wiggle' plot of a shotgather.
 
     Args:
-       data (ndarray): seismic data, i.e., shotgather
+       data (ndarray): seismic data, i.e., shotgather, *rows* contain traces
        dt (float): time interval
        offset (ndarray,optional): array of offsets 
        skiptr (integer,optiona): plot only every 'skiptr' traces
        title (string,optional): add a title to the plot
 
     """
-    t = np.array([i*dt for i in range(data.shape[0])])        
+    t = np.array([i*dt for i in range(data.shape[1])])        
     lwidth = 1.0 # line width
-    ntraces = data.shape[1]
+    ntraces = data.shape[0]
 
     if not isinstance(offset,np.ndarray) :
         ofs = np.array([float(i) for i in range(ntraces)])
@@ -145,17 +146,21 @@ def wiggle(data,dt,offset=None,skiptr=1,title=None):
         maxoff = (abs(np.diff(offset).max()))
         maxval = maxoff/maxseis
 
+    if scal!=None :
+        maxval *= scal    
+
     if data.ndim==1:
-        data=data.reshape(-1,1)
+        data=data.reshape(1,-1)
 
     for i in range(0,ntraces,skiptr):
-        trace=ofs[i]+data[:,i]*maxval
+        trace=ofs[i]+data[i,:]*maxval
         plt.plot(trace,t,color='black',linewidth=lwidth)
-        plt.fill_betweenx(t,ofs[i],trace,where=(trace>=ofs[i]),color='black')
+        if filltrace :
+            plt.fill_betweenx(t,ofs[i],trace,where=(trace>=ofs[i]),color='black')
         #plt.fill_betweenx(t,ofs[i],trace,where=(trace<ofs[i]),color='red')
     ax = plt.gca()
 
-    plt.xlim(ofs[0]-data[:,0].max()*maxval,ofs[-1]+data[:,-1].max())
+    plt.xlim(ofs[0]-data[0,:].max()*maxval,ofs[-1]+data[-1,:].max())
     plt.ylim(t.min(),t.max())
     ax.invert_yaxis()
 
@@ -172,23 +177,23 @@ def geometrical_spreading(seis,twt):
     Apply geometrical spreading correction to a shotgather.
 
     Args:
-        seis (ndarray): seismic shotgather
+        seis (ndarray): seismic shotgather, *rows* contain traces
         twt (ndarray): two-way traveltime 
             
     Returns
     ----------
         seis_gs (ndarray): seismograms corrected for geometrical spreading
     """
-    ns = seis.shape[0]
-    ntraces = seis.shape[1]
+    ns = seis.shape[1]
+    ntraces = seis.shape[0]
     
     seis_gs = seis.copy()
         
     for i in range(ntraces):
         ## twt**2 is a rough APPROXIMATION to geom. spreading...
-        seis_gs[:,i] = seis_gs[:,i] * twt**2
+        seis_gs[i,:] = seis_gs[i,:] * twt**2
         ## scale max amplitude to 1
-        seis_gs[:,i] /= np.abs(seis_gs[:,i]).max()
+        seis_gs[i,:] /= np.abs(seis_gs[i,:]).max()
         
     return seis_gs
 
@@ -199,7 +204,7 @@ def agc(seis, w=100, rho=0, type='uniform'):
     Apply Automatic Gain Control to a shotgather.
 
     Args:
-        seis (ndarray): seismic shotgather
+        seis (ndarray): seismic shotgather, *rows* contain traces
         w (float): window width
         rho (ndarray,optional): density
         agctype (string): 'linear' or 'gaussian', weight kernel type
@@ -209,8 +214,8 @@ def agc(seis, w=100, rho=0, type='uniform'):
         seis_gs (ndarray): seismograms corrected with AGC
     """
 
-    ns = seis.shape[0]
-    ntraces = seis.shape[1];
+    ns = seis.shape[1]
+    ntraces = seis.shape[0];
     
     if rho>0:
         nw = int(np.ceil(w/rho))
@@ -230,17 +235,63 @@ def agc(seis, w=100, rho=0, type='uniform'):
     seis_agc=np.zeros_like(seis)
     for i in range(ntraces):
         
-        seis_abs = np.abs(seis[:,i])
-        seis_weight = np.convolve(np.abs(seis[:,i]),weight_kernel, mode='same')
+        seis_abs = np.abs(seis[i,:])
+        seis_weight = np.convolve(np.abs(seis[i,:]),weight_kernel, mode='same')
 
         if (seis_weight==0.0).any() :
             # print("agc(): Dividing by zero in AGC correction... ")
             seis_weight = np.where(seis_weight==0.0,1e-6,seis_weight)      
             
         ##-----
-        seis_agc[:,i] = seis[:,i]/seis_weight
+        seis_agc[i,:] = seis[i,:]/seis_weight
   
     return seis_agc
     
 
 ########################################################
+
+def nmocorrection(velnmo,dt,offset,seisdat):
+    """
+    Common Mid Point (CMP) normal moveout correction.
+  
+    Args:
+        velnmo (ndarray): 1D array of "NMO" velocity, representing the 
+                          average velocity of the layers above
+        dt (float): the time interval
+        offset (ndarray): offsets for each trace
+        seisdat (ndarray): input seismic data, *rows* contain traces
+
+    Returns
+    ----------
+        seisnmo (ndarray): seismograms NMO corrected
+    """
+
+    ntraces,nsmpl = seisdat.shape
+    assert ntraces==offset.size
+    seisnmo = np.zeros_like(seisdat)
+    timearr = np.array([(i-1)*dt for i in range(nsmpl)])
+
+    ## build the nmo array trace by trace
+    for itr in range(ntraces):
+        # compute the time for nmo for all time points of a single trace
+        # velocity array is nx x nz so slice in depth is vel[?,:]
+        tnmo = np.sqrt(timearr**2 + offset[itr]**2/velnmo**2) 
+        # new trace
+        seisnmo[itr,:] =  _resampletrace(timearr,tnmo,seisdat[itr,:])
+    return seisnmo
+
+##########################################
+
+def _resampletrace(torig,tnmo,seistr):
+    seisnew = np.zeros(torig.size)
+    itp = CubicSpline(torig,seistr)
+    # time outside bounds?
+    outbou = (tnmo>torig.max()).nonzero()[0]
+    if outbou.size>0:
+        idx = np.min(outbou)
+    else :
+        idx = seisnew.size
+    seisnew[:idx] = itp(tnmo[:idx])
+    return seisnew
+
+###################################

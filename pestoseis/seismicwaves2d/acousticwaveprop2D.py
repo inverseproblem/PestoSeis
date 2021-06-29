@@ -390,7 +390,7 @@ def _solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
 
     ## Arrays to return seismograms
     nrecs = recpos.shape[0]
-    receiv = np.zeros((inpar["ntimesteps"],nrecs))
+    receiv = np.zeros((nrecs,inpar["ntimesteps"]))
 
     # Source time function
     #lensrctf = sourcetf.size
@@ -487,7 +487,7 @@ def _solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
         ##### receivers
         for r in range(nrecs) :
             rec_press = _bilinear_interp(pcur,dh,recpos[r,:])
-            receiv[t,r] = rec_press
+            receiv[r,t] = rec_press
         
         #### save snapshots
         if (inpar["savesnapshot"]==True) and (t%inpar["snapevery"]==0) :
@@ -720,7 +720,7 @@ def _solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcd
 
     ## Arrays to return seismograms
     nrecs = recpos.shape[0]
-    receiv = np.zeros((inpar["ntimesteps"],nrecs))
+    receiv = np.zeros((nrecs,inpar["ntimesteps"]))
 
     # Source time function
     #lensrctf = sourcetf.size
@@ -820,7 +820,7 @@ def _solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcd
         ##### receivers
         for r in range(nrecs) :
             rec_press = _bilinear_interp(pcur,dh,recpos[r,:])
-            receiv[t,r] = rec_press
+            receiv[r,t] = rec_press
         
         #### save snapshots
         if (inpar["savesnapshot"]==True) and (t%inpar["snapevery"]==0) :
@@ -901,7 +901,7 @@ def _solveacouwaveq2D_ReflBound( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos
 
     ## Arrays to return seismograms
     nrecs = recpos.shape[0]
-    receiv = np.zeros((inpar["ntimesteps"],nrecs))
+    receiv = np.zeros((nrecs,inpar["ntimesteps"]))
 
     # Source time function
     lensrctf = sourcetf.size
@@ -948,7 +948,7 @@ def _solveacouwaveq2D_ReflBound( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos
         ##### receivers
         for r in range(nrecs) :
             rec_press = _bilinear_interp(pcur,dh,recpos[r,:])
-            receiv[t,r] = rec_press
+            receiv[r,t] = rec_press
         
         #### save snapshots
         if (inpar["savesnapshot"]==True) and (t%inpar["snapevery"]==0) :
@@ -1049,7 +1049,7 @@ def _solveacouwaveq2D_GaussTaper( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpo
 
     ## Arrays to return seismograms
     nrecs = recpos.shape[0]
-    receiv = np.zeros((inpar["ntimesteps"],nrecs))
+    receiv = np.zeros((nrecs,inpar["ntimesteps"]))
 
     # Source time function
     lensrctf = sourcetf.size
@@ -1112,7 +1112,7 @@ def _solveacouwaveq2D_GaussTaper( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpo
         ##### receivers
         for r in range(nrecs) :
             rec_press = _bilinear_interp(pcur,dh,recpos[r,:])
-            receiv[t,r] = rec_press
+            receiv[r,t] = rec_press
         
         #### save snapshots
         if (inpar["savesnapshot"]==True) and (t%inpar["snapevery"]==0) :
