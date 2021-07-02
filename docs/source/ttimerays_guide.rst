@@ -254,12 +254,3 @@ Example::
   postm,postC_m = TR.lininv(tomomat,cov_m,cov_d,mprior,residualsvector)
 
 
-======================================
-API ``ttimerays``, list of functions
-======================================
-
-.. automodule:: pestoseis.ttimerays
-   :members:
-   :imported-members:  
-.. Need to use :imported-members: since ttimerays imports
-   the functions in __init__.py, so has no own members.
