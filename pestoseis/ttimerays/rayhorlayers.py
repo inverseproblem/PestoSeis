@@ -1,3 +1,11 @@
+"""Calculate rays in horizontally layered model
+
+"""
+
+""
+# %matplotlib inline
+
+""
 #    TTimeRays, a program to learn about seismic rays and traveltimes.
 #    Copyright (C) 2019  Andrea Zunino
 #
@@ -23,9 +31,8 @@
 """
 
 import numpy as __NP
-  
-#############################################
 
+""
 def tracerayhorlay(laydep, vel, xystart,takeoffangle,maxnumiterations=20000) :
     """
     Trace rays in a horizontally layered model. 
@@ -197,8 +204,7 @@ def tracerayhorlay(laydep, vel, xystart,takeoffangle,maxnumiterations=20000) :
     return raycoo,tt,dist
         
 
-#############################################
-
+""
 def _test() :
     
     import matplotlib.pyplot as PL
@@ -265,7 +271,7 @@ def _test() :
 
 
 #############################################
-#############################################
+# ############################################
 
 if __name__ == "__main__" :
 

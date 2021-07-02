@@ -1,4 +1,6 @@
+"""Various functions to calculate the travel time in a rectilinear grid.
 
+"""
 
 
 
@@ -7,8 +9,8 @@ from .traveltime_rays import rollmod,unrollmod,setupgrid,lininv,traveltime,trace
 
 
 from .rayhorlayers import tracerayhorlay
-  
+
 
 # __all__ = ["__version__","ttimerays.traveltime_rays"]
-#__all__.extend(traveltime_rays.__all__)
+# __all__.extend(traveltime_rays.__all__)
 
