@@ -26,11 +26,6 @@ Description Binary heap trees
 
 """
 
-"""
-.. module:: binheap.py
-    :synopsis: Binary heap trees (min/max).
-  
-"""
 import numpy as NP
 
 # #=================================

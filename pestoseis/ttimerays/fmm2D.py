@@ -22,12 +22,6 @@
 #------------------------------------------------------------------------
 
 
-"""
-.. module:: fmm2D
-    :synopsis: Fast marching method in 2D to compute seismic traveltimes.
- 
-"""
-
 ##########################################################################
 
 from .binheap import BinHeapMin 

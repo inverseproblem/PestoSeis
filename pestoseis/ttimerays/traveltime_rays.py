@@ -26,12 +26,6 @@ Calculate travel time from source to receiver on rectilinear grid
 
 """
 
-"""
-.. module:: traveltime_rays.py
-    :synopsis: A set of functions to compute seismic traveltimes, trace rays and performing simple ray tomography.
- 
-"""
-
 ############################################################################
 
 import numpy as __NP

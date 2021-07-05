@@ -26,12 +26,6 @@ Calculate rays in horizontally layered model
 
 """
 
-"""
-.. module:: rayhorlayers.py
-    :synopsis: Compute seismic ray paths in a horizontally layered model.
-  
-"""
-
 ############################################################################
 
 import numpy as __NP
