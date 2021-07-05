@@ -1,21 +1,7 @@
-"""
-Animate result of 2D finite difference simulation
-"""
-
-""
-# %matplotlib inline
-
-"""
-Description animatewaves
-
-Functions to 'animate' the results of a 2D acoustic finite difference simulation 
+"""Animate result of 2D finite difference simulation
 
 """
 
-""
-# %matplotlib inline
-
-""
 #------------------------------------------------------------------------
 #
 #    Copyright (C) 2021  Andrea Zunino 
