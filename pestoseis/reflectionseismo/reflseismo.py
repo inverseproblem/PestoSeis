@@ -1,5 +1,3 @@
-"""Functions to generate and process reflection data
-"""
 
 #------------------------------------------------------------------------
 #
@@ -22,6 +20,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #------------------------------------------------------------------------
+
+"""
+Functions to generate and process seismic reflection data to mimic an 
+  exploration seismology setup.
+"""
 
 #######################################################################
 #######################################################################
@@ -55,7 +58,18 @@ def fwdconvolve(refle,wavelet,dt):
 
 def calcreflectivity(density,vel,z,dt):
     """
-    Compute the reflectivity series.
+    Compute the reflectivity series given density and velocity as a function 
+      of depth and a time interval.
+
+    Args:
+       density (ndarray): a vector of density values
+       vel (ndarray): a vector of velocity values
+       z (ndarray): a vector of depths
+       dt (float): the time interval
+
+    Returns:
+       twt (ndarray): the two-way travel time
+       refltwt (ndarray): the reflectivity series as a function of two-way travel time
     """
     assert(vel.ndim==1)
     assert(density.ndim==1)
@@ -79,7 +93,15 @@ def calcreflectivity(density,vel,z,dt):
 
 def _depth2time(z,vel):
     """
-     Convert depth to time.
+    Convert depth to time. 
+    
+    Args: 
+       z (ndarray): the depth array
+       vel (ndarray): the velocity array
+
+    Returns:
+       twt (ndarray): the two-way travel time
+
     """
     assert(vel.ndim==1)
     assert(vel.size==z.size)
@@ -181,7 +203,6 @@ def geometrical_spreading(seis,twt):
         twt (ndarray): two-way traveltime 
             
     Returns
-    ----------
         seis_gs (ndarray): seismograms corrected for geometrical spreading
     """
     ns = seis.shape[1]
@@ -210,7 +231,6 @@ def agc(seis, w=100, rho=0, type='uniform'):
         agctype (string): 'linear' or 'gaussian', weight kernel type
 
     Returns
-    ----------
         seis_gs (ndarray): seismograms corrected with AGC
     """
 
@@ -261,7 +281,6 @@ def nmocorrection(velnmo,dt,offset,seisdat):
         seisdat (ndarray): input seismic data, *rows* contain traces
 
     Returns
-    ----------
         seisnmo (ndarray): seismograms NMO corrected
     """
 
@@ -291,7 +310,6 @@ def _resampletrace(torig,tnmo,seistr):
         seistr
         
     Returns
-    ----------
         seisnew (ndarray): resampled trace
     """
     seisnew = np.zeros(torig.size)

@@ -1,6 +1,4 @@
-"""Functions to calculate acoustic wave propagation in 2D
 
-"""
 #------------------------------------------------------------------------
 #
 #    PestoSeis, a numerical laboratory to learn about seismology, written
@@ -22,6 +20,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #------------------------------------------------------------------------
+
+"""
+Functions to calculate acoustic wave propagation in 2D
+"""
 
 #######################################################################
 #######################################################################
@@ -52,6 +54,9 @@ def _bilinear_interp(f,hgrid, pt):
 #############################################################################
 
 def _initGaussboundcon(nptsgau=60 ) :
+    """
+    Initialize Gaussian taper boundary conditions.
+    """
     
     ## Damping region size in grid points
     ##nptsgau = 50 #21
@@ -78,7 +83,9 @@ def _initGaussboundcon(nptsgau=60 ) :
 
 def _calc_Kab_CPML(nptspml,gridspacing,dt,Npower,d0,
                        alpha_max_pml,K_max_pml,onwhere ) :
-
+    """
+      Initialize/calculate the C-PML coefficients for boundary conditions.
+    """
     # L = thickness of adsorbing layer
     if onwhere=="grdpts" :
         L = nptspml*gridspacing
@@ -1128,7 +1135,7 @@ def _solveacouwaveq2D_GaussTaper( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpo
 #########################################################
 ####################################################
 
-def testacou():
+def _testacou():
     
     # time
     nt = 3000
@@ -1192,4 +1199,4 @@ def testacou():
 
 if __name__  == "__main__" :
 
-    testacou()
+    _testacou()

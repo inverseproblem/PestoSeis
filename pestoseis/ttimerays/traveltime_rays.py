@@ -1,10 +1,10 @@
-"""Calculate travel time from source to receiver on rectilinear grid
 
-"""
-
-
-#    TTimeRays, a program to learn about seismic rays and traveltimes.
-#    Copyright (C) 2019  Andrea Zunino
+#------------------------------------------------------------------------
+#
+#    PestoSeis, a numerical laboratory to learn about seismology, written
+#    in the Python language.
+#    Copyright (C) 2021  Andrea Zunino 
+#
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -21,6 +21,10 @@
 #
 #------------------------------------------------------------------------
 
+"""
+Calculate travel time from source to receiver on rectilinear grid
+
+"""
 
 ############################################################################
 
@@ -43,13 +47,12 @@ def rollmod(mod,nx,ny) :
     """
     Reshape a flattened (a vector) model to 2D (an array).
 
-    :param mod: input flattened model
-    :type mod: numpy.ndarray (2D)
-    :param nx,ny: sizes of the input 2D model
-    :type nx,ny: int,int
+    Args:
+       mod (ndarray): input flattened model
+       nx,ny (float,float): sizes of the input 2D model
 
-    :returns: the reshaped model as a 2D array
-    :rtype: numpy.ndarray (2D)
+    Returns:
+       (ndarray): the reshaped model as a 2D array
     """
     modr = mod.copy().reshape(nx,ny,order='F')
     return modr
@@ -60,9 +63,11 @@ def unrollmod(mod) :
     """
     Flatten a 2D model to a vector, using column-major Fortran order.
    
-    :param mod: input 2D model (probably velocity)
+    Args:
+       mod (ndarray): input 2D model (probably velocity)
     
-    :returns: the flattened model as a vector (1D)
+    Returns:
+       (ndarray): the flattened model as a vector (1D)
 
     """
     modu = mod.copy().flatten('F')
@@ -582,7 +587,7 @@ def __pointisonSEGMENT(seg, pt) :
 
 def __isonsrccelledge(srccell,curpt) :
     """
-    Is point on a cell edge?
+    Is the point on a cell edge?
     """
     for i in range(4) :
         isonedge = __pointisonSEGMENT(__NP.vstack((srccell[i,:],srccell[i+1,:])), curpt)
@@ -593,7 +598,10 @@ def __isonsrccelledge(srccell,curpt) :
 ############################################################################
 
 def __ptinbounds(gridpar,pt) :
-    if pt[0]>gridpar['xttmin'] and pt[0]<gridpar['xttmax'] and pt[1]>gridpar['yttmin'] and pt[1]<gridpar['yttmax'] :
+    """
+      Is the point within bounds?
+    """
+      if pt[0]>gridpar['xttmin'] and pt[0]<gridpar['xttmax'] and pt[1]>gridpar['yttmin'] and pt[1]<gridpar['yttmax'] :
         return True
     print('\n',pt,gridpar['xttmin'],gridpar['xttmax'],gridpar['yttmin'],gridpar['yttmax'])
     return False
@@ -604,12 +612,14 @@ def _traceray(gridpar,recpos,coordsrc, ttime) :
     """
     Back-trace a single ray using negative gradient of traveltime direction
 
-    :param gridpar: grid parameters dictionary (as defined by setupgrid())    
-    :param recpos: position of the receiver
-    :param srcpos: position of the source
-    :param ttime: traveltime array (2D)
+    Args:
+      gridpar (dict): grid parameters dictionary (as defined by setupgrid())    
+      recpos (ndarray): position of the receiver
+      coordsrc (ndarray): position of the source
+      ttime (ndarray): traveltime array (2D)
 
-    :returns: the traced ray 
+    Returns:
+      (ndarray): the traced ray as an array of coordinates
 
     """
     xmin = gridpar['xttmin'] 
@@ -720,12 +730,14 @@ def traceallrays(gridpar,srccoo,reccoo,grdsttime) :
     """
     Trace multiple rays, for all sources and receivers.
 
-    :param gridpar: grid parameters dictionary (as defined by setupgrid())    
-    :param srccoo: position of the source, a 2D array with two columns, representing x and y
-    :param reccoo: position of the receiver, a 2D array with two columns, representing x and y
-    :param grdsttime: array of traveltime arrays [list of 2D arrays, one per source]
+    Args:
+       gridpar (dict): grid parameters dictionary (as defined by setupgrid())    
+       srccoo (ndarray): position of the source, a 2D array with two columns, representing x and y
+       reccoo (ndarray): position of the receiver, a 2D array with two columns, representing x and y
+       grdsttime (list of ndarrays): array of traveltime arrays [list of 2D arrays, one per source]
 
-    :returns: the traced rays 
+    Returns:
+      (ndarray of ndarrays): the traced rays as (x,y) coordinates of the points defining the segments
 
     """
     assert reccoo.ndim==2
@@ -834,12 +846,13 @@ def traceall_straight_rays(gridpar,srccoo,reccoo) :
     """
     Trace multiple straight rays.
 
-    :param gridpar: grid parameters dictionary (as defined by setupgrid())    
-    :param srccoo: position of the source, a 2D array with two columns, representing x and y
-    :param reccoo: position of the receiver, a 2D array with two columns, representing x and y  
+    Args:
+       gridpar (dict): grid parameters dictionary (as defined by setupgrid())    
+       srccoo (ndarray): position of the source, a 2D array with two columns, representing x and y
+       reccoo (ndarray): position of the receiver, a 2D array with two columns, representing x and y  
            
-    :returns: the coordinates of the ray paths
-    :rtype: ndarray
+    Returns:
+       (ndarray): the coordinates of the ray paths
 
     """
     assert reccoo.ndim==2
@@ -862,21 +875,21 @@ def traceall_straight_rays(gridpar,srccoo,reccoo) :
 
 ############################################################################
 
-def buildtomomat(gridpar,rays, ttpick) :
+def buildtomomat(gridpar,rays,ttpick) :
     """
     Build forward matrix from rays for traveltime tomography.
 
-    :param gridpar: grid parameters dictionary (as defined by setupgrid())    
-    :param rays: seismic rays, as outputted by traceallrays()
-    :param ttpick: traveltime picks at the receivers. [These are needed 
+    Args:
+       gridpar (dict): grid parameters dictionary (as defined by setupgrid())    
+       rays (ndarray of ndarrays):  seismic rays, as outputted by traceallrays()
+       ttpick (ndarray): traveltime picks at the receivers. [These are needed 
                    only to provide the vector of traveltime picks 
                    flattened for performing tomography in the same order 
                    than the tomography matrix]
 
-    :returns: the 'tomography' matrix and the vector of traveltime picks 
-                  (flattened for performing tomography)
-    :rtype: ndarray
-
+    Returns: 
+       (ndarray): the 'tomography' matrix and the vector of traveltime picks 
+                    (flattened for performing tomography)
     """
     print("Building forward matrix")
     nrec = rays.shape[0]
@@ -925,9 +938,10 @@ def plotrays(src,rec,rays) :
     """
     Plot rays as polylines.
 
-    :param src: coordinates of the sources
-    :param rec: coordinates of the receivers
-    :param rays: seismic rays, as outputted by traceallrays()
+    Args:
+       src (ndarray): coordinates of the sources
+       rec (ndarray): coordinates of the receivers
+       rays (narray of arrays): seismic rays, as outputted by traceallrays()
 
     """
     for j in range(rays.shape[1]) :
@@ -945,9 +959,10 @@ def plotvelmod(gridpar,velmod,vmin=None,vmax=None) :
     """
     Plot velocity model as an image.
 
-    :param gridpar: grid parameters dictionary (as defined by setupgrid())    
-    :param velmod: velocity model
-    :param vmin,vmax: optional values to clip the colorbar min and max values
+    Args:
+       gridpar (dict): grid parameters dictionary (as defined by setupgrid())    
+       velmod (ndarray): velocity model
+       vmin,vmax (float,float): optional values to clip the colorbar min and max values
 
     """
     if vmin==None and vmax==None :
@@ -969,8 +984,9 @@ def plotttimemod(gridpar,ttime) :
     """
     Plot traveltime array as an image.
 
-    :param gridpar: grid parameters dictionary (as defined by setupgrid()) 
-    :param ttime: traveltime array
+    Args: 
+       gridpar (dict): grid parameters dictionary (as defined by setupgrid()) 
+       ttime (ndarray): traveltime array
    
     """
     extent_ttime = [gridpar['xttmin']-gridpar['dh']/2.0,gridpar['xttmax']+gridpar['dh']/2.0,

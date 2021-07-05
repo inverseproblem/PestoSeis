@@ -21,6 +21,9 @@
 #
 #------------------------------------------------------------------------
 
+"""
+  PestoSeis, a numerical laboratory to learn about seismology.
+"""
 
 from . import seismicwaves2d
 

@@ -22,7 +22,7 @@
 #------------------------------------------------------------------------
 
 """
-Various functions to calculate the travel time in a rectilinear grid.
+ Various functions to calculate travel times and ray in a rectilinear grid.
 
 """
 

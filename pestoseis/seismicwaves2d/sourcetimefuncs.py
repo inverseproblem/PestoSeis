@@ -1,8 +1,4 @@
 
-"""A collection of source time functions 
-
-"""
-
 #------------------------------------------------------------------------
 #
 #    PestoSeis, a numerical laboratory to learn about seismology, written
@@ -25,12 +21,29 @@
 #
 #------------------------------------------------------------------------
 
+"""
+A collection of source time functions. 
+
+"""
+
+#############################################################
 
 import numpy as np
 
+#############################################################
+
 def gaussource( t, t0, f0 ) :
     """
-      Derivative of a Gaussian source time function.
+    Derivative of a Gaussian source time function.
+
+    Args: 
+      t (ndarray): time array
+      t0 (float): time shift for the onset 
+      f0 (float): central frequency
+
+    Returns:
+      source (ndarray): the source time function
+
     """
     # boh = f0 .* (t-t0)
     # source = -8.0*boh.*exp( -boh.^2/(4.0*f0)^2 )
@@ -43,7 +56,16 @@ def gaussource( t, t0, f0 ) :
 
 def rickersource( t, t0, f0 ):
     """
-      Ricker wavelet source time function.
+    Ricker wavelet source time function.
+    
+    Args: 
+      t (ndarray): time array
+      t0 (float): time shift for the onset 
+      f0 (float): central frequency
+
+    Returns:
+      source (ndarray): the source time function
+
     """
     b = (np.pi*f0*(t-t0))**2
     w = (1.0-2.0*b)*np.exp(-b)
@@ -52,9 +74,17 @@ def rickersource( t, t0, f0 ):
 #############################################################
 
 def ricker_1st_derivative_source( t, t0, f0 ):
-  """
+    """
     First derivative of a wavelet source time function.
-  """
-  source = 2 * np.pi**2 * (t - t0) * f0**2 * np.exp(- np.pi**2 * (t - t0)**2 * f0**2) * (2 * np.pi**2 * (t - t0)**2 * f0**2 - 3)
+    
+    Args: 
+      t (ndarray): time array
+      t0 (float): time shift for the onset 
+      f0 (float): central frequency
+
+    Returns:
+      source (ndarray): the source time function
+    """
+    source = 2 * np.pi**2 * (t - t0) * f0**2 * np.exp(- np.pi**2 * (t - t0)**2 * f0**2) * (2 * np.pi**2 * (t - t0)**2 * f0**2 - 3)
   return source
 

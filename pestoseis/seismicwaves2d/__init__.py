@@ -22,7 +22,7 @@
 #------------------------------------------------------------------------
 
 """ 
-  Functions to calculate acoustic and elastic wave propagation in 2D
+  Functions to calculate acoustic and elastic wave propagation in 2D.
 """
 
 from .acousticwaveprop2D import solveacoustic2D

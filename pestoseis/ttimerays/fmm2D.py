@@ -1,7 +1,4 @@
 
-"""Fast Marching in 2D
-
-"""
 #------------------------------------------------------------------------
 #
 #    PestoSeis, a numerical laboratory to learn about seismology, written
@@ -35,8 +32,15 @@ import numpy as __NP
 
 class Grid2D():
     """
-    Class creating a 2D rectangular grid
+    Class containing the info of a 2D grid for traveltime calculations.
     
+    Args:
+      nx (int): number of points/cells in the x direction
+      ny (int): number of points/cells in the y direction
+      h (float): grid spacing (same for x and y)
+      xinit (float): grid origin for the x direction
+      yinit (float): grid origin for the y direction
+
     """
     def __init__(self, nx, ny, h,xinit,yinit):
         self.nx = nx
@@ -57,15 +61,18 @@ def forwtt(vel,grdh,xinit,yinit,coordsrc,coordrec,ttarrout=False) :
     """
     Traveltimes calculation given a velocity model, position of sources and receivers.
       
-    :param vel: input velocity model
-    :param grdh:  grid spacing
-    :param xinit: x axis origin coordinate
-    :param yinit: y axis origin coordinate
-    :param coordsrc: coordinates of the sources
-    :param coordred: coordinates of the receivers
-    :param ttarrout: optiona, returns the full array of traveltimes
+    Args:
+       vel (ndarray): input velocity model
+       grdh (float): grid spacing
+       xinit (float): x axis origin coordinate
+       yinit (float): y axis origin coordinate
+       coordsrc (ndarray): coordinates of the sources
+       coordred (ndarray): coordinates of the receivers
+       ttarrout (bool): optional, returns the full array of traveltimes
       
-    :returns: the traveltimes at the receivers and, optionally, the traveltime arrays
+    Returns:
+       ttpicks (ndarray), ttarr (ndarray,optional): the traveltimes at the 
+                            receivers and, optionally, the traveltime array(s)
       
     """
 
@@ -141,15 +148,17 @@ def fmm_findclosestnode(x,y,xinit,yinit,h) :
 
 def ttFMM(vel,src,grd) :
     """   
-     Fast marching method to compute traveltimes in 2D.
-     Uses a staggered grid, time array is bigger than velocity array, 
+    Fast marching method to compute traveltimes in 2D.
+    Uses a staggered grid, time array is bigger than velocity array, 
      following Podvin & Lecompte scheme.
      
-     :param vel: input velocity model
-     :param src: source position
-     :param grd: grid parameters
+    Args
+      vel: input velocity model
+      src: source position
+      grd: grid parameters
      
-     :returns :  ttime, array of traveltimes
+    Returns:
+      ttime: array of traveltimes
      
     """
 
@@ -307,7 +316,7 @@ def ttFMM(vel,src,grd) :
             if status[i,j]==0 : ## far
 
                 ## add tt of point to binary heap and give handle
-                tmptt = calcttpt(ttime,ttlocmin,inittt,slowness,grd,cooa,coob,coovin,coovadj,i,j)
+                tmptt = _calcttpt(ttime,ttlocmin,inittt,slowness,grd,cooa,coob,coovin,coovadj,i,j)
                 # get handle
                 ##han = sub2ind((ntx,nty),i,j)
                 han = __NP.ravel_multi_index((i,j),(ntx,nty))
@@ -347,7 +356,7 @@ def ttFMM(vel,src,grd) :
             if status[i,j]==0 : ## far, active
 
                 ## add tt of point to binary heap and give handle
-                tmptt = calcttpt(ttime,ttlocmin,inittt,slowness,grd,cooa,coob,coovin,coovadj,i,j)
+                tmptt = _calcttpt(ttime,ttlocmin,inittt,slowness,grd,cooa,coob,coovin,coovadj,i,j)
                 han = __NP.ravel_multi_index((i,j),(ntx,nty)) #sub2ind((ntx,nty),i,j)
                 bheap.insert_minheap(tmptt,han)
                 # change status, add to narrow band
@@ -356,7 +365,7 @@ def ttFMM(vel,src,grd) :
             elif status[i,j]==1 : ## narrow band                
 
                 # update the traveltime for this point
-                tmptt = calcttpt(ttime,ttlocmin,inittt,slowness,grd,cooa,coob,coovin,coovadj,i,j)
+                tmptt = _calcttpt(ttime,ttlocmin,inittt,slowness,grd,cooa,coob,coovin,coovadj,i,j)
                 # get handle
                 han = __NP.ravel_multi_index((i,j),(ntx,nty)) #sub2ind((nx,nty),i,j)
                 # update the traveltime for this point in the heap
@@ -368,8 +377,11 @@ def ttFMM(vel,src,grd) :
 
 ##########################################################################
 
-def calcttpt(ttime,ttlocmin,inittt,slowness,grd,cooa,coob,coovin,coovadj,i,j):
-    
+def _calcttpt(ttime,ttlocmin,inittt,slowness,grd,cooa,coob,coovin,coovadj,i,j):
+    """
+    Calculate the traveltime for a given point in the grid.
+    """ 
+
     ##--------------------------------##
     distab2 = grd.hgrid**2
     distac = grd.hgrid

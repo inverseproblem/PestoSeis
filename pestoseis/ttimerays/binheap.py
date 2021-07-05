@@ -22,13 +22,13 @@
 #------------------------------------------------------------------------
 
 """
-Description Binary heap trees
+Binary heap trees (min/max).
 
 """
 
 import numpy as NP
 
-# #=================================
+#=================================
 
 def index_parent(i):
     return i//2 
@@ -46,7 +46,7 @@ def index_rightchild(i):
 
 class BinHeapMax():
     """
-      Max heap
+      Max heap binary tree.
     """
     #==========================================
     
@@ -181,7 +181,7 @@ class BinHeapMax():
 
 class BinHeapMin():
     """
-      Min heap
+      Min heap binary tree.
     """
     #====================================================
     

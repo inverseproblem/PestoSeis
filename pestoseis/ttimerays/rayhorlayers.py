@@ -1,11 +1,10 @@
 
-"""Calculate rays in horizontally layered model
-
-"""
-
-
-#    TTimeRays, a program to learn about seismic rays and traveltimes.
-#    Copyright (C) 2019  Andrea Zunino
+#------------------------------------------------------------------------
+#
+#    PestoSeis, a numerical laboratory to learn about seismology, written
+#    in the Python language.
+#    Copyright (C) 2021  Andrea Zunino 
+#
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -22,6 +21,10 @@
 #
 #------------------------------------------------------------------------
 
+"""
+Calculate rays in a horizontally layered model.
+
+"""
 
 ############################################################################
 
@@ -33,21 +36,18 @@ def tracerayhorlay(laydep, vel, xystart,takeoffangle,maxnumiterations=20000) :
     """
     Trace rays in a horizontally layered model. 
       
-    :param laydep: input depth of layers  
-    :type mod: numpy.ndarray 
-    :param vel: velocity for each layer 
-    :type mod: numpy.ndarray 
-    :param xystart: origin coordinates of the ray 
-    :type mod: numpy.ndarray 
-    :param takeoffangle: take off angles 
-    :type mod: float 
-    :param maxnumiterations: limit the number of ray segments to calculate, in case 
-                             the ray never reaches the surface
-    :type mod: float 
+    Args: 
+      laydep (ndarray): input depth of layers  
+      vel (ndarray): velocity for each layer 
+      xystart(ndarray): origin coordinates of the ray 
+      takeoffangle (float): take off angle
+      maxnumiterations (int): limit the number of ray segments to calculate, in case 
+                               the ray never reaches the surface
 
-    :returns: coordinates of the the ray path, traveltime and distance covered 
-    :rtype: ndarray,float,float  
-   
+    Returns: 
+         (ndarray,float,float): coordinates of the the ray path, traveltime 
+                                and distance covered 
+
     """
 
     #

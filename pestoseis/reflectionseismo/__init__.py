@@ -22,8 +22,8 @@
 #------------------------------------------------------------------------
 
 """
-Functions to generate and process reflection seismology data
-    
+A module to generate and process seismic reflection data to mimic an 
+  exploration seismology setup.    
 """
 
 from .reflseismo import fwdconvolve,calcreflectivity,imgshotgath,wiggle,geometrical_spreading,agc,nmocorrection

@@ -1,7 +1,3 @@
-"""
-Functions to calculate elastic wave propagation in 2D
-
-"""
 
 #------------------------------------------------------------------------
 #
@@ -24,7 +20,9 @@ Functions to calculate elastic wave propagation in 2D
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #------------------------------------------------------------------------
-
+"""
+  Functions to calculate elastic wave propagation in 2D
+"""
 
 import numpy as np
 import sys
@@ -34,6 +32,9 @@ import h5py as h5
 #############################################################################
 
 def bilinear_interp(f,hgrid, pt, gridshift_xy=np.array([0.0,0.0])):
+    """
+     Bilinear interpolation (2D).
+    """
     xshift = gridshift_xy[0] 
     yshift = gridshift_xy[1]
     xreq=pt[0]
@@ -56,7 +57,9 @@ def bilinear_interp(f,hgrid, pt, gridshift_xy=np.array([0.0,0.0])):
 
 def calc_Kab_CPML(nptspml,gridspacing,dt,Npower,d0,
                        alpha_max_pml,K_max_pml,onwhere ) :
-
+    """
+      Initialize/calculate the C-PML coefficients for boundary conditions.
+    """
     # L = thickness of adsorbing layer
     if onwhere=="grdpts" :
         L = nptspml*gridspacing
@@ -1017,7 +1020,7 @@ def _solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, re
 
 #############################################################################
 
-def testela() :
+def _testela() :
     
     # time
     nt = 4000
@@ -1106,4 +1109,4 @@ def testela() :
 
 if __name__  == "__main__" :
 
-    testela()
+    _testela()
