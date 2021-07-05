@@ -83,9 +83,9 @@ which produces the following image
    :width: 400px
 
 
-==================
+==========================
 Computation of traveltimes
-==================
+==========================
 
 One possible way to model wave propagation in a medium is to assume that waves can be approximated by rays of infinite frequency along the path between a source and a receiver. If we consider a specific ray :math:`i` along a path :math:`\Gamma_i`, then we can obtain the traveltime :math:`t_i` belonging to that ray by solving the line integral
 
