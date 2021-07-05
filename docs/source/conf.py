@@ -112,7 +112,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'PestSeisdoc'
+htmlhelp_basename = 'PestoSeisdoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
