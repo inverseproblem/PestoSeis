@@ -831,13 +831,8 @@ def _solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcd
         
     return receiv,psave
 
-<<<<<<< HEAD
-
-""
-=======
 #############################################################################
 
->>>>>>> e59b79a45ea68fb5b889533879f7f005453fd570
 def _solveacouwaveq2D_ReflBound( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
     """
     Solve the acoustic wave equation in 2D using finite differences on a staggered grid. 

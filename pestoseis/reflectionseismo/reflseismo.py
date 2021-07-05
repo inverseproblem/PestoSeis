@@ -305,10 +305,7 @@ def _resampletrace(torig,tnmo,seistr):
     seisnew[:idx] = itp(tnmo[:idx])
     return seisnew
 
-<<<<<<< HEAD
-=======
 #######################################################################
 
 
 
->>>>>>> e59b79a45ea68fb5b889533879f7f005453fd570

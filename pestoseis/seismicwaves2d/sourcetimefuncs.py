@@ -39,11 +39,8 @@ def gaussource( t, t0, f0 ) :
     
     return source
 
-<<<<<<< HEAD
-=======
 #############################################################
 
->>>>>>> e59b79a45ea68fb5b889533879f7f005453fd570
 def rickersource( t, t0, f0 ):
     """
       Ricker wavelet source time function.
@@ -52,11 +49,8 @@ def rickersource( t, t0, f0 ):
     w = (1.0-2.0*b)*np.exp(-b)
     return w
 
-<<<<<<< HEAD
-=======
 #############################################################
 
->>>>>>> e59b79a45ea68fb5b889533879f7f005453fd570
 def ricker_1st_derivative_source( t, t0, f0 ):
   """
     First derivative of a wavelet source time function.
