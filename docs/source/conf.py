@@ -17,7 +17,24 @@
 # sys.path.insert(0, os.path.abspath('.'))
 import os
 import sys
+import codecs
+
 sys.path.insert(0, os.path.abspath('../../'))
+
+#-----------------------------------------------
+def read(rel_path):
+    here = os.path.abspath(os.path.dirname(__file__))
+    with codecs.open(os.path.join(here, rel_path), 'r') as fp:
+        return fp.read()
+
+def get_version(rel_path):
+    for line in read(rel_path).splitlines():
+        if line.startswith('__version__'):
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    else:
+        raise RuntimeError("Unable to find version string.")
+#-----------------------------------------------
 
 
 # -- Project information -----------------------------------------------------
@@ -27,9 +44,9 @@ copyright = '2021, Andrea Zunino'
 author = 'Andrea Zunino, Patrick Marty, Ines Elisa Ulrich'
 
 # The short X.Y version
-version = '0.3'
+version = get_version("../../pestoseis/__init__.py")
 # The full version, including alpha/beta/rc tags
-release = '0.3.0'
+release = get_version("../../pestoseis/__init__.py")
 html_logo = '../../Logo/PestoSeisLogo.png'
 
 # -- General configuration ---------------------------------------------------

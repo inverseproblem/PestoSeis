@@ -16,7 +16,8 @@ A general form of the elastic wave equation can be derived from the equation of 
       \sigma_{ij}&=\lambda\epsilon_{kk}\delta_{ij}+2\mu\epsilon{ij}, \\
       \epsilon_{kl}&=\frac{1}{2}\big(\frac{\partial u_l}{\partial x_k}+\frac{\partial u_k}{\partial x_l}\big),
    \end{eqnarray}
-where :math:`u` is the displacement, :math:`\sigma` the stress tensor, :math:`M` the moment tensor :math:`\epsilon` the strain field, :math:`\lambda` and :math:`\mu` the Lame parameters, :math:`f` external forces, :math:`\delta` the Kronecker delta and :math:`i,j,k,l=1,2,3` .
+   
+where :math:`u` is the displacement, :math:`\sigma` the stress tensor, :math:`M` the moment tensor :math:`\epsilon` the strain field, :math:`\lambda` and :math:`\mu` the Lame parameters, :math:`f` external forces, :math:`\delta` the Kronecker delta and :math:`i,j,k,l=1,2,3`.
 
 From this relationships, some simplified expressions for specific cases can be derived and in the following we will see the derivation of the acoustic wave equation and the elastic wave equation.
 

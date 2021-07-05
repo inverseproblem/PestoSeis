@@ -3,7 +3,7 @@
 Tutorials
 ======================
 
-These tutorials are generated from Jupyter Notebooks.
+A set of examples subdivided in different fields, such as ray tracing, wave propagation and example applications. These tutorials are generated from Jupyter Notebooks.
 
 .. toctree::
    :maxdepth: 1

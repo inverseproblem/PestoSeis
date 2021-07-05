@@ -25,6 +25,8 @@
   Functions to calculate acoustic and elastic wave propagation in 2D.
 """
 
+__all__ = ["solveacoustic2D","solveelastic2D","gaussource","rickersource","animateacousticwaves","animateelasticwaves"]
+
 from .acousticwaveprop2D import solveacoustic2D
 
 from .elasticwaveprop2D import solveelastic2D

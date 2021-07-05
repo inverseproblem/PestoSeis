@@ -40,23 +40,19 @@ The functions contained in this package aim at the following:
 ==============
 Installation
 ==============
-.. warning:: Installing the package globally with, for instance, ``pip`` (or ``pip3``) is still untested.
-
-Currently the only installation method tested is to deploy a folder containing the package locally, for instance cloning the Git repository, and then add the directory to the `sys.path` before importing the module `pestoseis`.	     
+     
 See the :ref:`installation` for more details.
 
 ==================
-For users
+User guide
 ==================
-The User guide provides information about how to use the package with examples.
-
+The User guide provides information about functionality and how to use the package with examples.
 
 -----------------------------
 Traveltimes and rays in 2D
 -----------------------------
 
 See :ref:`ttimerays_guide`.
-
 
 --------------------------
 Wave propagation in 2D
@@ -65,6 +61,14 @@ Wave propagation in 2D
 See :ref:`seismicwaves2d_guide`.
 
   
+==================
+Tutorials
+==================
+
+A set of examples in the form of Jupyter notebooks illustrating the capabilities of the code.
+See :ref:`tutorials`.
+
+
 ==================
 For developers
 ==================
@@ -82,9 +86,9 @@ Table of contents
       installation
       ttimerays_guide
       seismicwaves2d_guide
-      developerdocs
       tutorials
       API/index      
+      developerdocs
 
 ======================
 Indices and tables

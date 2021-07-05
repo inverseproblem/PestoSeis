@@ -22,9 +22,10 @@
 #------------------------------------------------------------------------
 
 """
-A module to generate and process seismic reflection data to mimic an 
-  exploration seismology setup.    
+A module to generate and process seismic reflection data to mimic an exploration seismology setup.    
 """
+
+__all__ = ["fwdconvolve","calcreflectivity","imgshotgath","wiggle","geometrical_spreading","agc","nmocorrection"]
 
 from .reflseismo import fwdconvolve,calcreflectivity,imgshotgath,wiggle,geometrical_spreading,agc,nmocorrection
 

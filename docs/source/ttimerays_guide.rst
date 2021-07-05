@@ -8,9 +8,9 @@ Traveltimes and rays -- using ``ttimerays``
 Computing travel times and rays through a velocity model is comprised of two main steps:
 
 1. Discretizing the velocity model on a numerical grid.
-2. Formulating the forward problem of wave propagation and finding a solution for the discretized model numerically.
+2. Formulating the forward problem of wave front propagation and finding a solution for the discretized model numerically.
 
-PestoSeis offers functions performing both steps and provids additional visualization tools. 
+PestoSeis offers functions performing both steps and provides additional visualization tools. 
 
 ====================================
 Setup of grid parameters and models
@@ -121,7 +121,7 @@ Rays
 ==================
 
 -------------------------------------------
-Trace rays in a 2D heterogeneus model
+Trace rays in a 2D heterogeneous model
 -------------------------------------------
 
 Even though solving the eikonal equation as previously describes results in traveltime information on all grid points without the need to explicitly calculate the ray paths through the medium, there are still stituations where we are interested in obtaining the ray paths between the sources and the receivers. For instance, to set up a tomographic problem, we need to know the length of a ray within each grid cell to set up a sparse `tomography matrix`. We can make use of the previously computed traveltimes to trace (approximately) the rays using the function :func:`pestoseis.ttimerays.traceallrays`. This function traces the rays starting from a receiver position by following the gradient of the traveltimes :math:`\nabla t(\mathbf{x})` back through the computed traveltime field to the source. Hence the computed ray path consists of piecewise linear segments (within each grid cell).  
@@ -216,7 +216,7 @@ This can be condensed to matrix vector notation by introducing the forward model
 
 where :math:`\mathbf{d}_{\text{obs}}` is the vector of observed traveltimes from every source to every receiver and :math:`\mathbf{m}` is the model vector containing the slowness map that is supposed to be inferred in the inversion.
 
-After calculating the rays using :func:`ttimerays.traceallrays` the tomography matrix :math:`\mathbf{G}` can be built subsequently using :func:`pestoseis.ttimerays.buildtomomat`. This kind of inversion is quite primitive and therefore often unstable. The model that fits the data best is the one that minimizes the *least-squares misfit functional*
+After calculating the rays using :func:`pestoseis.ttimerays.traceallrays` the tomography matrix :math:`\mathbf{G}` can be built subsequently using :func:`pestoseis.ttimerays.buildtomomat`. This kind of inversion is quite primitive and therefore often unstable. The model that fits the data best is the one that minimizes the *least-squares misfit functional*
 
 .. math::
 

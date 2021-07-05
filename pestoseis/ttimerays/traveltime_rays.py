@@ -34,7 +34,7 @@ import sys as __sys
 from scipy import linalg as __LA
 from scipy import interpolate as __SPINT
 
-from .fmm2D import forwtt as _forwtt
+from .fmm2D import ttimefmm as _ttimefmm
 
 ############################################################################
 
@@ -192,7 +192,7 @@ def traveltime(velmod,gridpar,srcs,recs) :
         __sys.stdout.write(line)
         __sys.stdout.flush()
 
-        ttpicks[i],ttime[i] = _forwtt(velmod,hgrid,xinit,yinit,srcs[i,:],recs,ttarrout=True)
+        ttpicks[i],ttime[i] = _ttimefmm(velmod,hgrid,xinit,yinit,srcs[i,:],recs,ttarrout=True)
         
         ##ttpicks[i],ttime[i]=traveltimesinglesrc(velmod,gridpar,srcs[i,:],recs)
     print(' ')
@@ -230,7 +230,7 @@ def traveltime(velmod,gridpar,srcs,recs) :
 #     #     coorec2 = coordrec[i,:]-__NP.array([gridpar['xttmin'],gridpar['yttmin']])
 #     #     ttpicks[i] = __bilinear_interp(tbuf,hgrid,coorec2)
 
-#     ttpicks,ttarr = forwtt(vel,grdh,xinit,yinit,coordsrc,coordrec,ttarrout=False)
+#     ttpicks,ttarr = ttimefmm(vel,grdh,xinit,yinit,coordsrc,coordrec,ttarrout=False)
 
 
 
@@ -601,7 +601,7 @@ def __ptinbounds(gridpar,pt) :
     """
       Is the point within bounds?
     """
-      if pt[0]>gridpar['xttmin'] and pt[0]<gridpar['xttmax'] and pt[1]>gridpar['yttmin'] and pt[1]<gridpar['yttmax'] :
+    if pt[0]>gridpar['xttmin'] and pt[0]<gridpar['xttmax'] and pt[1]>gridpar['yttmin'] and pt[1]<gridpar['yttmax'] :
         return True
     print('\n',pt,gridpar['xttmin'],gridpar['xttmax'],gridpar['yttmin'],gridpar['yttmax'])
     return False

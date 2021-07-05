@@ -25,6 +25,9 @@
   PestoSeis, a numerical laboratory to learn about seismology.
 """
 
+## pestoseis version, read by setuptools, etc.
+__version__ = "0.3.0"
+
 from . import seismicwaves2d
 
 from . import ttimerays

@@ -29,9 +29,9 @@ Functions to generate and process seismic reflection data to mimic an
 #######################################################################
 #######################################################################
 
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.interpolate import CubicSpline 
+import numpy as __np
+import matplotlib.pyplot as __plt
+from scipy.interpolate import CubicSpline as __CubicSpline 
 
 #######################################################################
 
@@ -49,8 +49,8 @@ def fwdconvolve(refle,wavelet,dt):
        convo (ndarry): seismic trace resulting from the convolution
 
     """
-    convo = np.convolve(refle,wavelet,mode="full")
-    tarr = np.array([i*dt for i in range(convo.size)])
+    convo = __np.convolve(refle,wavelet,mode="full")
+    tarr = __np.array([i*dt for i in range(convo.size)])
 
     return tarr,convo
 
@@ -78,13 +78,13 @@ def calcreflectivity(density,vel,z,dt):
     reflz = (impdz[1:]-impdz[:-1])/(impdz[1:]+impdz[:-1])
 
     twtfromv = _depth2time(z,vel)
-    twt = np.arange(0.0,twtfromv.max(),dt)
+    twt = __np.arange(0.0,twtfromv.max(),dt)
     npts = twt.size    
 
-    refltwt = np.zeros(npts)
+    refltwt = __np.zeros(npts)
     for i in range(reflz.size):
-        if np.abs(reflz[i])>0.0 :
-            idx = np.argmin(np.abs(twtfromv[i]-twt))
+        if __np.abs(reflz[i])>0.0 :
+            idx = __np.argmin(__np.abs(twtfromv[i]-twt))
             refltwt[idx] = reflz[i]
         
     return twt,refltwt
@@ -107,7 +107,7 @@ def _depth2time(z,vel):
     assert(vel.size==z.size)
 
     npts=vel.size
-    twt = np.zeros(npts)
+    twt = __np.zeros(npts)
 
     for i in range(npts-1):
         deltaz=z[i+1]-z[i]
@@ -129,15 +129,15 @@ def imgshotgath(seisdata,dt,offset,amplitudeclip=1.0):
        amplitudeclip (float,optional): clip the amplitude to a desired value
 
     """
-    twt = np.array([i*dt for i in range(seisdata.shape[1])])  
-    vmax = amplitudeclip*np.abs(seisdata).max()
+    twt = __np.array([i*dt for i in range(seisdata.shape[1])])  
+    vmax = amplitudeclip*__np.abs(seisdata).max()
     vmin = -vmax
     extent = [offset.min(),offset.max(),twt.max(),twt.min()]
-    plt.imshow(seisdata.T,vmin=vmin,vmax=vmax,cmap=plt.cm.RdGy_r,
+    __plt.imshow(seisdata.T,vmin=vmin,vmax=vmax,cmap=__plt.cm.RdGy_r,
                extent=extent,aspect='auto',interpolation='bilinear')
-    plt.colorbar()
-    plt.xlabel('Offset [m]')
-    plt.ylabel('TWT [s]')
+    __plt.colorbar()
+    __plt.xlabel('Offset [m]')
+    __plt.ylabel('TWT [s]')
     return
 
 #######################################################################
@@ -155,17 +155,17 @@ def wiggle(data,dt,offset=None,skiptr=1,scal=None,title=None,filltrace=True):
        title (string,optional): add a title to the plot
 
     """
-    t = np.array([i*dt for i in range(data.shape[1])])        
+    t = __np.array([i*dt for i in range(data.shape[1])])        
     lwidth = 1.0 # line width
     ntraces = data.shape[0]
 
-    if not isinstance(offset,np.ndarray) :
-        ofs = np.array([float(i) for i in range(ntraces)])
+    if not isinstance(offset,__np.ndarray) :
+        ofs = __np.array([float(i) for i in range(ntraces)])
         maxval=1.0/((abs(data).max()))
     else :
         ofs = offset
         maxseis = abs(data).max()
-        maxoff = (abs(np.diff(offset).max()))
+        maxoff = (abs(__np.diff(offset).max()))
         maxval = maxoff/maxseis
 
     if scal!=None :
@@ -176,20 +176,20 @@ def wiggle(data,dt,offset=None,skiptr=1,scal=None,title=None,filltrace=True):
 
     for i in range(0,ntraces,skiptr):
         trace=ofs[i]+data[i,:]*maxval
-        plt.plot(trace,t,color='black',linewidth=lwidth)
+        __plt.plot(trace,t,color='black',linewidth=lwidth)
         if filltrace :
-            plt.fill_betweenx(t,ofs[i],trace,where=(trace>=ofs[i]),color='black')
-        #plt.fill_betweenx(t,ofs[i],trace,where=(trace<ofs[i]),color='red')
-    ax = plt.gca()
+            __plt.fill_betweenx(t,ofs[i],trace,where=(trace>=ofs[i]),color='black')
+        #__plt.fill_betweenx(t,ofs[i],trace,where=(trace<ofs[i]),color='red')
+    ax = __plt.gca()
 
-    plt.xlim(ofs[0]-data[0,:].max()*maxval,ofs[-1]+data[-1,:].max())
-    plt.ylim(t.min(),t.max())
+    __plt.xlim(ofs[0]-data[0,:].max()*maxval,ofs[-1]+data[-1,:].max())
+    __plt.ylim(t.min(),t.max())
     ax.invert_yaxis()
 
     if title!=None :
-        plt.title(title)
-    plt.xlabel('Offset [m]')
-    plt.ylabel('TWT [s]')
+        __plt.title(title)
+    __plt.xlabel('Offset [m]')
+    __plt.ylabel('TWT [s]')
     return
 
 #######################################################################
@@ -214,7 +214,7 @@ def geometrical_spreading(seis,twt):
         ## twt**2 is a rough APPROXIMATION to geom. spreading...
         seis_gs[i,:] = seis_gs[i,:] * twt**2
         ## scale max amplitude to 1
-        seis_gs[i,:] /= np.abs(seis_gs[i,:]).max()
+        seis_gs[i,:] /= __np.abs(seis_gs[i,:]).max()
         
     return seis_gs
 
@@ -238,29 +238,29 @@ def agc(seis, w=100, rho=0, type='uniform'):
     ntraces = seis.shape[0];
     
     if rho>0:
-        nw = int(np.ceil(w/rho))
+        nw = int(__np.ceil(w/rho))
     else:
         nw = w
         
     # select weight kernel type
     if type.lower() == 'gaussian':
         from scipy.stats import norm
-        iw=np.linspace(-2,2,2*nw);
+        iw=__np.linspace(-2,2,2*nw);
         weight_kernel = norm.pdf(iw)
-        weight_kernel = weight_kernel/np.sum(weight_kernel)
+        weight_kernel = weight_kernel/__np.sum(weight_kernel)
     else:
-        weight_kernel = np.ones(nw)
-        weight_kernel = weight_kernel/np.sum(weight_kernel)
+        weight_kernel = __np.ones(nw)
+        weight_kernel = weight_kernel/__np.sum(weight_kernel)
  
-    seis_agc=np.zeros_like(seis)
+    seis_agc=__np.zeros_like(seis)
     for i in range(ntraces):
         
-        seis_abs = np.abs(seis[i,:])
-        seis_weight = np.convolve(np.abs(seis[i,:]),weight_kernel, mode='same')
+        seis_abs = __np.abs(seis[i,:])
+        seis_weight = __np.convolve(__np.abs(seis[i,:]),weight_kernel, mode='same')
 
         if (seis_weight==0.0).any() :
             # print("agc(): Dividing by zero in AGC correction... ")
-            seis_weight = np.where(seis_weight==0.0,1e-6,seis_weight)      
+            seis_weight = __np.where(seis_weight==0.0,1e-6,seis_weight)      
             
         ##-----
         seis_agc[i,:] = seis[i,:]/seis_weight
@@ -286,14 +286,14 @@ def nmocorrection(velnmo,dt,offset,seisdat):
 
     ntraces,nsmpl = seisdat.shape
     assert ntraces==offset.size
-    seisnmo = np.zeros_like(seisdat)
-    timearr = np.array([(i-1)*dt for i in range(nsmpl)])
+    seisnmo = __np.zeros_like(seisdat)
+    timearr = __np.array([(i-1)*dt for i in range(nsmpl)])
 
     ## build the nmo array trace by trace
     for itr in range(ntraces):
         # compute the time for nmo for all time points of a single trace
         # velocity array is nx x nz so slice in depth is vel[?,:]
-        tnmo = np.sqrt(timearr**2 + offset[itr]**2/velnmo**2) 
+        tnmo = __np.sqrt(timearr**2 + offset[itr]**2/velnmo**2) 
         # new trace
         seisnmo[itr,:] =  _resampletrace(timearr,tnmo,seisdat[itr,:])
     return seisnmo
@@ -312,12 +312,12 @@ def _resampletrace(torig,tnmo,seistr):
     Returns
         seisnew (ndarray): resampled trace
     """
-    seisnew = np.zeros(torig.size)
-    itp = CubicSpline(torig,seistr)
+    seisnew = __np.zeros(torig.size)
+    itp = __CubicSpline(torig,seistr)
     # time outside bounds?
     outbou = (tnmo>torig.max()).nonzero()[0]
     if outbou.size>0:
-        idx = np.min(outbou)
+        idx = __np.min(outbou)
     else :
         idx = seisnew.size
     seisnew[:idx] = itp(tnmo[:idx])

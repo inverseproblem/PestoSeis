@@ -4,16 +4,9 @@ API reference
 .. module:: pestoseis
 
 These packages describe the modules, classes and methods that constitute the 
-:code:`hmc_tomography` package. Here you'll find detailed explanations of how all the 
+:code:`pestoseis` package. Here you'll find detailed explanations of how all the 
 components work together.
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Overview of submodules
-   
-   reflectionseismo/index
-   seismicwaves2d/index   
-   ttimerays/index
 
 .. autosummary::
 
@@ -21,3 +14,11 @@ components work together.
    pestoseis.seismicwaves2d
    pestoseis.ttimerays
 
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Overview of submodules
+   
+   reflectionseismo
+   seismicwaves2d
+   ttimerays

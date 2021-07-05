@@ -86,5 +86,6 @@ def ricker_1st_derivative_source( t, t0, f0 ):
       source (ndarray): the source time function
     """
     source = 2 * np.pi**2 * (t - t0) * f0**2 * np.exp(- np.pi**2 * (t - t0)**2 * f0**2) * (2 * np.pi**2 * (t - t0)**2 * f0**2 - 3)
-  return source
+    return source
 
+#############################################################

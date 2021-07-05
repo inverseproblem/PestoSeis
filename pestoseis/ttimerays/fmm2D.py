@@ -57,7 +57,7 @@ class Grid2D():
 
 ##########################################################################
 
-def forwtt(vel,grdh,xinit,yinit,coordsrc,coordrec,ttarrout=False) :
+def ttimefmm(vel,grdh,xinit,yinit,coordsrc,coordrec,ttarrout=False) :
     """
     Traveltimes calculation given a velocity model, position of sources and receivers.
       
@@ -78,12 +78,12 @@ def forwtt(vel,grdh,xinit,yinit,coordsrc,coordrec,ttarrout=False) :
 
     nx,ny = vel.shape
     grd = Grid2D(nx,ny,grdh,xinit,yinit)
-    ttarr = ttFMM(vel,coordsrc,grd)
+    ttarr = _ttFMM(vel,coordsrc,grd)
     
     nrec = coordrec.shape[0]
     ttpicks = __NP.zeros(nrec)
     for i in range(nrec) :
-        ttpicks[i] = bilinear_interp(ttarr, grd.hgrid,grd.xinit,
+        ttpicks[i] = __bilinear_interp(ttarr, grd.hgrid,grd.xinit,
                                      grd.yinit,coordrec[i,0],
                                      coordrec[i,1])
     if ttarrout :
@@ -93,7 +93,7 @@ def forwtt(vel,grdh,xinit,yinit,coordsrc,coordrec,ttarrout=False) :
 
 ##########################################################################
 
-def bilinear_interp(f,hgrid,xinit,yinit,xreq,yreq) :
+def __bilinear_interp(f,hgrid,xinit,yinit,xreq,yreq) :
     """
      Bilinear interpolation (2D).
     """
@@ -126,7 +126,7 @@ def bilinear_interp(f,hgrid,xinit,yinit,xreq,yreq) :
 
 ##########################################################################
 
-def fmm_findclosestnode(x,y,xinit,yinit,h) :
+def __fmm_findclosestnode(x,y,xinit,yinit,h) :
     """
      Find closest grid node to given coordinates.
     """
@@ -146,11 +146,11 @@ def fmm_findclosestnode(x,y,xinit,yinit,h) :
 
 ##########################################################################
 
-def ttFMM(vel,src,grd) :
+def _ttFMM(vel,src,grd) :
     """   
     Fast marching method to compute traveltimes in 2D.
     Uses a staggered grid, time array is bigger than velocity array, 
-     following Podvin & Lecompte scheme.
+    following Podvin & Lecompte scheme.
      
     Args
       vel: input velocity model
@@ -180,7 +180,7 @@ def ttFMM(vel,src,grd) :
 
     ## grd.xinit-hgr because TIME array on STAGGERED grid
     hgr = grd.hgrid/2.0
-    ix,iy = fmm_findclosestnode(xsrc,ysrc,grd.xinit-hgr,grd.yinit-hgr,grd.hgrid)
+    ix,iy = __fmm_findclosestnode(xsrc,ysrc,grd.xinit-hgr,grd.yinit-hgr,grd.hgrid)
     
     rx = src[0]-((ix)*grd.hgrid+grd.xinit-hgr) # NO (i-1)*grd.., just i*grd.. python
     ry = src[1]-((iy)*grd.hgrid+grd.yinit-hgr) # NO (i-1)*grd.., just i*grd.. python

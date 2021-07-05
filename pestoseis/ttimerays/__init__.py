@@ -26,7 +26,8 @@
 
 """
 
-######################################################################
+
+__all__ = ["rollmod","unrollmod","setupgrid","lininv","traveltime","traceallrays","traceall_straight_rays","buildtomomat","plotgrid","plotrays","plotvelmod","plotttimemod","tracerayhorlay"]
 
 from .traveltime_rays import rollmod,unrollmod,setupgrid,lininv,traveltime,traceallrays,traceall_straight_rays,buildtomomat,plotgrid,plotrays,plotvelmod,plotttimemod
 
