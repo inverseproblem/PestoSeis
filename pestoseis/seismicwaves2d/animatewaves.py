@@ -218,6 +218,18 @@ def animateelasticwaves(inpfile,showwhatela="VxVz",clipamplitude=0.1,showanim=Tr
         pmax2 = clipamplitude * abs(vz).max() #abs(x).max()
         pmin2 = -pmax2 #x.min()
 
+    elif showwhatela == "Vmag":
+        data1 = np.sqrt(vx**2 + vz**2)
+        title1 = "V Combined"
+        data2 = 0 * vx
+        title2 = ""
+
+        N=vx.shape[2]
+        pmax1 = clipamplitude * abs(data1).max() #abs(x).max()
+        # pmin1 = -pmax1 #x.min()
+        pmin1 = 0
+        pmax2 = 1
+        pmin2 = -pmax2 #x.min()
 
     ######################################################
 

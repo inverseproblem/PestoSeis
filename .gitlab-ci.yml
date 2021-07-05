@@ -42,7 +42,7 @@ run:
 
 pages:
   script:
-    - pip install sphinx sphinx-rtd-theme
+    - pip install sphinx sphinx-rtd-theme nbsphinx parso pandoc
     - cd docs ; make html
     - mv build/html/ ../public/
   artifacts:
