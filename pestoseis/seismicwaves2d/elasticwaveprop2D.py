@@ -3,7 +3,6 @@ Functions to calculate elastic wave propagation in 2D
 
 """
 
-
 #------------------------------------------------------------------------
 #
 #    PestoSeis, a numerical laboratory to learn about seismology, written

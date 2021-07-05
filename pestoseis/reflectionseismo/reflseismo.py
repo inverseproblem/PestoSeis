@@ -30,12 +30,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import CubicSpline 
 
-<<<<<<< HEAD
-""
-
-=======
 #######################################################################
->>>>>>> e59b79a45ea68fb5b889533879f7f005453fd570
 
 def fwdconvolve(refle,wavelet,dt):
     """
