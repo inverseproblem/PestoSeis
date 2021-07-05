@@ -1,3 +1,4 @@
+
 """Calculate rays in horizontally layered model
 
 """
@@ -17,19 +18,17 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#     along with this program. If not, see <https://www.gnu.org/licenses/>.
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#------------------------------------------------------------------------
 
 
-"""
-.. module:: rayhorlayers.py
-    :synopsis: Compute seismic ray paths in a horizontally layered model.
-  
-.. moduleauthor:: Andrea Zunino
-"""
+############################################################################
 
 import numpy as __NP
 
-""
+############################################################################
+
 def tracerayhorlay(laydep, vel, xystart,takeoffangle,maxnumiterations=20000) :
     """
     Trace rays in a horizontally layered model. 
@@ -201,7 +200,8 @@ def tracerayhorlay(laydep, vel, xystart,takeoffangle,maxnumiterations=20000) :
     return raycoo,tt,dist
         
 
-""
+############################################################################
+
 def _test() :
     
     import matplotlib.pyplot as PL
@@ -261,14 +261,9 @@ def _test() :
 
     PL.show()
 
-
     
-
-
-
-
 #############################################
-# ############################################
+#############################################
 
 if __name__ == "__main__" :
 

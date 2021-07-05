@@ -6,6 +6,8 @@ Functions to calculate elastic wave propagation in 2D
 
 #------------------------------------------------------------------------
 #
+#    PestoSeis, a numerical laboratory to learn about seismology, written
+#    in the Python language.
 #    Copyright (C) 2021  Andrea Zunino 
 #
 #
@@ -23,13 +25,14 @@ Functions to calculate elastic wave propagation in 2D
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #------------------------------------------------------------------------
- 
+
+
 import numpy as np
 import sys
 import h5py as h5
 
 #############################################################################
-# ############################################################################
+#############################################################################
 
 def bilinear_interp(f,hgrid, pt, gridshift_xy=np.array([0.0,0.0])):
     xshift = gridshift_xy[0] 
@@ -50,7 +53,8 @@ def bilinear_interp(f,hgrid, pt, gridshift_xy=np.array([0.0,0.0])):
     #print xreq,yreq,xh,yh,i,j,xd,yd    
     return intval
 
-""
+#############################################################################
+
 def calc_Kab_CPML(nptspml,gridspacing,dt,Npower,d0,
                        alpha_max_pml,K_max_pml,onwhere ) :
 
@@ -73,7 +77,8 @@ def calc_Kab_CPML(nptspml,gridspacing,dt,Npower,d0,
     
     return K,a,b
 
-""
+#############################################################################
+
 def solveelastic2D(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos, saveh5=True,
                      outfileh5="elastic_snapshots.h5") :
     """
@@ -139,9 +144,8 @@ def solveelastic2D(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos, saveh5
 
     return receiv,vxzsave
 
+#############################################################################
 
-
-""
 def _solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) :
     """
     Solve the elastic wave equation in 2D using finite differences on a staggered grid. 
@@ -704,7 +708,8 @@ def _solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos)
     return receiv,(vxsave,vzsave)
 
 
-""
+#############################################################################
+
 def _solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos) :
     """
     Solve the elastic wave equation in 2D using finite differences on a staggered grid. 
@@ -1011,7 +1016,8 @@ def _solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, re
     return receiv,(vxsave,vzsave)
   
 
-""
+#############################################################################
+
 def testela() :
     
     # time
@@ -1097,7 +1103,8 @@ def testela() :
         
     return
 
-""
+#############################################################################
+
 if __name__  == "__main__" :
 
     testela()

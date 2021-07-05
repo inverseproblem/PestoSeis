@@ -1,6 +1,11 @@
+"""Functions to calculate acoustic wave propagation in 2D
+
+"""
 #------------------------------------------------------------------------
 #
-#    Copyright (C) 2019  Andrea Zunino 
+#    PestoSeis, a numerical laboratory to learn about seismology, written
+#    in the Python language.
+#    Copyright (C) 2021  Andrea Zunino 
 #
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,20 +24,14 @@
 #------------------------------------------------------------------------
 
 #######################################################################
-# ######################################################################
-
-"""
-Functions to calculate acoustic wave propagation in 2D
-
-
-"""
+#######################################################################
 
 import numpy as np
 import sys
 import h5py as h5
 
 #############################################################################
-# ############################################################################
+#############################################################################
 
 def _bilinear_interp(f,hgrid, pt):
     """
@@ -50,7 +49,8 @@ def _bilinear_interp(f,hgrid, pt):
     #print xreq,yreq,xh,yh,i,j,xd,yd    
     return intval
 
-""
+#############################################################################
+
 def _initGaussboundcon(nptsgau=60 ) :
     
     ## Damping region size in grid points
@@ -74,7 +74,8 @@ def _initGaussboundcon(nptsgau=60 ) :
 
     return nptsgau,leftdp,rightdp,bottomdp,topdp
 
-""
+#############################################################################
+
 def _calc_Kab_CPML(nptspml,gridspacing,dt,Npower,d0,
                        alpha_max_pml,K_max_pml,onwhere ) :
 
@@ -98,7 +99,8 @@ def _calc_Kab_CPML(nptspml,gridspacing,dt,Npower,d0,
     return K,a,b
 
 
-""
+#############################################################################
+
 def solveacoustic2D(inpar, ijsrc, Vp, density, sourcetf, srcdomfreq, recpos,saveh5=True,
                     outfileh5="acoustic_snapshots.h5"):
 
@@ -106,7 +108,8 @@ def solveacoustic2D(inpar, ijsrc, Vp, density, sourcetf, srcdomfreq, recpos,save
     #_solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcdomfreq, recpos )
     return
 
-""
+#############################################################################
+
 def solveacoustic2D( inpar, ijsrc, velmod, sourcetf, srcdomfreq, recpos, saveh5=True,
                      outfileh5="acoustic_snapshots.h5"):
     """
@@ -172,7 +175,8 @@ def solveacoustic2D( inpar, ijsrc, velmod, sourcetf, srcdomfreq, recpos, saveh5=
 
     return seism,psave
 
-""
+#############################################################################
+
 def _solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
 
     """
@@ -228,7 +232,6 @@ def _solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
     ##            |
     ##            \/ z
     ##
-
 
     #############################
     dh = inpar["dh"]
@@ -468,12 +471,9 @@ def _solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
         
         damp = fact[1:-1,1:-1] * (dpsidx + dpsidz + xi_x[1:-1,1:-1] + xi_z[1:-1,1:-1])
         
-
         # update pressure
         pnew[1:-1,1:-1] = 2.0*pcur[1:-1,1:-1] -pold[1:-1,1:-1] + fact[1:-1,1:-1]*(dpdx2 + dpdz2) + damp
-
-        
-
+     
         # inject source
         # pnew[isrc,jsrc] = pnew[isrc,jsrc] + dt**2*sourcetf[t]
         pnew[isrc,jsrc] = pnew[isrc,jsrc] + dt**2*sourcetf[t]*mean_vel_sq / dh**2
@@ -501,8 +501,13 @@ def _solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
         
     return receiv,psave
 
+<<<<<<< HEAD
 
 ""
+=======
+#############################################################################
+
+>>>>>>> e59b79a45ea68fb5b889533879f7f005453fd570
 def _solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcdomfreq, recpos ) :
     """
     Solve the acoustic wave equation in 2D using finite differences on a staggered grid. 
@@ -558,7 +563,6 @@ def _solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcd
     ##            \/ z
     ##
 
-
     #############################
     dh = inpar["dh"]
     dx = dh
@@ -573,7 +577,6 @@ def _solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcd
     print(" Stability criterion, CFL number:",(maxvp*dt*np.sqrt(1/dx**2+1/dz**2)))
     assert(maxvp*dt*np.sqrt(1/dx**2 + 1/dz**2) < 1.0)
     
-
     ##############################
     #   Parameters
     ##############################
@@ -781,7 +784,6 @@ def _solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcd
             pnew[:,0] = 0.0 #2.0*pcur[1:-1,0] -pold[1:-1,0] + fact[1:-1,0]*(dpdx) + fact[1:-1,0]*(dpdz) 
             ##-------------------------------------------
 
-
         ##=================================================
         ## second order stencil
         ##  ACOUSTIC 'Vp_density'
@@ -834,8 +836,13 @@ def _solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcd
         
     return receiv,psave
 
+<<<<<<< HEAD
 
 ""
+=======
+#############################################################################
+
+>>>>>>> e59b79a45ea68fb5b889533879f7f005453fd570
 def _solveacouwaveq2D_ReflBound( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
     """
     Solve the acoustic wave equation in 2D using finite differences on a staggered grid. 
@@ -964,7 +971,8 @@ def _solveacouwaveq2D_ReflBound( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos
     return receiv,psave
 
 
-""
+#############################################################################
+
 def _solveacouwaveq2D_GaussTaper( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
     """
     Solve the acoustic wave equation in 2D using finite differences on a staggered grid. 
@@ -1128,7 +1136,7 @@ def _solveacouwaveq2D_GaussTaper( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpo
 
 
 #########################################################
-# ###################################################
+####################################################
 
 def testacou():
     
@@ -1190,8 +1198,7 @@ def testacou():
     return
 
 #########################################################
-# ###################################################
-
+#########################################################
 
 if __name__  == "__main__" :
 

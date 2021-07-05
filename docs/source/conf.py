@@ -23,13 +23,13 @@ sys.path.insert(0, os.path.abspath('../../'))
 # -- Project information -----------------------------------------------------
 
 project = 'PestoSeis'
-copyright = '2019, Andrea Zunino'
-author = 'Andrea Zunino'
+copyright = '2021, Andrea Zunino'
+author = 'Andrea Zunino, Patrick Marty, Ines Elisa Ulrich'
 
 # The short X.Y version
-version = '0.2'
+version = '0.3'
 # The full version, including alpha/beta/rc tags
-release = '0.2.0'
+release = '0.3.0'
 html_logo = '../../Logo/PestoSeisLogo.png'
 
 # -- General configuration ---------------------------------------------------
@@ -112,7 +112,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'PestSeisdoc'
+htmlhelp_basename = 'PestoSeisdoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
