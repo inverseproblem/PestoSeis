@@ -1,23 +1,8 @@
-"""
-Animate result of 2D finite difference simulation
-"""
 
-""
-# %matplotlib inline
-
-"""
-Description animatewaves
-
-Functions to 'animate' the results of a 2D acoustic finite difference simulation 
-
-"""
-
-""
-# %matplotlib inline
-
-""
 #------------------------------------------------------------------------
 #
+#    PestoSeis, a numerical laboratory to learn about seismology, written
+#    in the Python language.
 #    Copyright (C) 2021  Andrea Zunino 
 #
 #
@@ -36,8 +21,12 @@ Functions to 'animate' the results of a 2D acoustic finite difference simulation
 #
 #------------------------------------------------------------------------
 
+"""
+  Animate result of 2D finite difference simulation
+"""
+
 #######################################################################
-# ######################################################################
+#######################################################################
 
 import matplotlib.pyplot as plt
 from matplotlib import animation
@@ -139,7 +128,8 @@ def animateacousticwaves(inpfile,clipamplitude=0.1,showanim=True) :
     return ani
 
 
-""
+#######################################################################
+
 def animateelasticwaves(inpfile,showwhatela="VxVz",clipamplitude=0.1,showanim=True) :
     """
      Function to 'animate' the results of a 2D elastic finite difference simulation. It produces (and saves to a file) an .mp4 movie.
@@ -294,3 +284,5 @@ def animateelasticwaves(inpfile,showwhatela="VxVz",clipamplitude=0.1,showanim=Tr
         plt.show()
 
     return ani
+
+#######################################################################

@@ -1,11 +1,8 @@
-"""Functions to generate and process reflection data
-"""
-""
-# %matplotlib inline
 
-""
 #------------------------------------------------------------------------
 #
+#    PestoSeis, a numerical laboratory to learn about seismology, written
+#    in the Python language.
 #    Copyright (C) 2021  Andrea Zunino 
 #
 #
@@ -24,20 +21,18 @@
 #
 #------------------------------------------------------------------------
 
-#######################################################################
-# ######################################################################
+"""
+Functions to generate and process reflection data
+"""
 
-# -*- coding: utf-8 -*
+#######################################################################
+#######################################################################
 
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import CubicSpline 
 
-""
-
-""
-
-
+#######################################################################
 
 def fwdconvolve(refle,wavelet,dt):
     """
@@ -58,7 +53,8 @@ def fwdconvolve(refle,wavelet,dt):
 
     return tarr,convo
 
-""
+#######################################################################
+
 def calcreflectivity(density,vel,z,dt):
     """
     Compute the reflectivity series.
@@ -81,7 +77,8 @@ def calcreflectivity(density,vel,z,dt):
         
     return twt,refltwt
 
-""
+#######################################################################
+
 def _depth2time(z,vel):
     """
      Convert depth to time.
@@ -99,7 +96,8 @@ def _depth2time(z,vel):
         
     return twt
 
-""
+#######################################################################
+
 def imgshotgath(seisdata,dt,offset,amplitudeclip=1.0):
     """
     Create an image of a shotgather.
@@ -122,7 +120,8 @@ def imgshotgath(seisdata,dt,offset,amplitudeclip=1.0):
     plt.ylabel('TWT [s]')
     return
 
-""
+#######################################################################
+
 def wiggle(data,dt,offset=None,skiptr=1,scal=None,title=None,filltrace=True):
 
     """
@@ -173,7 +172,8 @@ def wiggle(data,dt,offset=None,skiptr=1,scal=None,title=None,filltrace=True):
     plt.ylabel('TWT [s]')
     return
 
-""
+#######################################################################
+
 def geometrical_spreading(seis,twt):
     """
     Apply geometrical spreading correction to a shotgather.
@@ -199,7 +199,8 @@ def geometrical_spreading(seis,twt):
         
     return seis_gs
 
-""
+#######################################################################
+
 def agc(seis, w=100, rho=0, type='uniform'):
     """
     Apply Automatic Gain Control to a shotgather.
@@ -247,9 +248,9 @@ def agc(seis, w=100, rho=0, type='uniform'):
         seis_agc[i,:] = seis[i,:]/seis_weight
   
     return seis_agc
-    
+   
+#######################################################################
 
-""
 def nmocorrection(velnmo,dt,offset,seisdat):
     """
     Common Mid Point (CMP) normal moveout correction.
@@ -280,7 +281,8 @@ def nmocorrection(velnmo,dt,offset,seisdat):
         seisnmo[itr,:] =  _resampletrace(timearr,tnmo,seisdat[itr,:])
     return seisnmo
 
-""
+#######################################################################
+
 def _resampletrace(torig,tnmo,seistr):
     """
     Resample a trace
@@ -305,6 +307,7 @@ def _resampletrace(torig,tnmo,seistr):
     seisnew[:idx] = itp(tnmo[:idx])
     return seisnew
 
+#######################################################################
 
-""
+
 
