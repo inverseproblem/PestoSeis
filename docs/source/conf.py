@@ -30,7 +30,7 @@ author = 'Andrea Zunino'
 version = '0.2'
 # The full version, including alpha/beta/rc tags
 release = '0.2.0'
-
+html_logo = '../../Logo/PestoSeisLogo.png'
 
 # -- General configuration ---------------------------------------------------
 
@@ -48,6 +48,8 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
+    'nbsphinx',
+    'sphinx.ext.autosummary',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

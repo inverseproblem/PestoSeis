@@ -1,3 +1,11 @@
+"""
+Functions to calculate acoustic wave propagation in 2D
+"""
+
+""
+# %matplotlib inline
+
+""
 
 #------------------------------------------------------------------------
 #
@@ -18,16 +26,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #------------------------------------------------------------------------
- 
+
 #######################################################################
-#######################################################################
+# ######################################################################
 
 import numpy as np
 import sys
 import h5py as h5
 
 #############################################################################
-#############################################################################
+# ############################################################################
 
 def _bilinear_interp(f,hgrid, pt):
     """
@@ -45,8 +53,7 @@ def _bilinear_interp(f,hgrid, pt):
     #print xreq,yreq,xh,yh,i,j,xd,yd    
     return intval
 
-#############################################################################
-
+""
 def _initGaussboundcon(nptsgau=60 ) :
     
     ## Damping region size in grid points
@@ -70,8 +77,7 @@ def _initGaussboundcon(nptsgau=60 ) :
 
     return nptsgau,leftdp,rightdp,bottomdp,topdp
 
-#########################################################################
-
+""
 def _calc_Kab_CPML(nptspml,gridspacing,dt,Npower,d0,
                        alpha_max_pml,K_max_pml,onwhere ) :
 
@@ -95,8 +101,7 @@ def _calc_Kab_CPML(nptspml,gridspacing,dt,Npower,d0,
     return K,a,b
 
 
-###################################################################
-
+""
 def solveacoustic2D(inpar, ijsrc, Vp, density, sourcetf, srcdomfreq, recpos,saveh5=True,
                     outfileh5="acoustic_snapshots.h5"):
 
@@ -104,8 +109,7 @@ def solveacoustic2D(inpar, ijsrc, Vp, density, sourcetf, srcdomfreq, recpos,save
     #_solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcdomfreq, recpos )
     return
 
-###################################################################
-
+""
 def solveacoustic2D( inpar, ijsrc, velmod, sourcetf, srcdomfreq, recpos, saveh5=True,
                      outfileh5="acoustic_snapshots.h5"):
     """
@@ -171,8 +175,7 @@ def solveacoustic2D( inpar, ijsrc, velmod, sourcetf, srcdomfreq, recpos, saveh5=
 
     return seism,psave
 
-###################################################################
-
+""
 def _solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
 
     """
@@ -390,7 +393,7 @@ def _solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
 
     ## Arrays to return seismograms
     nrecs = recpos.shape[0]
-    receiv = np.zeros((inpar["ntimesteps"],nrecs))
+    receiv = np.zeros((nrecs,inpar["ntimesteps"]))
 
     # Source time function
     #lensrctf = sourcetf.size
@@ -487,7 +490,7 @@ def _solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
         ##### receivers
         for r in range(nrecs) :
             rec_press = _bilinear_interp(pcur,dh,recpos[r,:])
-            receiv[t,r] = rec_press
+            receiv[r,t] = rec_press
         
         #### save snapshots
         if (inpar["savesnapshot"]==True) and (t%inpar["snapevery"]==0) :
@@ -500,9 +503,8 @@ def _solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
         psave = None
         
     return receiv,psave
-  
-###################################################################
 
+""
 def _solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcdomfreq, recpos ) :
     """
     Solve the acoustic wave equation in 2D using finite differences on a staggered grid. 
@@ -720,7 +722,7 @@ def _solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcd
 
     ## Arrays to return seismograms
     nrecs = recpos.shape[0]
-    receiv = np.zeros((inpar["ntimesteps"],nrecs))
+    receiv = np.zeros((nrecs,inpar["ntimesteps"]))
 
     # Source time function
     #lensrctf = sourcetf.size
@@ -820,7 +822,7 @@ def _solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcd
         ##### receivers
         for r in range(nrecs) :
             rec_press = _bilinear_interp(pcur,dh,recpos[r,:])
-            receiv[t,r] = rec_press
+            receiv[r,t] = rec_press
         
         #### save snapshots
         if (inpar["savesnapshot"]==True) and (t%inpar["snapevery"]==0) :
@@ -833,9 +835,8 @@ def _solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcd
         psave = None
         
     return receiv,psave
-  
-#########################################################
 
+""
 def _solveacouwaveq2D_ReflBound( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
     """
     Solve the acoustic wave equation in 2D using finite differences on a staggered grid. 
@@ -901,7 +902,7 @@ def _solveacouwaveq2D_ReflBound( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos
 
     ## Arrays to return seismograms
     nrecs = recpos.shape[0]
-    receiv = np.zeros((inpar["ntimesteps"],nrecs))
+    receiv = np.zeros((nrecs,inpar["ntimesteps"]))
 
     # Source time function
     lensrctf = sourcetf.size
@@ -948,7 +949,7 @@ def _solveacouwaveq2D_ReflBound( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos
         ##### receivers
         for r in range(nrecs) :
             rec_press = _bilinear_interp(pcur,dh,recpos[r,:])
-            receiv[t,r] = rec_press
+            receiv[r,t] = rec_press
         
         #### save snapshots
         if (inpar["savesnapshot"]==True) and (t%inpar["snapevery"]==0) :
@@ -964,8 +965,7 @@ def _solveacouwaveq2D_ReflBound( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos
     return receiv,psave
 
 
-#########################################################
-
+""
 def _solveacouwaveq2D_GaussTaper( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
     """
     Solve the acoustic wave equation in 2D using finite differences on a staggered grid. 
@@ -1049,7 +1049,7 @@ def _solveacouwaveq2D_GaussTaper( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpo
 
     ## Arrays to return seismograms
     nrecs = recpos.shape[0]
-    receiv = np.zeros((inpar["ntimesteps"],nrecs))
+    receiv = np.zeros((nrecs,inpar["ntimesteps"]))
 
     # Source time function
     lensrctf = sourcetf.size
@@ -1112,7 +1112,7 @@ def _solveacouwaveq2D_GaussTaper( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpo
         ##### receivers
         for r in range(nrecs) :
             rec_press = _bilinear_interp(pcur,dh,recpos[r,:])
-            receiv[t,r] = rec_press
+            receiv[r,t] = rec_press
         
         #### save snapshots
         if (inpar["savesnapshot"]==True) and (t%inpar["snapevery"]==0) :
@@ -1129,7 +1129,7 @@ def _solveacouwaveq2D_GaussTaper( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpo
 
 
 #########################################################
-####################################################
+# ###################################################
 
 def testacou():
     
@@ -1191,7 +1191,7 @@ def testacou():
     return
 
 #########################################################
-####################################################
+# ###################################################
 
 
 if __name__  == "__main__" :

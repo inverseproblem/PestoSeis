@@ -83,6 +83,8 @@ Table of contents
       ttimerays_guide
       seismicwaves2d_guide
       developerdocs
+      tutorials
+      API/index      
 
 ======================
 Indices and tables

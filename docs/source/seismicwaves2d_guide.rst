@@ -51,11 +51,4 @@ Note that reformulating the elastic wave equation in terms of velocity instead o
 
 
 
-=============================================
-API ``seismicwaves2d``, list of functions
-=============================================
 
-.. automodule:: pestoseis.seismicwaves2d
-   :members:
-   :imported-members:  
-..   :undoc-members:

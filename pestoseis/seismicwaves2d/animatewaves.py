@@ -1,4 +1,21 @@
+"""
+Animate result of 2D finite difference simulation
+"""
 
+""
+# %matplotlib inline
+
+"""
+Description animatewaves
+
+Functions to 'animate' the results of a 2D acoustic finite difference simulation 
+
+"""
+
+""
+# %matplotlib inline
+
+""
 #------------------------------------------------------------------------
 #
 #    Copyright (C) 2021  Andrea Zunino 
@@ -18,9 +35,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #------------------------------------------------------------------------
- 
+
 #######################################################################
-#######################################################################
+# ######################################################################
 
 import matplotlib.pyplot as plt
 from matplotlib import animation
@@ -33,15 +50,15 @@ import scipy.integrate as spi
 import scipy.signal as sps
 
 #######################################################################
-#######################################################################
+# ######################################################################
 
-def animateacousticwaves(inpfile,clipamplitude=0.1) :
+def animateacousticwaves(inpfile,clipamplitude=0.1,showanim=True) :
     """
      Function to 'animate' the results of a 2D acoustic finite difference simulation. It produces (and saves to a file) an .mp4 movie.
 
     :parameter inpfile: input HDF5 file name
     :parameter clipamplitude: amplitude clipping factor
-
+    :parameter showanim: show plot or not
     
     """
     ##============================
@@ -116,20 +133,21 @@ def animateacousticwaves(inpfile,clipamplitude=0.1) :
 
 
     ##################
-    plt.show()
-
+    if showanim:
+        plt.show()
+        
     return ani
 
-#######################################################################
 
-def animateelasticwaves(inpfile,showwhatela="VxVz",clipamplitude=0.1) :
+""
+def animateelasticwaves(inpfile,showwhatela="VxVz",clipamplitude=0.1,showanim=True) :
     """
      Function to 'animate' the results of a 2D elastic finite difference simulation. It produces (and saves to a file) an .mp4 movie.
 
     :parameter inpfile: input HDF5 file name
     :parameter showwhatela: what to show, either 'VxVz' or 'PS'
     :parameter clipamplitude: amplitude clipping factor
-
+    :parameter showanim: show plot or not
     
     """
     ##============================
@@ -272,6 +290,7 @@ def animateelasticwaves(inpfile,showwhatela="VxVz",clipamplitude=0.1) :
 
 
     ##################
-    plt.show()
+    if showanim:
+        plt.show()
 
     return ani

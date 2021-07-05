@@ -1,3 +1,11 @@
+"""Fast Marching in 2D
+
+"""
+
+""
+# %matplotlib inline
+
+""
 #    TTimeRays, a program to learn about seismic rays and traveltimes.
 #    Copyright (C) 2019  Andrea Zunino
 #
@@ -26,9 +34,12 @@ from .binheap import BinHeapMin
 
 import numpy as __NP
 
-#################################################
-
+""
 class Grid2D():
+    """
+    Class creating a 2D rectangular grid
+    
+    """
     def __init__(self, nx, ny, h,xinit,yinit):
         self.nx = nx
         self.ny = ny
@@ -42,8 +53,7 @@ class Grid2D():
 # MyStruct = namedtuple("MyStruct", "field1 field2 field3")
 # m = MyStruct(field1="foo", field2="bar", field3="baz")
 
-#################################################
-
+""
 def forwtt(vel,grdh,xinit,yinit,coordsrc,coordrec,ttarrout=False) :
     """
     Traveltimes calculation given a velocity model, position of sources and receivers.
@@ -75,8 +85,7 @@ def forwtt(vel,grdh,xinit,yinit,coordsrc,coordrec,ttarrout=False) :
     else :
         return ttpicks
 
-#################################################
-
+""
 def bilinear_interp(f,hgrid,xinit,yinit,xreq,yreq) :
     """
      Bilinear interpolation (2D).
@@ -108,8 +117,7 @@ def bilinear_interp(f,hgrid,xinit,yinit,xreq,yreq) :
     intval = f[i,j]*(1.0-xd)*(1.0-yd)+f[i+1,j]*(1.0-yd)*xd + f[i,j+1]*(1.0-xd)*yd+f[i+1,j+1]*xd*yd
     return intval
 
-#################################################
-
+""
 def fmm_findclosestnode(x,y,xinit,yinit,h) :
     """
      Find closest grid node to given coordinates.
@@ -128,8 +136,7 @@ def fmm_findclosestnode(x,y,xinit,yinit,h) :
     ## return Int(ix+1),Int(iy+1) # julia
     return int(ix),int(iy) # python
 
-#################################################
-
+""
 def ttFMM(vel,src,grd) :
     """   
      Fast marching method to compute traveltimes in 2D.

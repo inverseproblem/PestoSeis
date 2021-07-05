@@ -1,3 +1,12 @@
+"""
+Calculate travel time from source to receiver on rectilinear grid
+
+"""
+
+""
+# %matplotlib inline
+
+""
 #    TTimeRays, a program to learn about seismic rays and traveltimes.
 #    Copyright (C) 2019  Andrea Zunino
 #
@@ -32,8 +41,8 @@ from .fmm2D import forwtt as _forwtt
 ### important!
 fmmtolerance = __NP.finfo(float).resolution
 
-###########################################################################
 
+""
 def rollmod(mod,nx,ny) :
     """
     Reshape a flattened (a vector) model to 2D (an array).
@@ -49,8 +58,7 @@ def rollmod(mod,nx,ny) :
     modr = mod.copy().reshape(nx,ny,order='F')
     return modr
 
-#############################################################
-
+""
 def unrollmod(mod) :
     """
     Flatten a 2D model to a vector, using column-major Fortran order.
@@ -63,8 +71,7 @@ def unrollmod(mod) :
     modu = mod.copy().flatten('F')
     return modu
 
-#############################################################
-
+""
 def setupgrid(nx,ny,dh,xinit,yinit) :
     """    
     Setup grid parameters.
@@ -90,8 +97,7 @@ def setupgrid(nx,ny,dh,xinit,yinit) :
     gridpar['yvelmax'] = gridpar['ny']*gridpar['dh']+gridpar['yttmin']-gridpar['dh']/2.0
     return gridpar
 
-###########################################################################
-
+""
 def lininv(G,cov_m,cov_d,mprior,dobs) :
     """
     Linear inversion under Gaussian assumptions.
@@ -138,8 +144,7 @@ def lininv(G,cov_m,cov_d,mprior,dobs) :
 
     return postm,postC_m
 
-###########################################################################
-
+""
 def __bilinear_interp(f,hgrid, pt):
     """ 
      Bilinear interpolation.
@@ -155,8 +160,7 @@ def __bilinear_interp(f,hgrid, pt):
     intval=f[i,j]*(1.0-xd)*(1.0-yd)+f[i+1,j]*(1.0-yd)*xd+f[i,j+1]*(1.0-xd)*yd+f[i+1,j+1]*xd*yd
     return intval
 
-###########################################################################
-
+""
 def traveltime(velmod,gridpar,srcs,recs) :
     """
       Calculate traveltime for all sources and receivers.
@@ -188,8 +192,7 @@ def traveltime(velmod,gridpar,srcs,recs) :
     print(' ')
     return ttpicks,ttime
 
-###########################################################################
-
+""
 # def traveltimesinglesrc(velmod,gridpar,coordsrc,coordrec) :
 #     """
 #     Calculate travel time given a velocity model and souce position
@@ -228,8 +231,7 @@ def traveltime(velmod,gridpar,srcs,recs) :
 #     return ttpicks,tbuf
 
 
-##########################################################
-
+""
 def __seg_intersect(a1,a2, b1,b2) :
     """
     Determine the intersection of two segments
@@ -294,8 +296,7 @@ def __seg_intersect(a1,a2, b1,b2) :
   
     return status,interspoint
 
-#############################################################
-
+""
 def __pointisonLINE(a,b, pointc):
     """
     Check if point is on LINE
@@ -307,8 +308,7 @@ def __pointisonLINE(a,b, pointc):
         return False   # (or != 0 if using integers)
     return True
 
-#############################################################
-
+""
 def __segintersRECT(rect,seg,rectangle=True) :
     """
     Find intersection of a segment and a polygon or rectangle if 'rectangle=True'.
@@ -335,8 +335,7 @@ def __segintersRECT(rect,seg,rectangle=True) :
     
     return sta,itsp
 
-##########################################################
-
+""
 def __findclosestnode(xmin,ymin,dx,dy,pt) :
     # xini ?
     # yini ?
@@ -364,8 +363,7 @@ def __findclosestnode(xmin,ymin,dx,dy,pt) :
         side = side1+'_above' if ycp<pt[1] else side1+'_below'        
     return __NP.array([xcp,ycp]),side,__NP.array([ix,iy])
 
-#############################################################
-
+""
 def __findcelledge(xmin,ymin,dx,dy,nx,ny, pt, endptgrad, source=False ) :
 
     """
@@ -476,8 +474,7 @@ def __findcelledge(xmin,ymin,dx,dy,nx,ny, pt, endptgrad, source=False ) :
     return rectangle,pos
 
 
-##########################################################
-
+""
 def __ijinvelgrid(segment,gridpar) :
     """
      Get the indices of the velocity cell related to a given segment.
@@ -494,8 +491,7 @@ def __ijinvelgrid(segment,gridpar) :
     ijvel = __NP.array([ivelcell,jvelcell],dtype='int')
     return ijvel
 
-##########################################################
-
+""
 def __globgrad(gridpar,ttime) :
     """
       Calculate interpolant functions for the gradient of the traveltime array.
@@ -524,8 +520,7 @@ def __globgrad(gridpar,ttime) :
     # fygrad = __SPINT.interp2d(x,y,globygrad.T,kind='linear')
     return fxgrad,fygrad
 
-###########################################################
-
+""
 def __gradatpt(fxgrad,fygrad,pt) :
     """
      Compute gradient at point pt.
@@ -538,8 +533,7 @@ def __gradatpt(fxgrad,fygrad,pt) :
     #print '>> grad >>> ',xgr,ygr,'pt',pt
     return __NP.array([xgr,ygr])
 
-##########################################################
-
+""
 def __nextptgrad(fxgrad,fygrad,steplen, pt ) :
     """
     Calculate target point using negative gradient of traveltime increment
@@ -556,9 +550,8 @@ def __nextptgrad(fxgrad,fygrad,steplen, pt ) :
     #print pt,steplen,grad,modgrad
     endptgrad = pt - grad*steplen/modgrad
     return endptgrad
-        
-##########################################################
 
+""
 def __pointisonSEGMENT(seg, pt) :
     """
     Is point on a segment?
@@ -573,8 +566,7 @@ def __pointisonSEGMENT(seg, pt) :
     if inx and iny : return True
     return False
 
-##########################################################
-
+""
 def __isonsrccelledge(srccell,curpt) :
     """
     Is point on a cell edge?
@@ -585,16 +577,14 @@ def __isonsrccelledge(srccell,curpt) :
             return True
     return False
 
-##########################################################
-
+""
 def __ptinbounds(gridpar,pt) :
     if pt[0]>gridpar['xttmin'] and pt[0]<gridpar['xttmax'] and pt[1]>gridpar['yttmin'] and pt[1]<gridpar['yttmax'] :
         return True
     print('\n',pt,gridpar['xttmin'],gridpar['xttmax'],gridpar['yttmin'],gridpar['yttmax'])
     return False
 
-##########################################################
-
+""
 def _traceray(gridpar,recpos,coordsrc, ttime) :
     """
     Back-trace a single ray using negative gradient of traveltime direction
@@ -708,8 +698,8 @@ def _traceray(gridpar,recpos,coordsrc, ttime) :
 
     return ray
 
-##########################################################
 
+""
 def traceallrays(gridpar,srccoo,reccoo,grdsttime) :
     """
     Trace multiple rays, for all sources and receivers.
@@ -741,8 +731,7 @@ def traceallrays(gridpar,srccoo,reccoo,grdsttime) :
     print(' ')
     return rays
 
-##########################################################
-            
+""
 def _trace_straight_ray(gridpar,srcpos,recpos) :
     """
     Trace a straight ray, from receiver to source.
@@ -821,8 +810,8 @@ def _trace_straight_ray(gridpar,srcpos,recpos) :
     #--
     return ray
 
-##########################################################
 
+""
 def traceall_straight_rays(gridpar,srccoo,reccoo) :
     """
     Trace multiple straight rays.
@@ -853,8 +842,7 @@ def traceall_straight_rays(gridpar,srccoo,reccoo) :
     print(' ')
     return rays
 
-##########################################################
-
+""
 def buildtomomat(gridpar,rays, ttpick) :
     """
     Build forward matrix from rays for traveltime tomography.
@@ -891,8 +879,7 @@ def buildtomomat(gridpar,rays, ttpick) :
             
     return tomomat,ttpickvector
 
-###################################################################
-
+""
 def plotgrid(gridpar) :
     """
     Plot staggered grid edges: traveltime at nodes and velocity in cells
@@ -912,8 +899,7 @@ def plotgrid(gridpar) :
     __PL.ylim([gridpar['yttmax'],gridpar['yttmin']]) 
     return
 
-####################################################################
-
+""
 def plotrays(src,rec,rays) :
     """
     Plot rays as polylines.
@@ -932,8 +918,7 @@ def plotrays(src,rec,rays) :
             __PL.plot(rec[r,0],rec[r,1],'vk',zorder=100)
     return
 
-####################################################################
-
+""
 def plotvelmod(gridpar,velmod,vmin=None,vmax=None) :
     """
     Plot velocity model as an image.
@@ -956,8 +941,7 @@ def plotvelmod(gridpar,velmod,vmin=None,vmax=None) :
     #__PL.gca().set_aspect('equal')
     return
 
-####################################################################
-
+""
 def plotttimemod(gridpar,ttime) :
     """
     Plot traveltime array as an image.
@@ -976,11 +960,12 @@ def plotttimemod(gridpar,ttime) :
 
 
 #####################################################################
-#####################################################################
+# ####################################################################
+
 
 
 ##########################################################
-##########################################################
+# #########################################################
 
 
 # if __name__ == '__main__' :
