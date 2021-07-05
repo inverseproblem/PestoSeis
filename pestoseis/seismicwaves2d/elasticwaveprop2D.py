@@ -1,14 +1,8 @@
 """
 Functions to calculate elastic wave propagation in 2D
+
 """
 
-""
-# %matplotlib inline
-
-""
-# %matplotlib inline
-
-""
 
 #------------------------------------------------------------------------
 #

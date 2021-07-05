@@ -3,15 +3,10 @@ A collection of source time functions
 
 """
 
-""
-# %matplotlib inline
-
-""
 
 
 import numpy as np
 
-""
 def gaussource( t, t0, f0 ) :
     """
       Derivative of a Gaussian source time function.
@@ -23,7 +18,6 @@ def gaussource( t, t0, f0 ) :
     
     return source
 
-""
 def rickersource( t, t0, f0 ):
     """
       Ricker wavelet source time function.
@@ -32,7 +26,6 @@ def rickersource( t, t0, f0 ):
     w = (1.0-2.0*b)*np.exp(-b)
     return w
 
-""
 def ricker_1st_derivative_source( t, t0, f0 ):
   """
     First derivative of a wavelet source time function.

@@ -1,7 +1,5 @@
 """Functions to generate and process reflection data
 """
-""
-# %matplotlib inline
 
 ""
 #------------------------------------------------------------------------
@@ -34,9 +32,6 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import CubicSpline 
 
 ""
-
-""
-
 
 
 def fwdconvolve(refle,wavelet,dt):
@@ -304,7 +299,4 @@ def _resampletrace(torig,tnmo,seistr):
         idx = seisnew.size
     seisnew[:idx] = itp(tnmo[:idx])
     return seisnew
-
-
-""
 

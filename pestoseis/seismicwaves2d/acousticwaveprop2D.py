@@ -1,12 +1,3 @@
-"""
-Functions to calculate acoustic wave propagation in 2D
-"""
-
-""
-# %matplotlib inline
-
-""
-
 #------------------------------------------------------------------------
 #
 #    Copyright (C) 2019  Andrea Zunino 
@@ -29,6 +20,12 @@ Functions to calculate acoustic wave propagation in 2D
 
 #######################################################################
 # ######################################################################
+
+"""
+Functions to calculate acoustic wave propagation in 2D
+
+
+"""
 
 import numpy as np
 import sys
@@ -504,6 +501,7 @@ def _solveacouwaveq2D_CPML( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :
         
     return receiv,psave
 
+
 ""
 def _solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcdomfreq, recpos ) :
     """
@@ -835,6 +833,7 @@ def _solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcd
         psave = None
         
     return receiv,psave
+
 
 ""
 def _solveacouwaveq2D_ReflBound( inpar, ijsrc, vel, sourcetf, srcdomfreq, recpos ) :

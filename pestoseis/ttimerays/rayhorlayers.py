@@ -2,10 +2,7 @@
 
 """
 
-""
-# %matplotlib inline
 
-""
 #    TTimeRays, a program to learn about seismic rays and traveltimes.
 #    Copyright (C) 2019  Andrea Zunino
 #
