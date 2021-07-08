@@ -31,7 +31,9 @@ Functions to generate and process seismic reflection data to mimic an
 
 import numpy as __np
 import matplotlib.pyplot as __plt
-from scipy.interpolate import CubicSpline as __CubicSpline 
+from scipy.interpolate import CubicSpline as __CubicSpline
+from skimage.draw import polygon
+from scipy.ndimage import gaussian_filter
 
 #######################################################################
 
@@ -133,7 +135,7 @@ def imgshotgath(seisdata,dt,offset,amplitudeclip=1.0):
     vmax = amplitudeclip*__np.abs(seisdata).max()
     vmin = -vmax
     extent = [offset.min(),offset.max(),twt.max(),twt.min()]
-    __plt.imshow(seisdata.T,vmin=vmin,vmax=vmax,cmap=__plt.cm.RdGy_r,
+    __plt.imshow(seisdata.T,vmin=vmin,vmax=vmax,cmap=__plt.cm.gray,
                extent=extent,aspect='auto',interpolation='bilinear')
     __plt.colorbar()
     __plt.xlabel('Offset [m]')
@@ -325,5 +327,231 @@ def _resampletrace(torig,tnmo,seistr):
 
 #######################################################################
 
+def get_pm_mask(seisdat):
+    """
+    Gets a mask of the sign (+/-) for a given set of seismic traces. Useful
+    for recoving the correct sign of the seismic data after FFTing the data.
 
+    Args:
+        seisdat (ndarray): input seismic data in time-space domain, *rows*
+                           contain traces
+    
+    Returns
+        pm_mask (ndarray): mask containing the sign (+1 or -1) of the trace
+                           samples
+    """
+    pm_mask = __np.zeros_like(seisdat)
+    pm_mask[__np.where(seisdat > 0)] = 1
+    pm_mask[__np.where(seisdat < 0)] = -1
 
+    return pm_mask
+
+#######################################################################
+
+def transform_tx_to_fk(seisdat):
+    """
+    Transform seismograms from time-space domain to frequency-wavenumber
+    domain.
+
+    Args:
+        seisdat (ndarray): input seismic data, *rows* contain traces
+
+    Returns
+        fk_seis (ndarray): transformed seismic data
+    """
+    # Transform to frequency-space domain
+    fx_seis = __np.fft.fftshift(__np.fft.fft(seisdat, axis=1), axes=1)
+
+    # Transform to frequency-wavenumber domain
+    fk_seis = __np.fft.fftshift(__np.fft.ifft(fx_seis, axis=0), axes=0)
+
+    return fk_seis
+
+#######################################################################
+
+def transform_fk_to_tx(seisdat):
+    """
+    Transform seismograms from frequency-wavenumber domain to time-space
+    domain.
+
+    Args:
+        seisdat (ndarray): seismic traces in frequency-wavenumber domain,
+                           *rows* contain traces
+    
+    Returns
+        tx_seis (ndarray): transformed seismic data
+    """
+    # Transform to frequency-space domain
+    fx_seis = __np.fft.fft(__np.fft.ifftshift(seisdat, axes=0), axis=0)
+
+    # Transform to time-space domain
+    tx_seis = __np.fft.ifft(__np.fft.ifftshift(fx_seis, axes=1), axis=1)
+
+    return __np.abs(tx_seis)
+
+#######################################################################
+
+import numpy as np
+class _Canvas:
+    def __init__(self, ax):
+        """
+        Constructs a canvas object for drawing on a plot
+
+        Args:
+            ax (matplotlib.axes._subplots.AxesSubplot): plot axis 
+        """
+        self.ax = ax
+        
+        # Create handle for a path of connected points
+        self.path, = ax.plot([], [], 'o-', lw=2.5, color='red')
+     
+        self.vert = np.empty(shape=[0,2])
+        self.ax.set_title('Interactive Plot\nLEFT: new point, MIDDLE: close polygon, RIGHT: delete last point')
+
+        self.x = [] 
+        self.y = []
+
+        self.mouse_button = {1: self._add_point, 2: self._close_polygon, 3: self._delete_point}
+    
+    def set_location(self,event):
+        if event.inaxes:
+            self.x = event.xdata
+            self.y = event.ydata
+    
+    def _add_point(self):
+        self.vert = np.vstack((self.vert, np.array([self.x, self.y])))
+    
+    def _delete_point(self):
+        if (self.vert).shape[0] > 0:
+            self.vert = np.delete(self.vert, -1, 0)
+    
+    def _close_polygon(self):
+        self.vert = np.vstack((self.vert, self.vert[0,:]))
+    
+    def update_path(self,event):
+
+        # If the mouse pointer is not on the canvas, ignore buttons
+        if not event.inaxes: return
+
+        # Do whichever action correspond to the mouse button clicked
+        # mouse_button: dictionary {1: self._add_point, 2: self._delete_point, 3: self._close_polygon}
+        self.mouse_button[event.button]()
+        print("vert:",self.vert)
+        
+        x = [self.vert[k,0] for k in range((self.vert).shape[0])]
+        y = [self.vert[k,1] for k in range((self.vert).shape[0])]
+        self.path.set_data(x,y)
+        __plt.draw()
+
+#######################################################################
+
+def _tracepoly(fig) :
+    ax = fig.gca()
+    cnv = _Canvas(ax)
+
+    # Get the information on the mouse events
+    __plt.connect('button_press_event', cnv.update_path)
+    __plt.connect('motion_notify_event', cnv.set_location)
+
+    # Display the plot
+    __plt.tight_layout()
+    __plt.show()
+        
+    return cnv
+
+#######################################################################
+
+def plot_fk_spectrum(seisdat_fk, ylim=None, interactive=True):
+    """
+    Plots the frequency-wavenumber spectrum of the seismic traces.  Data
+    must already be in frequency-wavenumber domain.
+
+    Args:
+        seisdat_fk (ndarray): seismic traces in frequency-wavenumber domain,
+                              *rows* contain traces
+        ylim (float, optional): upper y-limit (frequency) to plot
+        interactive (bool, optional): whether to plot an interactive polygon
+                                      drawing tool
+
+    Returns
+        canvas (_Canvas): canvas object containing the user-drawn polygon, only
+                          returned when `interactive=True`.
+    """
+    # Verify that the data is complex; rudamentary check to see if the data
+    # is still in time-space domain (but obviously not fool-proof)
+    if not __np.any(__np.iscomplex(seisdat_fk)):
+        raise Exception("Input data is not complex; verify that the input\
+            data is in frequency-wavenumber domain")
+
+    # Construct plot
+    fig = __plt.figure(figsize=[10, 8])
+    ax = __plt.gca()
+    ax.imshow(
+        __np.abs(seisdat_fk).T, 
+        aspect="auto", 
+        cmap="gray_r", 
+        origin="lower", 
+        vmax=2.5e-12
+    )
+
+    if ylim is None:
+        ylim = 0.1 * seisdat_fk.shape[1]
+    __plt.ylim([seisdat_fk.shape[1]/2, seisdat_fk.shape[1]/2 + ylim])
+
+    ax.set_xlabel("Wavenumber [1/m]")
+    ax.set_ylabel("Frequency [Hz]")
+
+    if interactive:
+        # Set canvas for drawing polygons onto
+        canvas = _tracepoly(fig)
+        return canvas
+
+#######################################################################
+
+def mask_from_polygon(img, poly, smooth=True, smoothing_strength=2.5, invert=False):
+    """
+    Constructs a boolean mask from a polygon for a given image.  Regions within
+    the polygon are by default assigned `0` and values outside of the polygon
+    are assigned `1`.
+
+    Args:
+        img (ndarray): image to construct the mask for
+        poly (ndarray, _Canvas): polygon to construct the boolean
+                                    mask of
+        smooth (bool, optional): flag for whether to apply gaussian smoothing
+                                 to the edges of the mask
+        smoothing_strength (int, optional): strength of gaussian smoothing
+        invert (bool, optional): flag for inverting the boolean selection
+
+    Returns
+        mask (ndarray): boolean mask with same dimensions of `img`
+    """
+    if type(poly) is _Canvas:
+        poly = __np.array(poly.vert)
+
+    if poly.shape[1] != 2 or len(poly.shape) != 2:
+        raise ValueError(
+            f"Polygon must have shape `[n, 2]` -> Got polygon with shape {poly.shape}"
+        )
+
+    # Create the mask from the polygon
+    mask = __np.ones_like(img, dtype=float)
+    rr, cc = polygon(poly[:, 0], poly[:, 1])
+    mask[rr, cc] = 0
+
+    if invert:
+        mask = __np.invert(mask)
+
+    # Smooth the edges of the mask
+    if smooth:
+        mask = gaussian_filter(mask, smoothing_strength)
+
+    # Flip the maps along the axes of symmetry
+    inds = [int(mask.shape[0]/2), int(mask.shape[1]/2)]
+    mask[-inds[0]:, :inds[1]] = __np.fliplr(mask[-inds[0]:, -inds[1]:])
+    mask[:inds[0], :] = __np.flipud(mask[-inds[0]:, :])
+
+    return mask
+    
+
+#######################################################################
