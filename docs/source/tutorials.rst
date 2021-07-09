@@ -15,3 +15,4 @@ A set of examples subdivided in different fields, such as ray tracing, wave prop
    notebooks/Tutorial 05 - Processing seismic data
    notebooks/Tutorial 06 - Acoustic Wave Propagation
    notebooks/Tutorial 07 - Elastic Wave Propagation
+   notebooks/Tutorial 08 - f-k Filtering
