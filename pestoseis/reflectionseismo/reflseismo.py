@@ -461,7 +461,7 @@ def _tracepoly(fig) :
 
 #######################################################################
 
-def plot_fk_spectrum(seisdat_fk, ylim=None, interactive=True):
+def plot_fk_spectrum(seisdat_fk, dt, dx, ylim=None, interactive=True):
     """
     Plots the frequency-wavenumber spectrum of the seismic traces.  Data
     must already be in frequency-wavenumber domain.
@@ -489,15 +489,22 @@ def plot_fk_spectrum(seisdat_fk, ylim=None, interactive=True):
     ax.imshow(
         __np.abs(seisdat_fk).T, 
         aspect="auto", 
-        cmap="gray_r", 
+        cmap="gray_r",
         origin="lower", 
-        vmax=2.5e-12
     )
+
+    freqs = np.fft.fftshift(np.fft.fftfreq(seisdat_fk.shape[1], d=dt))
+    __plt.yticks(np.arange(0, seisdat_fk.shape[1], 25), np.round(freqs[::25], 0))
+
+    ks = np.fft.fftshift(np.fft.fftfreq(seisdat_fk.shape[0], d=dx))
+    __plt.xticks(np.arange(0, seisdat_fk.shape[0], 25), np.round(ks[::25], 3))
+
 
     if ylim is None:
         ylim = 0.1 * seisdat_fk.shape[1]
     __plt.ylim([seisdat_fk.shape[1]/2, seisdat_fk.shape[1]/2 + ylim])
 
+    ax.set_title("Frequency-Wavenumber Spectrum")
     ax.set_xlabel("Wavenumber [1/m]")
     ax.set_ylabel("Frequency [Hz]")
 
