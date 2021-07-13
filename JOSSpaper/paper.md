@@ -22,20 +22,20 @@ authors:
 affiliations:
  - name: Institute of Geophysics, ETH Zurich, Switzerland
    index: 1
-date: 28 June 2021
+date: 13 July 2021
 bibliography: paper.bib
 
 ---
 
 # Summary
-`PestoSeis` is a Python package aiming at educational seismology. It contains functions to solve two-dimensional seismic problems in terms of traveletimes, rays and acoustic and elastic wave propagation. Moreover, a set of functions performing basic seismic processing for exploration geophysics is provided. The entire package is written in the Python language to allow users to explore the code for understanding the numerical algorithms and to minimize dependencies and simplify the installation process. A set of illustrative examples covering all included algorithms is provided.
+`PestoSeis` is a Python package aiming at educational seismology. It contains functions to solve two-dimensional seismic problems in terms of traveltimes, rays and acoustic and elastic wave propagation. Moreover, a set of functions performing basic seismic processing for exploration geophysics is provided. The entire package is written in the Python language to allow users to explore the code for understanding the numerical algorithms and to minimize dependencies and simplify the installation process. A set of illustrative examples covering all included algorithms is provided.
 
 
 # Statement of Need
 
-`PestoSeis` is a numerical laboratory to learn about seismology, written in the Python language. One of the design goals is simplicity and easiness of use. It contains a set of functions related to different aspects of seismology, ranging from simple straight rays computations to a full-waveform elastic solver for two-dimensional (2-D) problems. It thus collects several routines under a single package allowing the user to explore different topics in seismology with an hands-on approach. Moreover, a complete set of examples illustrating the functionality of the code is provided, with the double aim of illustrating some seismological problems and how to utilize the code.
+`PestoSeis` is a numerical laboratory to learn about seismology, written in the Python language. One of the design goals is simplicity and easiness of use. It contains a set of functions related to different aspects of seismology, ranging from simple straight ray computations to a full-waveform elastic solver for two-dimensional (2-D) problems. It thus collects several routines under a single package allowing the user to explore different topics in seismology with a hands-on approach. Moreover, a complete set of examples demonstrating the functionality of the code is provided, with the double aim of illustrating some seismological problems and how to utilize the code.
 
-The entire code is written in Python to avoid the need of linking to a low-level languages and allow the user to directly explore the code in order to understand how the algorithms work. Moreover, the depency on other packages is kept to the minimum to simplify the installation process and, again, understanding of the source code from the user perspective.
+The entire code is written in Python to avoid the need of linking to a low-level language and to allow the user to directly explore the code in order to understand how the algorithms work. Moreover, the depency on other packages is kept to the minimum to simplify the installation process and, again, understanding of the source code from the user perspective.
 `PestoSeis` can thus be used, for instance, in a course on seismology, where a set of exercises can be designed to help understanding certain topics in a practical way, allowing the students to calculate results that could not be obtained by hand calculations.
 
 `PestoSeis` addresses the following set of 2-D seismic problems:
@@ -47,7 +47,38 @@ The entire code is written in Python to avoid the need of linking to a low-level
 - performing some basic seismic processing for exploration seismology
 - plotting various input and output data related to the problems above.
 
-This package allows anybody interested in playing around or better understand certain aspects of seismology to do that in a simple yet rigourous way.  
+This package allows anybody interested in playing around or gaining a more profound understanding of certain aspects of seismology to do that in a simple yet rigourous way. 
+
+# Package Content
+
+Logically, the `PestoSeis` is split into tree categories:
+
+1. Traveltimes and rays using `ttimerays`
+2. Seismic wave propagation using `seismicwaves2D`
+3. Seismic processing using `to be added`.
+
+Each one of these categories considers a specific use case and provides a variety of functions tailored to solve problems within the considered application. 
+
+## Traveltimes and rays
+One of the fundamental concepts in seismology is traveltime compitation using ray theory. The functions provided in `ttimerays` allow the user to compute rays and traveltimes for a 2D velocity model, which is discretized using a grid structure. The computed traveltimes can then be used to set up a tomographic problem, which can then be solved with a simple linear inversion under Gaussian assumptions (least squares approach) using `pestoseis.ttimerays.lininv()`. 
+
+## Seismic wave propagation
+
+`PestoSeis` provides code to compute wave propagation in 2D for: 
+2. Acoustic mediums solving the acoustic wave equation in 2D;
+3. Elsatic mediums solving the elastic wave equation in 2D.
+
+The functions `pestoseis.seismicwaves2d.solveacoustic2D()`, `pestoseis.seismicwaves2d.solveelastic2D()` solve the acoustic and elastic wave equation in 2D using finite differences on a staggered grid in both in space and time. Staggered grids generally allow for a better accuracy with only a small computational overhead. In order to compute wve propagation in either an acoustic or an elastic medium, the user needs to specify the parameters of the grid used to construct the velocity models, the source-receiver geometry and a source time function with dominant frequency. Furthermore, boundary conditions need to be set (`PestoSeis` provides implementation of reflecting boundary conditions, a Gauss taper or perfectly matched layers) with the option to use a free surface. The function returns a seismogram recorded at the receivers as well as a set of snapshots of the wavefield. Additionaly, the functions `pestoseis.seismicwaves2d.animateacousticwaves()` and `pestoseis.seismicwaves2d.animateelasticwaves()` collects the snapshots and saves them to a `.mp4` movie that illustrates the propagation of the seismic waves through the medium at all simulation time steps. The functions provided aim to equip the user with the possibility to quickly set up and visualize small scale 2D simulations.
+
+## Seismic processing
+
+1. Reflection seismology
+2. Data processing & fk-filtering
+
+# Benchmark tests
+
+
+
 
 
 =============================================================
