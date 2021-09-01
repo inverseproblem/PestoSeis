@@ -68,6 +68,8 @@ Each one of these categories considers a specific use case and provides a variet
  
 The functions provided in `ttimerays` allow the user to compute rays and traveltimes for a 2D velocity model, which is discretized on a rectilinear grid constructed from the user input using the function `pestoseis.ttimerays.setupgrid()`. The computed traveltimes can then be used to set up a tomographic problem, which may for instance be solved with a simple linear inversion under Gaussian assumption (least squares approach) using `pestoseis.ttimerays.lininv()`. The set of available functions allow the user to set up and solve a simple 2D tomographic problem, thus they aim to provide a conceptual guide of how travel time tomography is performed in practice. Since the main focus lies on the forward computation of travel times, the set of functions `pestoseis.ttimerays.lininv()` performing the linear inversion is kept on a very basic level on purpose.     
 
+![image](/Users/inesulrich/Documents/PestoSeis/figures/PestoSeis_phantom.png)
+
 ## Seismic wave propagation
 
 `PestoSeis` provides code to compute wave propagation in 2D for: 
