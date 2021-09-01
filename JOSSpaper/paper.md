@@ -60,15 +60,21 @@ Logically, the `PestoSeis` is split into tree categories:
 Each one of these categories considers a specific use case and provides a variety of functions tailored to solve problems within the considered application. 
 
 ## Traveltimes and rays
-One of the fundamental concepts in seismology is traveltime compitation using ray theory. The functions provided in `ttimerays` allow the user to compute rays and traveltimes for a 2D velocity model, which is discretized using a grid structure. The computed traveltimes can then be used to set up a tomographic problem, which can then be solved with a simple linear inversion under Gaussian assumptions (least squares approach) using `pestoseis.ttimerays.lininv()`. 
+
+`PestoSeis` provides code to compute rays in heterogeneous media as:
+1. Bent rays (accurate in the limit of grid cell size);
+2. Straight rays;
+3. Additionaly, in the special case of a horizontally layered medium, the function `pestoseis.ttimerays.tracerayhorlay()` applies Snell's law to compute ray paths, traveltimes and the distance covered by the ray.
+ 
+The functions provided in `ttimerays` allow the user to compute rays and traveltimes for a 2D velocity model, which is discretized on a rectilinear grid constructed from the user input using the function `pestoseis.ttimerays.setupgrid()`. The computed traveltimes can then be used to set up a tomographic problem, which may for instance be solved with a simple linear inversion under Gaussian assumption (least squares approach) using `pestoseis.ttimerays.lininv()`. The set of available functions allow the user to set up and solve a simple 2D tomographic problem, thus they aim to provide a conceptual guide of how travel time tomography is performed in practice. Since the main focus lies on the forward computation of travel times, the set of functions `pestoseis.ttimerays.lininv()` performing the linear inversion is kept on a very basic level on purpose.     
 
 ## Seismic wave propagation
 
 `PestoSeis` provides code to compute wave propagation in 2D for: 
-2. Acoustic mediums solving the acoustic wave equation in 2D;
-3. Elsatic mediums solving the elastic wave equation in 2D.
+1. Acoustic mediums solving the acoustic wave equation in 2D;
+2. Elsatic mediums solving the elastic wave equation in 2D.
 
-The functions `pestoseis.seismicwaves2d.solveacoustic2D()`, `pestoseis.seismicwaves2d.solveelastic2D()` solve the acoustic and elastic wave equation in 2D using finite differences on a staggered grid in both in space and time. Staggered grids generally allow for a better accuracy with only a small computational overhead. In order to compute wve propagation in either an acoustic or an elastic medium, the user needs to specify the parameters of the grid used to construct the velocity models, the source-receiver geometry and a source time function with dominant frequency. Furthermore, boundary conditions need to be set (`PestoSeis` provides implementation of reflecting boundary conditions, a Gauss taper or perfectly matched layers) with the option to use a free surface. The function returns a seismogram recorded at the receivers as well as a set of snapshots of the wavefield. Additionaly, the functions `pestoseis.seismicwaves2d.animateacousticwaves()` and `pestoseis.seismicwaves2d.animateelasticwaves()` collects the snapshots and saves them to a `.mp4` movie that illustrates the propagation of the seismic waves through the medium at all simulation time steps. The functions provided aim to equip the user with the possibility to quickly set up and visualize small scale 2D simulations.
+The functions `pestoseis.seismicwaves2d.solveacoustic2D()`, `pestoseis.seismicwaves2d.solveelastic2D()` solve the acoustic and elastic wave equation in 2D using finite differences on a staggered grid in both space and time. Staggered grids generally allow for a better accuracy with only a small computational overhead. In order to compute wave propagation in either an acoustic or an elastic medium, the user needs to specify the parameters of the grid used to construct the velocity models, the source-receiver geometry and a source time function with dominant frequency. Furthermore, boundary conditions need to be set (`PestoSeis` provides implementation of reflecting boundary conditions, a Gauss taper or perfectly matched layers) with the option to specify a free surface. The function returns a seismogram recorded at the receivers as well as a set of snapshots of the wavefield. Additionaly, the functions `pestoseis.seismicwaves2d.animateacousticwaves()` and `pestoseis.seismicwaves2d.animateelasticwaves()` collects the snapshots and saves them to a `.mp4` movie that illustrates the propagation of the seismic waves through the medium at all simulation time steps. The functions provided aim to equip the user with the possibility to quickly set up and visualize small scale 2D simulations.
 
 ## Seismic processing
 
