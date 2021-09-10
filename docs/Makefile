@@ -19,4 +19,5 @@ help:
 	rm -r source/notebooks
 	mkdir source/notebooks
 	cp -r ../examples/*/*.ipynb source/notebooks
+	cp -r ../examples/*/*.png source/notebooks
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
