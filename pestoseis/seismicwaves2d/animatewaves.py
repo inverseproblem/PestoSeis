@@ -41,7 +41,7 @@ import scipy.signal as sps
 #######################################################################
 # ######################################################################
 
-def animateacousticwaves(inpfile,clipamplitude=0.1,showanim=True) :
+def animateacousticwaves(inpfile,clipamplitude=0.1,showanim=False) :
     """
      Function to 'animate' the results of a 2D acoustic finite difference simulation. It produces (and saves to a file) an .mp4 movie.
 
@@ -131,7 +131,7 @@ def animateacousticwaves(inpfile,clipamplitude=0.1,showanim=True) :
 
 #######################################################################
 
-def animateelasticwaves(inpfile,showwhatela="VxVz",clipamplitude=0.1,showanim=True) :
+def animateelasticwaves(inpfile,showwhatela="VxVz",clipamplitude=0.1,showanim=False) :
     """
      Function to 'animate' the results of a 2D elastic finite difference simulation. It produces (and saves to a file) an .mp4 movie.
 
