@@ -47,14 +47,14 @@ The entire code is written in Python to avoid the need of linking to a low-level
 - performing some basic seismic processing for exploration seismology
 - plotting various input and output data related to the problems above.
 
-This package allows anybody interested in playing around or gaining a more profound understanding of certain aspects of seismology to do that in a simple yet rigourous way. 
+This package allows anybody interested in playing around or gaining a more profound understanding of certain aspects of seismology to do that in a simple yet rigorous way. 
 
 # Package Content
 
 Logically, the `PestoSeis` is split into tree categories:
 
-1. Traveltimes and rays using `ttimerays`
-2. Seismic wave propagation using `seismicwaves2D`
+1. Traveltimes and rays using `ttimerays`;
+2. Seismic wave propagation using `seismicwaves2D`;
 3. Seismic processing using `to be added`.
 
 Each one of these categories considers a specific use case and provides a variety of functions tailored to solve problems within the considered application. 
@@ -62,32 +62,37 @@ Each one of these categories considers a specific use case and provides a variet
 ## Traveltimes and rays
 
 `PestoSeis` provides code to compute rays in heterogeneous media as:
-1. Bent rays (accurate in the limit of grid cell size);
-2. Straight rays;
-3. Additionaly, in the special case of a horizontally layered medium, the function `pestoseis.ttimerays.tracerayhorlay()` applies Snell's law to compute ray paths, traveltimes and the distance covered by the ray.
+
+1. Bent rays using `pestoseis.ttimerays.traceallrays()`;
+2. Straight rays using `pestoseis.ttimerays.traceall_straight_rays()`;
+3. Additionally, in the special case of a horizontally layered medium, the function `pestoseis.ttimerays.tracerayhorlay()` applies Snell's law to compute ray paths, traveltimes and the distance covered by the ray.
  
-The functions provided in `ttimerays` allow the user to compute rays and traveltimes for a 2D velocity model, which is discretized on a rectilinear grid constructed from the user input using the function `pestoseis.ttimerays.setupgrid()`. The computed traveltimes can then be used to set up a tomographic problem, which may for instance be solved with a simple linear inversion under Gaussian assumption (least squares approach) using `pestoseis.ttimerays.lininv()`. The set of available functions allow the user to set up and solve a simple 2D tomographic problem, thus they aim to provide a conceptual guide of how travel time tomography is performed in practice. Since the main focus lies on the forward computation of travel times, the set of functions `pestoseis.ttimerays.lininv()` performing the linear inversion is kept on a very basic level on purpose.     
+The functions provided in `pestoseis.ttimerays` allow the user to compute rays and traveltimes for a 2D velocity model, which is discretized on a rectilinear grid constructed from the user input using the function `pestoseis.ttimerays.setupgrid()`. Figure \ref{ttimes_and_rays} shows an example with computed traveltimes, bent ray paths and straight ray paths through a speed-of-sound model mimicking human breast tissue. The computed traveltimes can then be used to set up a tomographic problem, which may for instance be solved with a simple linear inversion under Gaussian assumption (least squares approach) using `pestoseis.ttimerays.lininv()`. The available functions allow the user to set up and solve a simple 2D tomographic problem, thus they aim at providing a conceptual guide of how travel time tomography is performed in practice. Since the main focus lies on the forward computation of travel times, the set of functions `pestoseis.ttimerays.lininv()` performing the linear inversion is kept on a very basic level on purpose.     
 
-![My image](/Users/inesulrich/Documents/PestoSeis/figures/PestoSeis_phantom.png)
+![Visualization of computed travel times and rays (bent rays and straight rays) using the functions in`pestoseis.ttimerays`. In this example, we consider a numerical breast phantom as used in medical ultrasound to study the ray paths through the medium and subsequently compute the according travel times from an array of sources and receivers surrounding the breast phantom. \label{ttimes_and_rays}](/Users/inesulrich/Documents/PestoSeis/figures/PestoSeis_phantom.png)
 
-**Fig. 1:** Visualization of computed travel times and rays (bent rays and straight rays) using the functions in`pestoseis.ttimerays`. In this example, we consider a numerical breast breast phantom as used in medical ultrasound to study the ray paths through the medium and subsequently compute the according travel times from an array of sources and receivers surrounding the breast phantom. 
+<!-- [image]: /Users/inesulrich/Documents/PestoSeis/figures/PestoSeis_phantom.png "Some fancy title" 
+![Alt text][image] 
+A reference to the [image](#image). -->
+
+<!-- **Fig. 1:** Visualization of computed travel times and rays (bent rays and straight rays) using the functions in`pestoseis.ttimerays`. In this example, we consider a numerical breast phantom as used in medical ultrasound to study the ray paths through the medium and subsequently compute the according travel times from an array of sources and receivers surrounding the breast phantom.  -->
 
 ## Seismic wave propagation
 
-`PestoSeis` provides code to compute wave propagation in 2D for: 
-1. Acoustic mediums solving the acoustic wave equation in 2D;
-2. Elsatic mediums solving the elastic wave equation in 2D.
+`PestoSeis` provides code to compute wave propagation in 2D for:
 
-The functions `pestoseis.seismicwaves2d.solveacoustic2D()`, `pestoseis.seismicwaves2d.solveelastic2D()` solve the acoustic and elastic wave equation in 2D using finite differences on a staggered grid in both space and time. Staggered grids generally allow for a better accuracy with only a small computational overhead. In order to compute wave propagation in either an acoustic or an elastic medium, the user needs to specify the parameters of the grid used to construct the velocity models, the source-receiver geometry and a source time function with dominant frequency. Furthermore, boundary conditions need to be set (`PestoSeis` provides implementation of reflecting boundary conditions, a Gauss taper or perfectly matched layers) with the option to specify a free surface. The function returns a seismogram recorded at the receivers as well as a set of snapshots of the wavefield. Additionaly, the functions `pestoseis.seismicwaves2d.animateacousticwaves()` and `pestoseis.seismicwaves2d.animateelasticwaves()` collects the snapshots and saves them to a `.mp4` movie that illustrates the propagation of the seismic waves through the medium at all simulation time steps. The functions provided aim to equip the user with the possibility to quickly set up and visualize small scale 2D simulations.
+1. Acoustic mediums solving the acoustic wave equation in 2D;
+2. Elastic mediums solving the elastic wave equation in 2D.
+
+The functions `pestoseis.seismicwaves2d.solveacoustic2D()` and `pestoseis.seismicwaves2d.solveelastic2D()` solve the acoustic and elastic wave equation in 2D using finite differences on a staggered grid in both space and time. Staggered grids generally allow for a better accuracy with only a small computational overhead. In order to compute wave propagation in either an acoustic or an elastic medium, the user needs to specify the parameters of the grid used to construct the velocity models, the source-receiver geometry and a source time function with dominant frequency. Furthermore, boundary conditions need to be set (`PestoSeis` provides implementation of reflecting boundary conditions, a Gauss taper or perfectly matched layers) with the option to specify a free surface. The function returns a seismogram recorded at the receivers as well as a set of snapshots of the wavefield. Additionally, the functions `pestoseis.seismicwaves2d.animateacousticwaves()` and `pestoseis.seismicwaves2d.animateelasticwaves()` collects the snapshots and saves them to a `.mp4` movie that illustrates the propagation of the seismic waves through the medium at all simulation time steps. The functions provided aim to equip the user with the possibility to quickly set up and visualize small scale 2D simulations.
 
 ## Seismic processing
  
-`PestoSeis` provides some basic functionality to process seismic data. Again, the main focus of the provided functions is to equip the user with some fast and simple tools to experiment with common practice methods such as arranging the data in different shot gathers, enhancing the amplitude and performing a normal moveout correction. 
+`PestoSeis` provides code to set up and perform simple, small-scale seismic reflection experiments and to process the resulting data with common practice methods such as for instance arranging the data in shot gathers, generating a wiggle plot of the shot gathers, normal moveout correction, correcting for geometrical spreading or applying Automatic Gain Control to a shot gather. Furthermore, some functionalities to process the data in the wavenumber-frequency domain are provided as well. All functions concerned with generating and processing seismic reflection data are part of `pestoseis.reflectionseismo`. Again, the main focus of the provided functions is to equip the user with some fast and simple tools to get familiar and experiment with common practice processing methods. 
 
-1. Reflection seismology
-2. Data processing & fk-filtering
+## Tutorials
 
-# Benchmark tests
+There exist a number of tutorials that provide examples on how to use the functions within `PestoSeis`. These tutorials showcase different numerical scenarios and can be used to get started with `PestoSeis`.  
 
 
 
@@ -155,12 +160,12 @@ For a quick reference, the following citation commands can be used:
 
 # Figures
 
-Figures can be included like this:
-![Caption for example figure.\label{fig:example}](figure.png)
+<!-- Figures can be included like this:
+![Caption for example figure.\label{fig:example}](/Users/inesulrich/Documents/PestoSeis/figures/PestoSeis_phantom.png)
 and referenced from text using \autoref{fig:example}.
 
 Figure sizes can be customized by adding an optional second parameter:
-![Caption for example figure.](figure.png){ width=20% }
+![Caption for example figure.](/Users/inesulrich/Documents/PestoSeis/figures/PestoSeis_phantom.png){ width=20% } -->
 
 # Acknowledgements
 
@@ -168,3 +173,7 @@ We acknowledge contributions from Brigitta Sipocz, Syrtis Major, and Semyeong
 Oh, and support from Kathryn Johnston during the genesis of this project.
 
 # References
+
+
+
+
