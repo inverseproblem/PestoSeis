@@ -12,7 +12,7 @@ A set of examples subdivided in different fields, such as ray tracing, wave prop
    notebooks/Tutorial 02 - Trace rays
    notebooks/Tutorial 03 - Velocity inversion
    notebooks/Tutorial 04 - Medical Ultrasound - Calculate travel times using the USCT setup
-   notebooks/Tutorial 05 - Processing seismic data
-   notebooks/Tutorial 06 - Acoustic Wave Propagation
-   notebooks/Tutorial 07 - Elastic Wave Propagation
-   notebooks/Tutorial 08 - f-k Filtering
+   notebooks/Tutorial 05 - Acoustic Wave Propagation
+   notebooks/Tutorial 06 - Elastic Wave Propagation
+   notebooks/Tutorial 07 - Processing seismic data I
+   notebooks/Tutorial 08 - Processing seismic data II
