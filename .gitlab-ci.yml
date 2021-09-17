@@ -45,6 +45,8 @@ pages:
     - apt-get -yq update
     - apt-get -yq install pandoc
     - pip install ../PestoSeis/
+    # for syntax highliting of html version of jupyter notebooks
+    - conda install -c conda-forge ipython 
     - pip install sphinx sphinx-rtd-theme nbsphinx parso pandoc>=2.11
     - cd docs ; make html
     - mv build/html/ ../public/
