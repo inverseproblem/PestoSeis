@@ -712,7 +712,9 @@ def _traceray(gridpar,recpos,coordsrc, ttime) :
         # if cou>16 :
         #     exit()
         
-        if curptonsrccell or disttosrc<=__NP.sqrt(2.0)*dx :# nearsource :
+        if curptonsrccell or disttosrc<=__NP.sqrt(2.0)*(dx/2.0):# nearsource :
+            #print(curptonsrccell," ",curptonsrccell)
+            #print(__NP.sqrt(2.0)*(dx/2.0)," ",__NP.sqrt(2.0)*(dx/2.0))
             ray['xy'] = __NP.vstack((ray['xy'],coordsrc))
             ijvel= __ijinvelgrid(ray['xy'][-2:,:],gridpar) 
             ray['ij'] = __NP.vstack((ray['ij'],ijvel))

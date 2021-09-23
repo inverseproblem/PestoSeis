@@ -114,7 +114,10 @@ Example::
   gridpar = tr.setupgrid(nx, ny, dh, xinit, yinit)
 
   # define a velocity model
-  velmod = 3.0*np.ones((nx,ny))
+  velmod = np.zeros((nx,ny))
+  for i in range(nx):
+    velmod[i,:] = np.linspace(2.0,6.0,ny)
+ 
   # define the position of sources and receivers, e.g.,
   recs = np.array([[30.4, 22.3],
                    [10.1, 20.0],
@@ -166,9 +169,9 @@ Example::
   import matplotlib.pyplot as pl
 
   # create a 2D grid with 50x30 cells
-  nx,ny = 50,30
+  nx,ny = 100,60
   # size of the cells
-  dh = 5.5
+  dh = 2.5
   # origin of grid axes
   xinit,yinit = 0.0,0.0
 
@@ -176,7 +179,10 @@ Example::
   gridpar = tr.setupgrid(nx, ny, dh, xinit, yinit)
 
   # define a velocity model
-  velmod = 3.0*np.ones((nx,ny))
+  velmod = np.zeros((nx,ny))
+  for i in range(nx):
+    velmod[i,:] = np.linspace(2.0,6.0,ny)
+  
   # define the position of sources and receivers, e.g.,
   recs = np.array([[30.4, 22.3],
                    [10.1,  20.0],
@@ -185,7 +191,6 @@ Example::
                    [42.4, 15.5]])
   ## calculate all traveltimes
   ttpick,ttime = tr.traveltime(velmod,gridpar,srcs,recs)
-
   
   ## now trace rays (ttime contains a set of 2D traveltime arrays)
   rays = tr.traceallrays(gridpar,srcs,recs,ttime)
@@ -239,7 +244,10 @@ Example::
   gridpar = tr.setupgrid(nx, ny, dh, xinit, yinit)
 
   # define a velocity model
-  velmod = 3.0*np.ones((nx,ny))
+  velmod = np.zeros((nx,ny))
+  for i in range(nx):
+    velmod[i,:] = np.linspace(2.0,6.0,ny)
+
   # define the position of sources and receivers, e.g.,
   recs = np.array([[30.4, 22.3],
                    [10.1,  20.0],
@@ -331,7 +339,7 @@ This can be condensed to matrix vector notation by introducing the forward model
 
 where :math:`\mathbf{d}_{\text{obs}}` is the vector of observed traveltimes from every source to every receiver and :math:`\mathbf{m}` is the model vector containing the slowness map that is supposed to be inferred in the inversion.
 
-After calculating the rays using :func:`pestoseis.ttimerays.traceallrays` the tomography matrix :math:`\mathbf{G}` can be built subsequently using :func:`pestoseis.ttimerays.buildtomomat`. This kind of inversion is quite primitive and therefore often unstable. The model that fits the data best is the one that minimizes the *least-squares misfit functional*
+After calculating the rays using :func:`pestoseis.ttimerays.traceallrays` the tomography matrix :math:`\mathbf{G}` can be built subsequently using :func:`pestoseis.ttimerays.buildtomomat`. This kind of inversion can be unstable. The model that fits the data best is the one that minimizes the *least-squares misfit functional*
 
 .. math::
 
@@ -356,7 +364,7 @@ and the center of posterior Gaussian (the mean model) is
    \mathbf{\widetilde{m}}
    = \mathbf{m}_{\rm{prior}}+ \mathbf{\widetilde{C}}_{\rm{M}} \, \mathbf{G}^{\sf{T}} \, \mathbf{C}^{-1}_{\rm{D}} \left(\mathbf{d}_{\rm{obs}} - \mathbf{G} \mathbf{m}_{\rm{prior}} \right) .
 
-Example::
+The functions provided for performing a tomographic inversion can be used as following. For a complete example see the relevant Jupyter notebook in the Tutorials section. ::
 
   [...]
 
