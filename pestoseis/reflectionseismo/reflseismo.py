@@ -32,7 +32,7 @@ Functions to generate and process seismic reflection data to mimic an
 import numpy as __np
 import matplotlib.pyplot as __plt
 from scipy.interpolate import CubicSpline as __CubicSpline
-from skimage.draw import polygon
+#from skimage.draw import polygon
 from scipy.ndimage import gaussian_filter
 
 #######################################################################
