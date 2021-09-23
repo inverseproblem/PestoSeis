@@ -993,7 +993,9 @@ def plotttimemod(gridpar,ttime) :
                     gridpar['yttmax']+gridpar['dh']/2.0,gridpar['yttmin']-gridpar['dh']/2.0 ]
     __PL.imshow(ttime.T,interpolation='nearest',extent=extent_ttime,
               origin='upper',cmap=__PL.cm.rainbow,aspect='auto')
-    __PL.colorbar()
+    cb=__PL.colorbar()
+
+    __PL.cb.set_label('traveltime')
     #__PL.gca().set_aspect('equal')
     return
 

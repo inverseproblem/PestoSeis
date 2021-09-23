@@ -21,13 +21,8 @@ See :func:`pestoseis.ttimerays.setupgrid` for how to create the *dictionary* hol
 
 Example::
   
-  import sys
-  # add location of ttimerays package to path
-  sys.path.append('pyteachseismo/')
-  import pestoseis.ttimerays as TR
-  # import the plotting library
-  import matplotlib.pyplot as PL
-
+  import pestoseis.ttimerays as tr
+ 
   # create a 2D grid with 50x30 cells
   nx,ny = 50,30
   # size of the cells
@@ -36,7 +31,7 @@ Example::
   xinit,yinit = 0.0,0.0
 
   # create the dictionary containing the grid parameters
-  gridpar = TR.setupgrid(nx, ny, dh, xinit, yinit)
+  gridpar = tr.setupgrid(nx, ny, dh, xinit, yinit)
 
 
 ==================
@@ -54,12 +49,9 @@ name to get the docstring):
 
 Example of plotting the grid::
 
-  import sys
-  # add location of ttimerays package to path
-  sys.path.append('pyteachseismo/')
-  import pestoseis.ttimerays as TR
+  import pestoseis.ttimerays as tr
   # import the plotting library
-  import matplotlib.pyplot as PL
+  import matplotlib.pyplot as pl
 
   # create a 2D grid with 50x30 cells
   nx,ny = 50,30
@@ -69,18 +61,20 @@ Example of plotting the grid::
   xinit,yinit = 0.0,0.0
 
   # create the dictionary containing the grid parameters
-  gridpar = TR.setupgrid(nx, ny, dh, xinit, yinit)
+  gridpar = tr.setupgrid(nx, ny, dh, xinit, yinit)
   
   # plot the grid
-  PL.figure()
-  TR.plotgrid(gridpar)
-  PL.show()
+  pl.figure()
+  tr.plotgrid(gridpar)
+  pl.show()
 
 which produces the following image
 
 .. figure::  images/gridpl.png
    :align:   center
    :width: 400px
+
+Other examples are provided in the following sections.
 
 
 ==========================
@@ -93,7 +87,7 @@ One possible way to model wave propagation in a medium is to assume that waves c
 
    t_i=\int_{\Gamma_i(s(\mathbf{x}))}s(\mathbf{x}(l))dl,
     
-where :math:`\mathbf{x}=[x,y]^{\text{T}}` in :math:`\mathbb{R}^2` and :math:`s=s(\mathbf{x})` is the slowness map of the medium and is related to the speed of sound by :math:`s(\mathbf{x})=\frac{1}{c(\mathbf{x})}`, :math:`dl` is an infinitesimal line segment on the path and :math:`\mathbf{x(}l)` is the parametrization of the spatial variable in terms of :math:`l`. To solve this line integral is difficult since it is non-linear in the ray path, which means that the path taken by the ray itself depends on the velocity structure of the medium, which is unknown in realistic experiemnts. One way to circumvent the explicit need to find ray paths to compute travel times is to decribe the propagation of wavefronts through a medium in 2D with the eikonal equation
+where :math:`\mathbf{x}=[x,y]^{\text{T}}` in :math:`\mathbb{R}^2` and :math:`s=s(\mathbf{x})` is the slowness map of the medium and is related to velocity by :math:`s(\mathbf{x})=\frac{1}{c(\mathbf{x})}`, :math:`dl` is an infinitesimal line segment on the path and :math:`\mathbf{x(}l)` is the parametrization of the spatial variable in terms of :math:`l`. To solve this line integral is difficult since it is non-linear in the ray path, which means that the path taken by the ray itself depends on the velocity structure of the medium, which is unknown in realistic experiments. One way to circumvent the explicit need to find ray paths to compute travel times is to decribe the propagation of wavefronts through a medium in 2D with the eikonal equation
 
 .. math::
    
@@ -103,18 +97,55 @@ where :math:`t(\mathbf{x})` is the traveltime of the wavefront. Note that due to
 
 Example::
 
-  [...]
-  # define a grid
-  [...]
+  # import the traveltime-rays sub-module
+  import pestoseis.ttimerays as tr
+  import numpy as np
+  # import the plotting library
+  import matplotlib.pyplot as pl
+
+  # create a 2D grid with 50x30 cells
+  nx,ny = 50,30
+  # size of the cells
+  dh = 5.5
+  # origin of grid axes
+  xinit,yinit = 0.0,0.0
+
+  # create the dictionary containing the grid parameters
+  gridpar = tr.setupgrid(nx, ny, dh, xinit, yinit)
+
   # define a velocity model
-  velmod = 3.0*ones(nx,ny)
+  velmod = 3.0*np.ones((nx,ny))
   # define the position of sources and receivers, e.g.,
-  recs = NP.array([[30.4, 22.3],
-                   [12.4,  9.5]])
-  srcs = NP.array([[ 3.4,  2.3],
+  recs = np.array([[30.4, 22.3],
+                   [10.1, 20.0],
+		   [12.4,  9.5]])
+  srcs = np.array([[ 3.4,  2.3],
                    [42.4, 15.5]])
   ## calculate all traveltimes
-  ttpick,ttime = TR.traveltime(velmod,gridpar,sources,receivers)
+  ttpick,ttime = tr.traveltime(velmod,gridpar,srcs,recs)
+
+``ttpick`` contains an array whose elements are the traveltimes at receivers for each source. In this example we have two sources, hence ``ttpick`` has two elements: each of them contains an array with three elements representing the traveltime for each receiver with respect to the source. Similarly, ``ttime`` is an array of arrays. In this example we have three sources, so ttime contains three arrays where each of them holds the traveltimes at all grid nodes (for the entire model) for one of the sources.
+
+To plot the velocity model one can use the function :func:`pestoseis.ttimerays.plotvelmod`::
+
+  pl.figure()
+  tr.plotvelmod(gridpar,velmod)
+  pl.show()
+
+.. figure::  images/velmod1.png
+   :align:   center
+   :width: 400px 
+
+To plot the resulting traveltimes for a selected source (source #1 in this example), one can use the function :func:`pestoseis.ttimerays.plotttimemod`::
+
+  pl.figure()
+  tr.plotttimemod(gridpar,ttime[1])
+  pl.show()
+
+.. figure::  images/traveltimes1.png
+   :align:   center
+   :width: 400px 
+
 
 ==================
 Rays
@@ -128,13 +159,49 @@ Even though solving the eikonal equation as previously describes results in trav
 
 Example::
 
-  [...]
-  ## compute traveltimes
-  ttpick,ttime = TR.traveltime(velmod,gridpar,sources,receivers)
+  # import the traveltime-rays sub-module
+  import pestoseis.ttimerays as tr
+  import numpy as np
+  # import the plotting library
+  import matplotlib.pyplot as pl
+
+  # create a 2D grid with 50x30 cells
+  nx,ny = 50,30
+  # size of the cells
+  dh = 5.5
+  # origin of grid axes
+  xinit,yinit = 0.0,0.0
+
+  # create the dictionary containing the grid parameters
+  gridpar = tr.setupgrid(nx, ny, dh, xinit, yinit)
+
+  # define a velocity model
+  velmod = 3.0*np.ones((nx,ny))
+  # define the position of sources and receivers, e.g.,
+  recs = np.array([[30.4, 22.3],
+                   [10.1,  20.0],
+		   [12.4,  9.5]])
+  srcs = np.array([[ 3.4,  2.3],
+                   [42.4, 15.5]])
+  ## calculate all traveltimes
+  ttpick,ttime = tr.traveltime(velmod,gridpar,srcs,recs)
+
+  
   ## now trace rays (ttime contains a set of 2D traveltime arrays)
-  rays = TR.traceallrays(gridpar,sources,receivers,ttime)
+  rays = tr.traceallrays(gridpar,srcs,recs,ttime)
 
 The computed rays take ray bending in a heterogeneous media into account (in the limit of the grid cell size). 
+The output ``rays`` is an array of objects where the number of objects corresponds to the number of receivers. Each object is in turn an array with as many elements as the number of sources. Each of this elements contains all the information relative to a single ray: the coordinates of the points of the ray, the indices of which cells it crosses and the length of the segments in such cells.
+
+The function :func:`pestoseis.plotrays` ` is used to visualize the results:::
+
+  pl.figure()
+  tr.plotrays(srcs,recs,rays)
+  pl.show()
+
+.. figure::  images/rays1.png
+   :align:   center
+   :width: 400px 
 
 -------------------------------------------
 Trace *straight* rays
@@ -155,10 +222,47 @@ where :math:`l_{ij}` is the segment of ray :math:`i` in cell :math:`j` and :math
 
 Example::
 
-  [...]
-  ## now trace straight rays
-  rays = TR.traceall_straight_rays(gridpar,sources,receivers)
+  # import the traveltime-rays sub-module
+  import pestoseis.ttimerays as tr
+  import numpy as np
+  # import the plotting library
+  import matplotlib.pyplot as pl
 
+  # create a 2D grid with 50x30 cells
+  nx,ny = 50,30
+  # size of the cells
+  dh = 5.5
+  # origin of grid axes
+  xinit,yinit = 0.0,0.0
+
+  # create the dictionary containing the grid parameters
+  gridpar = tr.setupgrid(nx, ny, dh, xinit, yinit)
+
+  # define a velocity model
+  velmod = 3.0*np.ones((nx,ny))
+  # define the position of sources and receivers, e.g.,
+  recs = np.array([[30.4, 22.3],
+                   [10.1,  20.0],
+		   [12.4,  9.5]])
+  srcs = np.array([[ 3.4,  2.3],
+                   [42.4, 15.5]])
+		   
+  ## now trace straight rays
+  rays = tr.traceall_straight_rays(gridpar,srcs,recs)
+
+  
+The output ``rays`` has the same structure than the output of :func:`pestoseis.ttimerays.traceallrays`: see above for a description. 
+The function :func:`pestoseis.plotrays` ` is used to visualize the results:::
+
+  pl.figure()
+  tr.plotrays(srcs,recs,rays)
+  pl.show()
+
+  
+.. figure::  images/straightrays1.png
+   :align:   center
+   :width: 400px
+	   
 -----------------------------------------------
 Trace rays in a *horizontally layered* medium
 -----------------------------------------------
@@ -173,22 +277,33 @@ As an input, the angle *theta* being the take off angle, measured anti-clockwise
 
 Example::
 
-  [...]
-  import numpy as NP
+  import pestoseis.ttimerays as tr
+  import numpy as np
   # number of layers
   Nlay = 120
   # depth of layers -- includes both top and bottom (Nlay+1)
-  laydepth = NP.linspace(0.0,2000.0,Nlay+1)[1:]
+  laydepth = np.linspace(0.0,2000.0,Nlay+1)[1:]
   # velocity
-  vp = NP.linspace(2000.0,3000.0,Nlay)
+  vel = np.linspace(2000.0,3000.0,Nlay)
   # origin of ray
-  xystart = NP.array([0.0, 0.0])
+  xystart = np.array([0.0, 0.0])
   # take off angle
   takeoffangle = 45.0
 
   # trace a single ray
-  TR.tracerayhorlay(laydep, vel, xystart, takeoffangle)
+  raypath,tt,dist = tr.tracerayhorlay(laydepth, vel, xystart, takeoffangle)
 
+
+To show the ray path a simple plot can be created:::
+
+  pl.figure()
+  pl.plot(raypath[:,0],raypath[:,1],'.-')
+  pl.gca().invert_yaxis()
+  pl.show()
+
+.. figure::  images/horrays1.png
+   :align:   center
+   :width: 500px
 
 -----------------
 Ray tomography
@@ -246,11 +361,11 @@ Example::
   [...]
 
   # trace rays
-  rays = TR.traceallrays(gridpar,sources,receivers,bkgttimegrd)
+  rays = tr.traceallrays(gridpar,sources,receivers,bkgttimegrd)
   # build the tomography matrix
-  tomomat,residualsvector = TR.buildtomomat(gridpar, rays, residuals)
+  tomomat,residualsvector = tr.buildtomomat(gridpar, rays, residuals)
 
   # Perform the actual inversion using a "least-squares" approach
-  postm,postC_m = TR.lininv(tomomat,cov_m,cov_d,mprior,residualsvector)
+  postm,postC_m = tr.lininv(tomomat,cov_m,cov_d,mprior,residualsvector)
 
 
