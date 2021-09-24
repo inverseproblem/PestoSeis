@@ -32,7 +32,6 @@ Functions to generate and process seismic reflection data to mimic an
 import numpy as __np
 import matplotlib.pyplot as __plt
 from scipy.interpolate import CubicSpline as __CubicSpline
-#from skimage.draw import polygon
 from scipy.ndimage import gaussian_filter
 
 #######################################################################
@@ -392,6 +391,7 @@ def transform_fk_to_tx(seisdat):
 #######################################################################
 
 import numpy as np
+from matplotlib.path import Path as PolyPath
 class _Canvas:
     def __init__(self, ax):
         """
@@ -542,12 +542,13 @@ def mask_from_polygon(img, poly, smooth=True, smoothing_strength=2.5, invert=Fal
         )
 
     # Create the mask from the polygon
-    mask = __np.ones_like(img, dtype=float)
-    rr, cc = polygon(poly[:, 0], poly[:, 1])
-    mask[rr, cc] = 0
+    mask = np.invert(_pts_inside_poly(img, poly))
 
+    # Invert selection if specified
     if invert:
         mask = __np.invert(mask)
+
+    mask = np.array(mask, dtype=float)
 
     # Smooth the edges of the mask
     if smooth:
@@ -558,7 +559,23 @@ def mask_from_polygon(img, poly, smooth=True, smoothing_strength=2.5, invert=Fal
     mask[-inds[0]:, :inds[1]] = __np.fliplr(mask[-inds[0]:, -inds[1]:])
     mask[:inds[0], :] = __np.flipud(mask[-inds[0]:, :])
 
-    return mask
+    return mask.T
     
+
+#######################################################################
+
+def _pts_inside_poly(img, poly):
+    n = img.shape
+
+    x, y = np.meshgrid(np.arange(n[0]), np.arange(n[1]))
+    x, y = x.flatten(), y.flatten()
+
+    pts = np.vstack((x, y)).T
+
+    path = PolyPath(poly)
+    grid = path.contains_points(pts)
+    grid = grid.reshape((n[1], n[0]))
+
+    return grid
 
 #######################################################################
