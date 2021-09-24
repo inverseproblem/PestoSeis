@@ -125,6 +125,8 @@ html_static_path = ['_static']
 #
 # html_sidebars = {}
 
+# Give link to download the source
+html_sourcelink_suffix = ''
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
@@ -207,3 +209,12 @@ epub_exclude_files = ['search.html']
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
+
+# -- Options for nbspinx output ----------------------------------------------
+
+# Download link for notebooks
+nbsphinx_prolog = """
+{% set docname = env.doc2path(env.docname, base=True).replace(" ", "%20") %}
+
+`Download This Notebook <{{ docname }}>`_
+"""
