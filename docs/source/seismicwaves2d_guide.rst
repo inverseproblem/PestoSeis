@@ -25,6 +25,10 @@ From this relationship, some simplified expressions for specific cases can be de
 Acoustic wave equation in 2D
 =============================================
 
+.. figure:: images/acouwavefield1.png
+   :align: center
+   :width: 750px
+	   
 We model acoustic wave propagation through a medium by relating the time and space dependent pressure wavefield :math:`p(\mathbf{x},t)` to some external force :math:`f(\mathbf{x},t)` via the constant density acoustic wave equation. Therefore, we assume a constant density and a vanishing :math:`\mu` and obtain
 
 .. math:: 
@@ -69,6 +73,8 @@ The intuitive meaning of this equation is that the pressure at each location in 
    :width: 400px
 
 Thus, this allows us to get the pressure values for coordinates :math:`i` and :math:`j` for the next time step :math:`n+1` (ie. so that we can progress the simulation forward in time).
+
+See the relevant Tutorial on acoustic waves for how to set up an acoustic simulation :ref:`Tutorial-05---Acoustic-Wave-Propagation`.
 
 =============================================
 Elastic wave equation in 2D
@@ -144,6 +150,8 @@ Similar to the stencil for the velocity updates, the fourth-order accurate stenc
    :width: 650px
 
 Note that the source :math:`f` is injected differently depending on whether a moment tensor source or a force source is considered.  Force sources are added to the updated velocity values whereas the components of the moment tensor source are added to the updated stresses.
+
+See the relevant Tutorial on elastic waves for how to set up an elastic simulation.
 
 =============================================
 Boundary conditions
