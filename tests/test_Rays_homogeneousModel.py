@@ -64,6 +64,9 @@ class TestTraveltime(unittest.TestCase):
             ref_rays_ij[i,:] = ref_rays[0][0]["ij"]
             ref_rays_segment_len[i,:] = ref_rays[0][0]["segment_len"]
 
+        atol=1e-03
+        rtol=1e-05
+        
         if np.allclose(rays_xy,ref_rays_xy, rtol=rtol, atol=atol) != True:
             print("Test failed. Difference between coordinates of rays too large. Please check the code.")
         if np.allclose(rays_ij,ref_rays_ij, rtol=rtol, atol=atol) != True:
@@ -71,8 +74,6 @@ class TestTraveltime(unittest.TestCase):
         if np.allclose(rays_segment_len,ref_rays_segment_len, rtol=rtol, atol=atol) != True:
             print("Test failed. Difference between segement lengths too large. Please check the code.")
 
-        atol=1e-03
-        rtol=1e-05
         self.assertTrue(np.allclose(rays_xy,ref_rays_xy, rtol=rtol, atol=atol))
         self.assertTrue(np.allclose(rays_ij,ref_rays_ij, rtol=rtol, atol=atol))
         self.assertTrue(np.allclose(rays_segment_len,ref_rays_segment_len, rtol=rtol, atol=atol))
