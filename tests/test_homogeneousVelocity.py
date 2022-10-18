@@ -1,20 +1,20 @@
 #!/usr/bin/env python
 # coding: utf-8
+# %%
 
-# In[4]:
+# %%
 
 
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
 import h5py
-sys.path.append("/Users/inesulrich/Documents/PestoSeis/pestoseis")
-import ttimerays as tr
+import pestoseis.ttimerays as tr
 import time
 import unittest
 
 
-# In[5]:
+# %%
 
 
 class TestTraveltime(unittest.TestCase):
@@ -69,3 +69,5 @@ class TestTraveltime(unittest.TestCase):
 
 
 
+
+# %%
