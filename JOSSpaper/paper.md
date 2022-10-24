@@ -105,7 +105,7 @@ providing a guide of how travel time tomography can be performed in practice.
 
 Figure \ref{ttimes_and_rays} shows an example from the field of medical imaging
 with computed traveltimes, bent ray paths, and straight ray paths through a
-speed-of-sound model mimicking human breast tissue. The computed traveltimes can
+speed-of-sound model mimicking human breast tissue (e.g. [@medicalUS]). The computed traveltimes can
 then be used to set up a tomographic inverse problem which may, for instance, be
 solved with a simple linear inversion under Gaussian assumptions (least squares
 approach).
