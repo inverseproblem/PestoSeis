@@ -40,7 +40,7 @@ def get_version(rel_path):
 # -- Project information -----------------------------------------------------
 
 project = 'PestoSeis'
-copyright = '2021, Andrea Zunino'
+copyright = '2022, Andrea Zunino'
 author = 'Andrea Zunino, Patrick Marty, Ines Elisa Ulrich'
 
 # The short X.Y version

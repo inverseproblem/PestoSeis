@@ -3,7 +3,7 @@
 #
 #    PestoSeis, a numerical laboratory to learn about seismology, written
 #    in the Python language.
-#    Copyright (C) 2021  Andrea Zunino 
+#    Copyright (C) 2022  Andrea Zunino 
 #
 #
 #    This program is free software: you can redistribute it and/or modify
