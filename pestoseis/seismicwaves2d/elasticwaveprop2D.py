@@ -126,10 +126,11 @@ def solveelastic2D(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos, saveh5
     if saveh5:
         ## save stuff
         hf = h5.File(outfileh5,"w")
+        hf["seism"] = receiv
         if inpar["savesnapshot"]==True :
             hf["vx"] = vxzsave[0]
             hf["vz"] = vxzsave[1]
-        hf["snapevery"] = inpar["snapevery"]
+            hf["snapevery"] = inpar["snapevery"]
         hf["seismogrkind"] = inpar["seismogrkind"]
         hf["srctf"] = sourcetf
         hf["dh"] = inpar["dh"]
@@ -707,7 +708,10 @@ def _solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos)
     if inpar["savesnapshot"]==False :
         psave = None
         
-    return receiv,(vxsave,vzsave)
+    if (inpar["savesnapshot"]==True):
+        return receiv,(vxsave,vzsave)
+    else:
+        return receiv, ()
 
 
 #############################################################################

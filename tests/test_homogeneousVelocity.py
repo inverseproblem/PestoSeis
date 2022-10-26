@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
+# %%
 
-# In[4]:
+# %%
 
 
 import numpy as np
@@ -13,7 +14,7 @@ import time
 import unittest
 
 
-# In[5]:
+# %%
 
 
 class TestTraveltime(unittest.TestCase):
@@ -68,3 +69,5 @@ class TestTraveltime(unittest.TestCase):
 
 
 
+
+# %%
