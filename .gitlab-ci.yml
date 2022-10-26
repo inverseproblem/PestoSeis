@@ -42,9 +42,11 @@ run:
 
 pages:
   script:
+    - pwd
+    - ls -lht
     - apt-get -yq update
     - apt-get -yq install pandoc
-    - pip install ../PestoSeis/
+    - pip install ./  # installing pestoseis
     # for syntax highliting of html version of jupyter notebooks
     - pip install ipython 
     - pip install sphinx sphinx-rtd-theme nbsphinx parso pandoc>=2.11
