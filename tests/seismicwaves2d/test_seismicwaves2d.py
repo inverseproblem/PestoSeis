@@ -8,6 +8,7 @@ import unittest
 
 # +
 scale = 2
+# scale = 4
 dh = 1.0 / scale
 
 # Domain characteristics
@@ -31,9 +32,15 @@ vp_ref = 3000.0
 vs_ref = 2000.0
 rho_ref = 2500.0
 
+# Gradient material parameters
+vp_ref_range = np.array([1500.0, 3000.0])
+vs_ref_range = np.array([1000.0, 2000.0])
+rho_ref_range = np.array([1250.0, 2500.0])
+
 # Simulation length
 t_sim = 0.075
 dt = 0.00009
+# dt = 0.00005
 nt = int(t_sim / dt)
 t = np.arange(0.0, nt * dt, dt)
 
@@ -219,7 +226,7 @@ def _plot_compare_pestoseis_salvus(
     plt.show()
 
 
-def _acoustic_ref_data(free_surface: bool) -> None:
+def _acoustic_ref_data(free_surface: bool, homogeneous: bool = True) -> None:
     """
     Function used for generating PestoSeis reference data for the acoustic case.
 
@@ -228,13 +235,24 @@ def _acoustic_ref_data(free_surface: bool) -> None:
     must manually move these to the ``pestoseis/tests/reference_solutions``
     directory if they wish to update the previous reference solutions.
     """
-    model = np.ones(domain_size, dtype=float) * vp_ref
+    if homogeneous:
+        model = np.ones(domain_size, dtype=float) * vp_ref
+    else:
+        model = np.zeros(domain_size, dtype=float)
+        for i in range(nx):
+            model[i, :] = np.linspace(vp_ref_range[0], vp_ref_range[1], nz)
 
     inpar["freesurface"] = free_surface
-    if free_surface:
-        suffix = "free_surface"
+    
+    if homogeneous:
+        suffix_1 = "hom"
     else:
-        suffix = "PML"
+        suffix_1 = "grad"
+        
+    if free_surface:
+        suffix_2 = "free_surface"
+    else:
+        suffix_2 = "PML"
 
     stf = pestoseis.seismicwaves2d.sourcetimefuncs.rickersource(t, t0, f0)
 
@@ -245,25 +263,25 @@ def _acoustic_ref_data(free_surface: bool) -> None:
         stf,
         f0,
         receivers,
-        outfileh5=f"pestoseis_acoustic_hom_{suffix}_ref.h5",
+        outfileh5=f"pestoseis_acoustic_{suffix_1}_{suffix_2}_ref.h5",
     )
     _plot_compare_pestoseis_salvus(
-        f"pestoseis_acoustic_hom_{suffix}_ref.h5",
-        f"reference_solutions/salvus_acoustic_hom_{suffix}_ref.h5",
+        f"pestoseis_acoustic_{suffix_1}_{suffix_2}_ref.h5",
+        f"reference_solutions/salvus_acoustic_{suffix_1}_{suffix_2}_ref.h5",
     )
 
-    data = import_pestoseis_data(f"pestoseis_acoustic_hom_{suffix}_ref.h5")
+    data = import_pestoseis_data(f"pestoseis_acoustic_{suffix_1}_{suffix_2}_ref.h5")
     ref = import_salvus_data(
-        f"reference_solutions/salvus_acoustic_hom_{suffix}_ref.h5", interp=True
+        f"reference_solutions/salvus_acoustic_{suffix_1}_{suffix_2}_ref.h5", interp=True
     )
 
     diff = np.linalg.norm(data["waveforms"] - ref["waveforms"])
     print(
-        f"L2 Norm between Salvus and the new PestoSeis reference solution is {diff*100}%\n"
+        f"L2 Norm between Salvus and the new PestoSeis reference solution is {diff*100}\n"
     )
 
 
-def _elastic_ref_data(free_surface: bool) -> None:
+def _elastic_ref_data(free_surface: bool, homogeneous: bool = True) -> None:
     """
     Function used for generating PestoSeis reference data for the elastic case.
 
@@ -272,9 +290,18 @@ def _elastic_ref_data(free_surface: bool) -> None:
     must manually move these to the ``pestoseis/tests/reference_solutions``
     directory if they wish to update the previous reference solutions.
     """
-    vp_model = np.ones(domain_size, dtype=float) * vp_ref
-    vs_model = np.ones(domain_size, dtype=float) * vs_ref
-    rho_model = np.ones(domain_size, dtype=float) * rho_ref
+    if homogeneous:
+        vp_model = np.ones(domain_size, dtype=float) * vp_ref
+        vs_model = np.ones(domain_size, dtype=float) * vs_ref
+        rho_model = np.ones(domain_size, dtype=float) * rho_ref
+    else:
+        vp_model = np.zeros(domain_size, dtype=float)
+        vs_model = np.zeros(domain_size, dtype=float)
+        rho_model = np.zeros(domain_size, dtype=float)
+        for i in range(nx):
+            vp_model[i, :] = np.linspace(vp_ref_range[0], vp_ref_range[1], nz)
+            vs_model[i, :] = np.linspace(vs_ref_range[0], vs_ref_range[1], nz)
+            rho_model[i, :] = np.linspace(rho_ref_range[0], rho_ref_range[1], nz)
 
     lambda_model = rho_model * (vp_model ** 2 - 2.0 * vs_model ** 2)
     mu_model = rho_model * vs_model ** 2
@@ -285,10 +312,16 @@ def _elastic_ref_data(free_surface: bool) -> None:
     rockprops["rho"] = rho_model
 
     inpar["freesurface"] = free_surface
-    if free_surface:
-        suffix = "free_surface"
+
+    if homogeneous:
+        suffix_1 = "hom"
     else:
-        suffix = "PML"
+        suffix_1 = "grad"
+        
+    if free_surface:
+        suffix_2 = "free_surface"
+    else:
+        suffix_2 = "PML"
 
     inpar["sourcetype"] = "MomTensor"
     inpar["momtensor"] = dict(xx=1.0, xz=0.0, zz=1.0)
@@ -305,16 +338,16 @@ def _elastic_ref_data(free_surface: bool) -> None:
         stf,
         f0,
         receivers,
-        outfileh5=f"pestoseis_elastic_hom_{suffix}_ref.h5",
+        outfileh5=f"pestoseis_elastic_{suffix_1}_{suffix_2}_ref.h5",
     )
     _plot_compare_pestoseis_salvus(
-        f"pestoseis_elastic_hom_{suffix}_ref.h5",
-        f"reference_solutions/salvus_elastic_hom_{suffix}_ref.h5",
+        f"pestoseis_elastic_{suffix_1}_{suffix_2}_ref.h5",
+        f"reference_solutions/salvus_elastic_{suffix_1}_{suffix_2}_ref.h5",
     )
 
-    data = import_pestoseis_data(f"pestoseis_elastic_hom_{suffix}_ref.h5")
+    data = import_pestoseis_data(f"pestoseis_elastic_{suffix_1}_{suffix_2}_ref.h5")
     ref = import_salvus_data(
-        f"reference_solutions/salvus_elastic_hom_{suffix}_ref.h5", interp=True
+        f"reference_solutions/salvus_elastic_{suffix_1}_{suffix_2}_ref.h5", interp=True
     )
 
     #     diff = np.linalg.norm(data["waveforms"] - ref["waveforms"])
@@ -323,7 +356,7 @@ def _elastic_ref_data(free_surface: bool) -> None:
         / np.sum(data["waveforms"] ** 2)
     )
     print(
-        f"L2 Norm between Salvus and the new PestoSeis reference solution is {diff*100}%\n"
+        f"L2 Norm between Salvus and the new PestoSeis reference solution is {diff}\n"
     )
 
 
@@ -385,8 +418,61 @@ def _test_acoustic_homogeneous(free_surface: bool, threshold: float = 0.02) -> b
 
     return diff < threshold
 
+def _test_acoustic_gradient(threshold: float = 0.02) -> bool:
+    """
+    Test function for checking if the acoustic wave solver produces the expected
+    results.
 
-def _test_elastic_homogeneous(free_surface: bool, threshold: float = 3e-9) -> bool:
+    Solves a simple forward problem of a wave propagating through a medium
+    with linearly varying material properties with depth.  The result is 
+    compared to a reference solution within the
+    `reference_solutions` directory.  If the difference (measured in an L2
+    sense) is greater than the user-defined threshold, then the test will fail.
+
+    Args:
+        threshold (float, optional): Acceptable error threshold above which the
+        test will fail.
+
+    Returns:
+        (bool): Whether the test passed or failed.
+    """
+    model = np.zeros(domain_size, dtype=float)
+    for i in range(nx):
+        model[i, :] = np.linspace(vp_ref_range[0], vp_ref_range[1], nz)
+
+    inpar["freesurface"] = False
+    suffix = "PML"
+
+    stf = pestoseis.seismicwaves2d.sourcetimefuncs.rickersource(t, t0, f0)
+
+    data, _ = pestoseis.seismicwaves2d.acousticwaveprop2D.solveacoustic2D(
+        inpar,
+        sources,
+        model,
+        stf,
+        f0,
+        receivers,
+        outfileh5=f"pestoseis_acoustic_grad_{suffix}.h5",
+    )
+
+    ref = import_pestoseis_data(
+        f"reference_solutions/pestoseis_acoustic_grad_{suffix}_ref.h5"
+    )["waveforms"]
+
+    # Ensure sampling between the reference data and the simulated data are the same
+    ref_resampled = np.zeros_like(data)
+    for i, trace in enumerate(ref):
+        interp_fun = interpolate.interp1d(np.linspace(0, 1, ref.shape[1]), trace)
+        ref_resampled[i, :] = interp_fun(np.linspace(0, 1, data.shape[1]))
+
+    diff = np.mean(np.linalg.norm(data - ref_resampled, axis=1))
+    print(
+        f"L2 Norm between simulated data and the PestoSeis reference solution is {diff}\n"
+    )
+
+    return diff < threshold
+
+def _test_elastic_homogeneous(free_surface: bool, threshold: float = 5e-9) -> bool:
     """
     Test function for checking if the elastic wave solver produces the expected
     results.
@@ -461,6 +547,81 @@ def _test_elastic_homogeneous(free_surface: bool, threshold: float = 3e-9) -> bo
     return diff < threshold
 
 
+def _test_elastic_gradient(threshold: float = 5e-9) -> bool:
+    """
+    Test function for checking if the elastic wave solver produces the expected
+    results.
+
+    Solves a simple forward problem of a wave propagating through a a medium
+    with linearly varying material properties with depth.  The result is 
+    compared to a reference solution within the
+    `reference_solutions` directory.  If the difference (measured in an L2
+    sense) is greater than the user-defined threshold, then the test will fail.
+
+    Args:
+        threshold (float, optional): Acceptable error threshold above which the
+        test will fail.
+
+    Returns:
+        (bool): Whether the test passed or failed.
+    """
+    vp_model = np.zeros(domain_size, dtype=float)
+    vs_model = np.zeros(domain_size, dtype=float)
+    rho_model = np.zeros(domain_size, dtype=float)
+    for i in range(nx):
+        vp_model[i, :] = np.linspace(vp_ref_range[0], vp_ref_range[1], nz)
+        vs_model[i, :] = np.linspace(vs_ref_range[0], vs_ref_range[1], nz)
+        rho_model[i, :] = np.linspace(rho_ref_range[0], rho_ref_range[1], nz)
+
+    lambda_model = rho_model * (vp_model ** 2 - 2.0 * vs_model ** 2)
+    mu_model = rho_model * vs_model ** 2
+
+    rockprops = {}
+    rockprops["lambda"] = lambda_model
+    rockprops["mu"] = mu_model
+    rockprops["rho"] = rho_model
+
+    inpar["freesurface"] = False
+    suffix = "PML"
+
+    inpar["sourcetype"] = "MomTensor"
+    inpar["momtensor"] = dict(xx=1.0, xz=0.0, zz=1.0)
+    inpar["seismogrkind"] = "velocity"
+
+    stf = pestoseis.seismicwaves2d.sourcetimefuncs.ricker_1st_derivative_source(
+        t, t0, f0
+    )
+
+    data, _ = pestoseis.seismicwaves2d.elasticwaveprop2D.solveelastic2D(
+        inpar,
+        rockprops,
+        sources,
+        stf,
+        f0,
+        receivers,
+        outfileh5=f"pestoseis_elastic_grad_{suffix}.h5",
+    )
+
+    data = np.linalg.norm(data, axis=2)
+
+    ref = import_pestoseis_data(
+        f"reference_solutions/pestoseis_elastic_grad_{suffix}_ref.h5"
+    )["waveforms"]
+
+    # Ensure sampling between the reference data and the simulated data are the same
+    ref_resampled = np.zeros_like(data)
+    for i, trace in enumerate(ref):
+        interp_fun = interpolate.interp1d(np.linspace(0, 1, ref.shape[1]), trace)
+        ref_resampled[i, :] = interp_fun(np.linspace(0, 1, data.shape[1]))
+
+    diff = np.mean(np.linalg.norm(data - ref_resampled, axis=1))
+    print(
+        f"L2 Norm between simulated data and the PestoSeis reference solution is {diff}\n"
+    )
+
+    return diff < threshold
+
+
 class TestAcousticHomogeneous(unittest.TestCase):
     def test_PML(self):
         self.assertTrue(
@@ -471,6 +632,12 @@ class TestAcousticHomogeneous(unittest.TestCase):
     def test_free_surface(self):
         self.assertTrue(
             _test_acoustic_homogeneous(free_surface=True),
+            "Test data does not match the saved reference data.",
+        )
+        
+    def test_PML_gradient(self):
+        self.assertTrue(
+            _test_acoustic_gradient(),
             "Test data does not match the saved reference data.",
         )
 
@@ -487,6 +654,12 @@ class TestElasticHomogeneous(unittest.TestCase):
             _test_elastic_homogeneous(free_surface=True),
             "Test data does not match the saved reference data.",
         )
+        
+    def test_PML_gradient(self):
+        self.assertTrue(
+            _test_elastic_gradient(),
+            "Test data does not match the saved reference data.",
+        )
 
 
 # -
@@ -497,7 +670,14 @@ if __name__ == "__main__":
     # Functions for generating the test data; must be manually enabled to
     # re-compute the reference data
     if False:
+        # Acoustic reference data
         _acoustic_ref_data(free_surface=False)
         _acoustic_ref_data(free_surface=True)
+        _acoustic_ref_data(free_surface=False, homogeneous=False)
+        
+        # Elastic reference data
         _elastic_ref_data(free_surface=False)
         _elastic_ref_data(free_surface=True)
+        _elastic_ref_data(free_surface=False, homogeneous=False)
+
+
