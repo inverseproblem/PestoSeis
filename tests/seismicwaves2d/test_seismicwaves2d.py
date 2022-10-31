@@ -1,5 +1,6 @@
 import numpy as np
 from scipy import interpolate
+from scipy import signal
 import h5py
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
@@ -18,14 +19,7 @@ nz = domain_size[1]
 
 # Sources and receivers
 sources = np.array([50, 50]) * scale
-receivers = np.array(
-    [
-        [20, 20],
-        [75, 25],
-        [70, 70],
-        [30, 65],
-    ]
-)
+receivers = np.array([[20, 20], [75, 25], [70, 70], [30, 65],])
 
 # Material parameters
 vp_ref = 3000.0
@@ -154,10 +148,7 @@ def _plot_compare_pestoseis_salvus(
     for i in range(n_recs):
         ax.append(fig.add_subplot(gs[i, 0]))
         ax[i].plot(
-            salvus_data["t"],
-            salvus_data["waveforms"][i, :],
-            color="k",
-            label="Salvus",
+            salvus_data["t"], salvus_data["waveforms"][i, :], color="k", label="Salvus",
         )
         ax[i].plot(
             pesto_data["t"],
@@ -243,12 +234,12 @@ def _acoustic_ref_data(free_surface: bool, homogeneous: bool = True) -> None:
             model[i, :] = np.linspace(vp_ref_range[0], vp_ref_range[1], nz)
 
     inpar["freesurface"] = free_surface
-    
+
     if homogeneous:
         suffix_1 = "hom"
     else:
         suffix_1 = "grad"
-        
+
     if free_surface:
         suffix_2 = "free_surface"
     else:
@@ -317,7 +308,7 @@ def _elastic_ref_data(free_surface: bool, homogeneous: bool = True) -> None:
         suffix_1 = "hom"
     else:
         suffix_1 = "grad"
-        
+
     if free_surface:
         suffix_2 = "free_surface"
     else:
@@ -418,16 +409,17 @@ def _test_acoustic_homogeneous(free_surface: bool, threshold: float = 0.02) -> b
 
     return diff < threshold
 
+
 def _test_acoustic_gradient(threshold: float = 0.02) -> bool:
     """
     Test function for checking if the acoustic wave solver produces the expected
     results.
 
-    Solves a simple forward problem of a wave propagating through a medium
-    with linearly varying material properties with depth.  The result is 
-    compared to a reference solution within the
-    `reference_solutions` directory.  If the difference (measured in an L2
-    sense) is greater than the user-defined threshold, then the test will fail.
+    Solves a simple forward problem of a wave propagating through a medium with
+    linearly varying material properties with depth.  The result is compared to
+    a reference solution within the `reference_solutions` directory.  If the
+    difference (measured in an L2 sense) is greater than the user-defined
+    threshold, then the test will fail.
 
     Args:
         threshold (float, optional): Acceptable error threshold above which the
@@ -471,6 +463,7 @@ def _test_acoustic_gradient(threshold: float = 0.02) -> bool:
     )
 
     return diff < threshold
+
 
 def _test_elastic_homogeneous(free_surface: bool, threshold: float = 5e-9) -> bool:
     """
@@ -553,10 +546,10 @@ def _test_elastic_gradient(threshold: float = 5e-9) -> bool:
     results.
 
     Solves a simple forward problem of a wave propagating through a a medium
-    with linearly varying material properties with depth.  The result is 
-    compared to a reference solution within the
-    `reference_solutions` directory.  If the difference (measured in an L2
-    sense) is greater than the user-defined threshold, then the test will fail.
+    with linearly varying material properties with depth.  The result is
+    compared to a reference solution within the `reference_solutions` directory.
+    If the difference (measured in an L2 sense) is greater than the user-defined
+    threshold, then the test will fail.
 
     Args:
         threshold (float, optional): Acceptable error threshold above which the
@@ -634,7 +627,7 @@ class TestAcousticHomogeneous(unittest.TestCase):
             _test_acoustic_homogeneous(free_surface=True),
             "Test data does not match the saved reference data.",
         )
-        
+
     def test_PML_gradient(self):
         self.assertTrue(
             _test_acoustic_gradient(),
@@ -654,7 +647,7 @@ class TestElasticHomogeneous(unittest.TestCase):
             _test_elastic_homogeneous(free_surface=True),
             "Test data does not match the saved reference data.",
         )
-        
+
     def test_PML_gradient(self):
         self.assertTrue(
             _test_elastic_gradient(),
@@ -674,10 +667,8 @@ if __name__ == "__main__":
         _acoustic_ref_data(free_surface=False)
         _acoustic_ref_data(free_surface=True)
         _acoustic_ref_data(free_surface=False, homogeneous=False)
-        
+
         # Elastic reference data
         _elastic_ref_data(free_surface=False)
         _elastic_ref_data(free_surface=True)
         _elastic_ref_data(free_surface=False, homogeneous=False)
-
-
