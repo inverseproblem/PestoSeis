@@ -28,12 +28,13 @@ bibliography: PestoSeis.bib
 ---
 
 # Summary
-`PestoSeis` is a Python package is aimed at educational seismology. It contains
+
+`PestoSeis` is a Python package aimed at educational seismology. It contains
 tools to solve two-dimensional seismic problems in terms of traveltimes, rays,
 acoustic and elastic wave propagation, and related plotting functions. Moreover,
 a set of functions performing basic seismic processing for exploration
 geophysics is provided. The entire package is written in the Python language to
-allow users to explore the code to better understand the numerical algorithms
+allow users to explore the code to gain a better understand of the numerical algorithms
 used while simultaneously minimizing third-party dependencies and, thus,
 simplifying the installation process. A set of illustrative examples covering
 all included algorithms are provided.
@@ -42,12 +43,12 @@ all included algorithms are provided.
 # Statement of Need
 
 `PestoSeis` is a numerical laboratory written in the Python language and 
-contains a suite of functionalities which can be used as a learning tool for 
+contains a suite of functionalities which can be used as learning tools for 
 concepts in seismology. One of the primary design goals of `PestoSeis` is simplicity and ease of use. It
 contains a set of functions related to different aspects of seismology, ranging
 from simple straight ray computations to a full-waveform elastic solver for
 two-dimensional (2D) problems. It thus collects several routines within a single
-package allowing the user to explore different topics in seismology with a
+package allowing the user to explore different topics in seismology using a
 hands-on approach. Moreover, a complete set of examples demonstrating the
 functionalities of the code are provided, with the combined aim of illustrating some
 common seismological applications in addition to demonstrating how to utilize 
@@ -71,9 +72,9 @@ set of exercises can be designed to help illustrate how certain principles can b
 - performing some basic seismic processing for exploration seismology;
 - plotting various input and output data related to the aforementioned applications.
 
-This package enables users to enhances their understanding of a variety of
+<!-- This package enables users to enhances their understanding of a variety of
 modeling principles used within seismology using a simple yet comprehensive set
-of tools.
+of tools. -->
 
 # Package Content
 
@@ -99,13 +100,13 @@ submodules are provided.
  
 The functions provided in `pestoseis.ttimerays` allow the user to compute rays
 and traveltimes for a 2D velocity model which is discretized on a rectilinear
-grid constructed from the user input.  The available functions allow the user to
-set up and solve simple 2D tomographic inverse problems, thus they aim at
-providing a guide of how travel time tomography can be performed in practice.
+grid constructed from inputs provided by the user.  The available functions allow the user to
+set up and solve simple 2D tomographic inverse problems and thus aims to
+serve as a guide for how travel time tomography can be performed in practice.
 
 Figure \ref{ttimes_and_rays} shows an example from the field of medical imaging
 with computed traveltimes, bent ray paths, and straight ray paths through a
-speed-of-sound model mimicking human breast tissue (e.g. [@medicalUS]). The computed traveltimes can
+speed-of-sound model mimicking human breast tissue (e.g. @medicalUS). The computed traveltimes can
 then be used to set up a tomographic inverse problem which may, for instance, be
 solved with a simple linear inversion under Gaussian assumptions (least squares
 approach).
@@ -120,7 +121,7 @@ approach).
 1. acoustic media solving the acoustic wave equation;
 2. elastic media solving the elastic wave equation.
 
-![A snapshot of acoustic seismic wave propagation where the wavefield is overlayed on the velocity model. \label{acouwavefield}](figs/acouwavefield1.png)
+![A snapshot of an acoustic seismic wavefield where the wavefield is overlayed on the velocity model. The depicted overthrust model is adapted from @aminzadeh_3-d_1997.\label{acouwavefield}](figs/acouwavefield1.png)
 
 The acoustic and elastic wave equations in 2D are solved using finite
 differences on a staggered grid in both space and time in the
@@ -131,7 +132,8 @@ for better accuracy with a minimal increase in computational overhead.
 In order to compute wave propagation in either an acoustic or an elastic medium, the user
 needs to specify the parameters of the grid used to construct the velocity
 models, the source-receiver geometry, and a source time function with a given dominant
-frequency. Furthermore, the user must select the desired boundary conditions as either reflecting, a Gauss taper (acoustic formulation only), or convolutionary perfectly matched layers [@komatitschUnsplitConvolutionalPerfectly2007]);
+frequency. Furthermore, the user must select the desired boundary conditions as either 
+reflecting, a Gauss taper (acoustic formulation only), or convolutionary perfectly matched layers [@komatitschUnsplitConvolutionalPerfectly2007];
 free surface boundary conditions may also be optionally set at the top of the model. 
 
 The function returns a seismogram recorded
@@ -155,20 +157,15 @@ gather (see figure \ref{geomspragc}). Furthermore, some functionalities which
 can be used for filtering the data in the frequency-wavenumber domain are also
 provided. Similar to the forward modeling tools outlined previously, the main
 focus of these processing functions is to provide the user with rudimentary
-tools which are commonly used in seismology so that they can experiment with common
-practice processing methods. 
+tools which are commonly used in seismology so that they can experiment with
+processing methods which are commonly used in both industry and academia. 
 
 ## Tutorials
 
 Finally, a number of tutorials that provide examples on how to use the functions
 within `PestoSeis` are provided in the form of Jupyter notebooks. These
 tutorials showcase different numerical scenarios and can be used to get started
-with `PestoSeis`.  
-
-
+with `PestoSeis`.
 
 # References
-
-
-
 
