@@ -102,14 +102,16 @@ The functions provided in `pestoseis.ttimerays` allow the user to compute rays
 and traveltimes for a 2D velocity model which is discretized on a rectilinear
 grid constructed from inputs provided by the user.  The available functions allow the user to
 set up and solve simple 2D tomographic inverse problems and thus aims to
-serve as a guide for how travel time tomography can be performed in practice.
+serve as a guide for how travel time tomography can be performed in practice. 
+These kind of calculations are useful not only in the field of Earth sciences but also, for instance, in medical imaging, where traveltimes (time-of-flight in the medical literature) are used to infer the internal structure of parts of the human body [@ulrichDiffuseUltrasoundComputed2022].
+
 
 Figure \ref{ttimes_and_rays} shows an example from the field of medical imaging
 with computed traveltimes, bent ray paths, and straight ray paths through a
-speed-of-sound model mimicking human breast tissue (e.g. @medicalUS). The computed traveltimes can
+speed-of-sound model mimicking human breast tissue (e.g. @ulrichDiffuseUltrasoundComputed2022). The computed traveltimes can
 then be used to set up a tomographic inverse problem which may, for instance, be
 solved with a simple linear inversion under Gaussian assumptions (least squares
-approach).
+approach) [@tarantolaInverseProblemTheory2005a].
 
 ![Visualization of computed travel times and rays (bent rays and straight rays) using the functions in `pestoseis.ttimerays`. In this example, a numerical breast phantom is considered as used in medical ultrasound to study the ray paths through the medium and subsequently compute the according travel times from an array of sources and receivers surrounding the breast phantom. \label{ttimes_and_rays}](figs/tutorial04_results.png)
 
@@ -121,12 +123,12 @@ approach).
 1. acoustic media solving the acoustic wave equation;
 2. elastic media solving the elastic wave equation.
 
-![A snapshot of an acoustic seismic wavefield where the wavefield is overlayed on the velocity model. The depicted overthrust model is adapted from @aminzadeh_3-d_1997.\label{acouwavefield}](figs/acouwavefield1.png)
+![A snapshot of an acoustic seismic wavefield where the wavefield is overlayed on the velocity model. The depicted overthrust model is adapted from @aminzadehSEGEAGE3D1997.\label{acouwavefield}](figs/acouwavefield1.png)
 
 The acoustic and elastic wave equations in 2D are solved using finite
 differences on a staggered grid in both space and time in the
-`pestoseis.seismicwaves2D` submodule [@virieuxPSVWavePropagation1986;
-@komatitschUnsplitConvolutionalPerfectly2007]. Staggered grids generally allow
+`pestoseis.seismicwaves2D` submodule [@bunksMultiscaleSeismicWaveform1995;@virieuxPSVWavePropagation1986;
+@komatitschUnsplitConvolutionalPerfectly2007;@pasalicConvolutionalPerfectlyMatched2010]. Staggered grids generally allow
 for better accuracy with a minimal increase in computational overhead. 
 
 In order to compute wave propagation in either an acoustic or an elastic medium, the user
@@ -149,8 +151,7 @@ ability to quickly set up and visualize small scale 2D simulations.
 
 The submodule `pestoseis.reflectionseismo` provides a series of routines for
 processing the resulting data using a number of methods which are commonly used
-in practice within seismology. Examples of processing routines implemented
-within `PestoSeis` include arranging the data in shot gathers, generating a
+in practice within seismology [@ozSeismicDataAnalysis2001]. Examples of processing routines implemented within `PestoSeis` include arranging the data in shot gathers, generating a
 wiggle plot of the shot gathers, normal moveout (NMO) correction, correcting for
 geometrical spreading, and applying automatic gain control (AGC) to a shot
 gather (see figure \ref{geomspragc}). Furthermore, some functionalities which
