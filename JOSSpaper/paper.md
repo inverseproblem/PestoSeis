@@ -110,7 +110,7 @@ speed-of-sound model mimicking human breast tissue (e.g. @ulrichDiffuseUltrasoun
 The computed traveltimes can
 then be used to set up a tomographic inverse problem which may, for instance, be
 solved with a simple linear inversion under Gaussian assumptions (least squares
-approach) [@tarantolaInverseProblemTheory2005a], as provided by `PestoSeis`.
+approach) [@tarantolaInverseProblemTheory2005c], as provided by `PestoSeis`.
 
 ![Visualization of computed travel times and rays (bent rays and straight rays) using the functions in `pestoseis.ttimerays`. A numerical breast phantom is employed, as often used in medical ultrasound to study the ray paths through the medium. An array of receivers surrounds the breast phantom. The shown ray paths originate from two sources at the left and right sides of the phantom. \label{ttimes_and_rays}](figs/tutorial04_results.png)
 
