@@ -957,7 +957,7 @@ def plotrays(src,rec,rays) :
 
 ############################################################################
 
-def plotvelmod(gridpar,velmod,vmin=None,vmax=None) :
+def plotvelmod(gridpar,velmod,vmin=None,vmax=None,units="",cmap=__PL.cm.rainbow) :
     """
     Plot velocity model as an image.
 
@@ -965,7 +965,8 @@ def plotvelmod(gridpar,velmod,vmin=None,vmax=None) :
        gridpar (dict): grid parameters dictionary (as defined by setupgrid())    
        velmod (ndarray): velocity model
        vmin,vmax (float,float): optional values to clip the colorbar min and max values
-
+       units (str): optional string to specify the units of measurement for velocity
+       cmap (colormap): optional parameter to specify a colormap. Defaults to "rainbow".
     """
     if vmin==None and vmax==None :
         vmin=velmod.min()
@@ -974,9 +975,9 @@ def plotvelmod(gridpar,velmod,vmin=None,vmax=None) :
     extent_vel = [gridpar['xvelmin']-gridpar['dh']/2.0,gridpar['xvelmax']+gridpar['dh']/2.0,
                   gridpar['yvelmax']+gridpar['dh']/2.0,gridpar['yvelmin']-gridpar['dh']/2.0 ]
     __PL.imshow(velmod.T,interpolation='nearest',extent=extent_vel,
-              origin='upper',cmap=__PL.cm.rainbow,aspect='auto',vmin=vmin,vmax=vmax)
+              origin='upper',cmap=cmap,aspect='auto',vmin=vmin,vmax=vmax)
     cb=__PL.colorbar()
-    cb.set_label('velocity')
+    cb.set_label('Velocity '+units)
     #__PL.gca().set_aspect('equal')
     return
 
