@@ -983,14 +983,14 @@ def plotvelmod(gridpar,velmod,vmin=None,vmax=None,units="",cmap=__PL.cm.rainbow)
 
 ############################################################################
 
-def plotttimemod(gridpar,ttime) :
+def plotttimemod(gridpar,ttime,units="") :
     """
     Plot traveltime array as an image.
 
     Args: 
        gridpar (dict): grid parameters dictionary (as defined by setupgrid()) 
        ttime (ndarray): traveltime array
-   
+       units (str): optional string to specify the units of measurement for traveltime
     """
     extent_ttime = [gridpar['xttmin']-gridpar['dh']/2.0,gridpar['xttmax']+gridpar['dh']/2.0,
                     gridpar['yttmax']+gridpar['dh']/2.0,gridpar['yttmin']-gridpar['dh']/2.0 ]
@@ -998,7 +998,7 @@ def plotttimemod(gridpar,ttime) :
               origin='upper',cmap=__PL.cm.rainbow,aspect='auto')
     cb=__PL.colorbar()
 
-    __PL.cb.set_label('traveltime')
+    __PL.cb.set_label('Traveltime '+units)
     #__PL.gca().set_aspect('equal')
     return
 
