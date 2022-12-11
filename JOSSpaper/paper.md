@@ -122,7 +122,7 @@ approach) [@tarantolaInverseProblemTheory2005c], as provided by `PestoSeis`.
 1. acoustic media solving the acoustic wave equation;
 2. elastic media solving the elastic wave equation.
 
-![A snapshot of an acoustic seismic wavefield where the wavefield is overlayed on the velocity model. The source is located near the surface at x=400????????. The wavefield represents the pressure. The depicted overthrust model is adapted from @aminzadehSEGEAGE3D1997.\label{acouwavefield}](figs/acouwavefield1.png)
+![A snapshot of an acoustic seismic wavefield where the wavefield is overlayed on the velocity model. The source is located near the surface at x=400????????. The wavefield represents the pressure distribution at a single instance in time. The depicted overthrust model is adapted from @aminzadehSEGEAGE3D1997.\label{acouwavefield}](figs/acouwavefield1.png)
 
 The acoustic and elastic wave equations in 2D are solved using finite
 differences on a staggered grid in both space and time in the
