@@ -89,35 +89,39 @@ def animateacousticwaves(inpfile,clipamplitude=0.1,showanim=False) :
     nt = srctf.size
     t = np.arange(0.0,dt*nt,dt)
 
-    gs = gridspec.GridSpec(1, 4)
-    gs.update(left=0.05, right=0.99, wspace=0.15,hspace=0.25)
+    fig1 = plt.figure(figsize=(12,5), constrained_layout=True)
 
-    fig1 = plt.figure(figsize=(12,5))
+    gs = gridspec.GridSpec(1, 4, figure=fig1)
+    gs.update(left=0.05, right=0.95, wspace=0.15,hspace=0.25)
 
     sp1 = plt.subplot(gs[0, 0])
-    plt.title("Source time function")
+    plt.title("Source Time Function")
+    plt.xlabel("Time [s]")
+    plt.ylabel("Amplitude")
     sep1 = plt.plot(t,srctf,'k')
     reddot, = plt.plot(0,srctf[0],'or')
 
 
     sp2 = plt.subplot(gs[0, 1:])
-    plt.title("Amplitude scaling factor: {}".format(clipamplitude))
+    plt.title("Amplitude Scaling Factor: {}".format(clipamplitude))
     # sp2 = plt.subplot(122)
     extent = [0.0,dh*(nx-1),dh*(nz-1),0.0]
     vp = plt.imshow(vel[:,:].T,cmap=plt.cm.jet,extent=extent,
-                     interpolation="nearest", alpha=0.5)
-    #srcpos, = plt.plot(  ,'^b')
+                     interpolation="nearest", alpha=0.75)
+
+    plt.xlabel("Horizontal Distance [m]")
+    plt.ylabel("Depth [m]")
+    
+    cbar1 = plt.colorbar(vp, aspect=50)
+    cbar1.set_label("P-Wave Velocity [m/s]")
+
     plt.scatter(recs[:,0],recs[:,1],marker="v",color="k")
     wav = plt.imshow(x[:,:,1].T,vmin=pmin,vmax=pmax,cmap=cmap,extent=extent,
                      interpolation="nearest", animated=True, alpha=0.8)
-    plt.colorbar()
-    #plt.tight_layout()
 
     ###
     ani = animation.FuncAnimation(fig1, updatefig_acou, frames=range(0,N,every), interval=150, blit=False)
 
-    # Writer = animation.writers['ffmpeg']
-    # mywriter = Writer(fps=15, metadata=dict(artist='PestoSeis'), bitrate=1800)
     mywriter = animation.FFMpegWriter()
     ani.save('animation_{}.mp4'.format(kind),dpi=96,writer=mywriter)
 
@@ -238,45 +242,52 @@ def animateelasticwaves(inpfile,showwhatela="VxVz",clipamplitude=0.1,showanim=Fa
     nt = srctf.size
     t = np.arange(0.0,dt*nt,dt)
 
-    gs = gridspec.GridSpec(2, 4)
+    fig1 = plt.figure(figsize=(11,8), constrained_layout=True)
+
+    gs = gridspec.GridSpec(4, 4, figure=fig1)
     gs.update(left=0.05, right=0.99, wspace=0.15,hspace=0.25)
 
-    fig1 = plt.figure(figsize=(11,8))
-
     ## source-time function
-    sp1 = plt.subplot(gs[0, 0])
-    plt.title("Source time function")
+    sp1 = plt.subplot(gs[1:3, 0])
+    plt.title("Source Time Function")
+    plt.xlabel("Time [s]")
+    plt.ylabel("Amplitude")
     sep1 = plt.plot(t,srctf,'k')
     reddot, = plt.plot(0,srctf[0],'or')
 
     ## data1 waves
-    sp2 = plt.subplot(gs[0, 1:])
+    sp2 = plt.subplot(gs[:2, 1:])
     extent = [0.0,dh*(nx-1),dh*(nz-1),0.0]
     prop1 = plt.imshow(rho[:,:].T,cmap=plt.cm.jet,extent=extent,
                      interpolation="nearest", alpha=0.5)
     plt.scatter(recs[:,0],recs[:,1],marker="v",color="k")
-    #plt.scatter(srcs[:,0],srcs[:,1],marker="o",color="k")
     wav1 = plt.imshow(data1[:,:,1].T,vmin=pmin1,vmax=pmax1,cmap=cmap,extent=extent,
                       interpolation="nearest", animated=True, alpha=0.7)
-    plt.colorbar()
+
+    plt.xlabel("Horizontal Distance [m]")
+    plt.ylabel("Depth [m]")
+
+    cbar1 = plt.colorbar(prop1, aspect=50)
+    cbar1.set_label("Density [kg/m^3]")
 
     ## data2 waves
-    sp3 = plt.subplot(gs[1, 1:])
+    sp3 = plt.subplot(gs[2:, 1:])
     extent = [0.0,dh*(nx-1),dh*(nz-1),0.0]
     prop2 = plt.imshow(rho[:,:].T,cmap=plt.cm.jet,extent=extent,
                      interpolation="nearest", alpha=0.5)
     plt.scatter(recs[:,0],recs[:,1],marker="v",color="k")
-    #plt.scatter(srcs[:,0],srcs[:,1],marker="o",color="k")
     wav2 = plt.imshow(data2[:,:,1].T,vmin=pmin2,vmax=pmax2,cmap=cmap,extent=extent,
                       interpolation="nearest", animated=True, alpha=0.7)
-    plt.colorbar()
-    #plt.tight_layout(
+
+    plt.xlabel("Horizontal Distance [m]")
+    plt.ylabel("Depth [m]")
+
+    cbar2 = plt.colorbar(prop2, aspect=50)
+    cbar2.set_label("Density [kg/m^3]")
 
     ###
     ani = animation.FuncAnimation(fig1, updatefig_ela, frames=range(0,N,every), interval=150, blit=False)
 
-    # Writer = animation.writers['ffmpeg']
-    # mywriter = Writer(fps=15, metadata=dict(artist='PestoSeis'), bitrate=1800)
     mywriter = animation.FFMpegWriter()
     ani.save('animation_{}.mp4'.format(kind),dpi=96,writer=mywriter)
 
