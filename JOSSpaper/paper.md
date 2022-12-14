@@ -110,7 +110,7 @@ speed-of-sound model mimicking human breast tissue (e.g. @ulrichDiffuseUltrasoun
 The computed traveltimes can
 then be used to set up a tomographic inverse problem which may, for instance, be
 solved with a simple linear inversion under Gaussian assumptions (least squares
-approach) [@tarantolaInverseProblemTheory2005c], as provided by `PestoSeis`.
+approach) [@tarantolaInverseProblemTheory2005a], as provided by `PestoSeis`.
 
 ![Visualization of computed travel times and rays (bent rays and straight rays) using the functions in `pestoseis.ttimerays`. A numerical breast phantom is employed, as often used in medical ultrasound to study the ray paths through the medium. An array of receivers surrounds the breast phantom. The shown ray paths originate from two sources at the left and right sides of the phantom. \label{ttimes_and_rays}](figs/tutorial04_results.png)
 
@@ -126,15 +126,17 @@ approach) [@tarantolaInverseProblemTheory2005c], as provided by `PestoSeis`.
 
 The acoustic and elastic wave equations in 2D are solved using finite
 differences on a staggered grid in both space and time in the
-`pestoseis.seismicwaves2D` submodule [@bunksMultiscaleSeismicWaveform1995;@virieuxPSVWavePropagation1986]. Staggered grids generally allow
-for better accuracy with a minimal increase in computational overhead. Absorbing boundary conditions are 
-implemented as convolutional perfectly matched layer (C-PML) for both acoustic and elastic formulations [@pasalicConvolutionalPerfectlyMatched2010;@komatitschUnsplitConvolutionalPerfectly2007].
+`pestoseis.seismicwaves2D` submodule [@bunksMultiscaleSeismicWaveform1995;@virieuxPSVWavePropagation1986]. 
+Staggered grids generally allow for better accuracy with a minimal increase in computational overhead. 
+Absorbing boundary conditions are implemented as convolutional perfectly matched layer (C-PML) for both acoustic and elastic 
+formulations [@pasalicConvolutionalPerfectlyMatched2010;@komatitschUnsplitConvolutionalPerfectly2007].
 
 In order to compute wave propagation in either an acoustic or an elastic medium, the user
 needs to specify the parameters of the grid used to construct the velocity
 models, the source-receiver geometry, and a source time function with a given dominant
 frequency. Furthermore, the user must select the desired boundary conditions as either 
-reflecting, a Gauss taper (acoustic formulation only), or convolutionary perfectly matched layers [@komatitschUnsplitConvolutionalPerfectly2007];
+reflecting, a Gauss taper (acoustic formulation only), or convolutionary perfectly matched 
+layers [@komatitschUnsplitConvolutionalPerfectly2007];
 free surface boundary conditions may also be optionally set at the top of the model. 
 
 The function returns a seismogram recorded
@@ -150,7 +152,8 @@ ability to quickly set up and visualize small-scale 2D simulations.
 
 The submodule `pestoseis.reflectionseismo` provides a series of routines for
 processing the resulting data using a number of methods which are commonly used
-in practice within seismology [@ozSeismicDataAnalysis2001]. Examples of processing routines implemented within `PestoSeis` include arranging the data in shot gathers, generating a
+in practice within seismology [@ozSeismicDataAnalysis2001]. Examples of processing routines 
+implemented within `PestoSeis` include arranging the data in shot gathers, generating a
 wiggle plot of the shot gathers, normal moveout (NMO) correction, correcting for
 geometrical spreading, and applying automatic gain control (AGC) to a shot
 gather (see figure \ref{geomspragc}). Furthermore, some functionalities which
