@@ -7,14 +7,17 @@
 Some of the of the functionalities within PestoSeis include:
 
 - Straight-ray solver
+
 ![Straight ray solver](figs/straight_ray.png)
 
 - Bent-ray solver (eikonal equation)
+
 ![Bent ray solver](figs/bent_ray.png)
 
 - Linearized Ray Tomography
 
 -  Acoustic and elastic wave propagation
+
 ![Wave propagation](figs/wavefield.png)
 
 - Basic exploration seismology processing functions
