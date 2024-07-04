@@ -33,16 +33,16 @@ stages:
 #     - pip install tox flake8  # you can also use tox
 #     - tox -e py36,flake8
 
-run:
-  #stage: build
-  script:
-    - python setup.py bdist_wheel
-    # an alternative approach is to install and run:
-    - pip install dist/*
-    # run the command here
-  artifacts:
-    paths:
-      - dist/*.whl
+# run:
+#   #stage: build
+#   script:
+#     - python setup.py bdist_wheel
+#     # an alternative approach is to install and run:
+#     - pip install dist/*
+#     # run the command here
+#   artifacts:
+#     paths:
+#       - dist/*.whl
 
 pages:
   stage: deploy
