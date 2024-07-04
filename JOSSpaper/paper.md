@@ -1,5 +1,5 @@
 ---
-title: 'PestoSeis: A Python package for basic and educational seismology'
+title: 'PestoSeis: A Python package for 2D wave physics and educational seismology'
 tags:
   - Python
   - seismology
@@ -16,8 +16,10 @@ authors:
   - name: Patrick Marty
     affiliation: 1
   - name: Ines Elisa Ulrich
+    orcid: 0000-0003-0444-4998
     affiliation: 1
   - name: Andreas Fichtner
+	orcid: 0000-0003-3090-963X 
     affiliation: 1 
 affiliations:
  - name: Institute of Geophysics, ETH Zurich, Switzerland
@@ -30,7 +32,7 @@ bibliography: PestoSeis.bib
 # Summary
 
 `PestoSeis` is a Python package which contains a collection of solvers and 
-processing tools commonly used in acoustic wave physics.  With a particular
+processing tools commonly used in wave physics.  With a particular
 emphasis on seismological applications, `PestoSeis` contains
 tools to solve two-dimensional seismic problems in terms of traveltimes, rays,
 acoustic and elastic wave propagation, and related plotting functions. Moreover,
