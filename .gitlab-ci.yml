@@ -24,6 +24,9 @@ before_script:
   - virtualenv venv
   - source venv/bin/activate
 
+stages:
+  - deploy
+
 # test:
 #   script:
 #     - python setup.py test
@@ -31,6 +34,7 @@ before_script:
 #     - tox -e py36,flake8
 
 run:
+  stage: build
   script:
     - python setup.py bdist_wheel
     # an alternative approach is to install and run:
@@ -41,6 +45,7 @@ run:
       - dist/*.whl
 
 pages:
+  stage: deploy
   script:
     - pwd
     - ls -lht
@@ -56,4 +61,4 @@ pages:
     paths:
       - public
   only:
-    - master
+    - main
