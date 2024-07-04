@@ -14,6 +14,7 @@ authors:
     orcid: 0000-0002-3415-162X
     affiliation: "1"
   - name: Patrick Marty
+    orcid: 0000-0002-1763-3731
     affiliation: 1
   - name: Ines Elisa Ulrich
     orcid: 0000-0003-0444-4998
