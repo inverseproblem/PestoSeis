@@ -4,7 +4,7 @@
 
 # %%
 
-
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
@@ -52,10 +52,12 @@ class TestTraveltime(unittest.TestCase):
             rays_xy[i,:] = rays[0][0]["xy"]
             rays_ij[i,:] = rays[0][0]["ij"] 
             rays_segment_len[i,:] = rays[0][0]["segment_len"] 
-        # np.save("reference_solutions/rays_homogeneous.npy",rays,allow_pickle=True)
 
         # load reference solution
-        ref_rays = np.load("reference_solutions/rays_homogeneous.npy",allow_pickle=True)
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        reference_solutions_dir = os.path.join(current_dir, "reference_solutions")
+        ref_path = os.path.join(reference_solutions_dir, "rays_homogeneous.npy")
+        ref_rays = np.load(ref_path, allow_pickle=True)
         ref_rays_xy = np.zeros([ref_rays.shape[0],ref_rays[0][0]["xy"].shape[0],ref_rays[0][0]["xy"].shape[1]])
         ref_rays_ij = np.zeros([ref_rays.shape[0],ref_rays[0][0]["ij"].shape[0],ref_rays[0][0]["ij"].shape[1]])
         ref_rays_segment_len = np.zeros([ref_rays.shape[0],ref_rays[0][0]["segment_len"].shape[0],ref_rays[0][0]["segment_len"].shape[1]])

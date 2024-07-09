@@ -4,7 +4,7 @@
 
 # %%
 
-
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
@@ -34,10 +34,16 @@ class TestTraveltime(unittest.TestCase):
         # trace a single ray
         raypath,tt,dist = tr.tracerayhorlay(laydepth, velmod, xystart, takeoffangle)
         
-        
-        raypath_ref = np.load("reference_solutions/raypath_horizLayeredModel.npy") 
-        tt_ref = np.load("reference_solutions/tt_horizLayeredModel.npy") 
-        dist_ref = np.load("reference_solutions/dist_horizLayeredModel.npy")
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        reference_solutions_dir = os.path.join(current_dir, "reference_solutions")
+        raypath_ref_path = os.path.join(reference_solutions_dir, "raypath_horizLayeredModel.npy")
+        raypath_ref = np.load(raypath_ref_path, allow_pickle=True)
+     
+        tt_ref_path = os.path.join(reference_solutions_dir, "tt_horizLayeredModel.npy")
+        tt_ref = np.load(tt_ref_path, allow_pickle=True)
+
+        dist_ref_path = os.path.join(reference_solutions_dir, "dist_horizLayeredModel.npy")
+        dist_ref = np.load(dist_ref_path, allow_pickle=True)
         
         atol=1e-06
         rtol=1e-05

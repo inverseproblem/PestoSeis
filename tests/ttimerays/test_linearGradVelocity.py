@@ -4,7 +4,7 @@
 
 # %%
 
-
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
@@ -77,7 +77,10 @@ class TestTraveltime(unittest.TestCase):
         # compute difference
         diff = np.abs(ansol2d - ttime[0][:-1,:-1]) 
         # check that difference is within tolerance of reference solution
-        ref_diff = np.load("reference_solutions/diff_analytical_numerical_linearGradVelocity.npy")
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        reference_solutions_dir = os.path.join(current_dir, "reference_solutions")
+        ref_diff_path = os.path.join(reference_solutions_dir, "diff_analytical_numerical_linearGradVelocity.npy")
+        ref_diff = np.load(ref_diff_path, allow_pickle=True)
         if np.allclose(diff, ref_diff, rtol=1e-01, atol=0) != True:
             print("Test failed. Difference between analytical traveltimes and computed traveltimes greater than threshold w.r.t. reference difference. Please check the code")
         self.assertTrue(np.allclose(diff, ref_diff, rtol=1e-01, atol=0))
