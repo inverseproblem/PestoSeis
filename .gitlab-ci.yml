@@ -1,0 +1,20 @@
+image:
+  name: openjournals/inara
+  entrypoint: ["/bin/sh", "-c"]
+
+stages:
+  - deploy
+
+paper:
+  stage: deploy
+  variables:
+    GIT_SHA: $CI_COMMIT_SHA
+    JOURNAL: joss
+  script:
+    - inara -o pdf,cff paper/paper.md
+  allow_failure: false
+  artifacts:
+    paths:
+      - paper/paper.pdf
+      - paper/CITATION.cff
+  needs: []
