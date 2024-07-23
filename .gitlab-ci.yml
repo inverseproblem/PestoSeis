@@ -1,48 +1,21 @@
-# This file is a template, and might need editing before it works on your project.
-# Official language image. Look for the different tagged releases at:
-# https://hub.docker.com/r/library/python/tags/
-image: python:3.9-bullseye
-
-# Change pip's cache directory to be inside the project directory since we can
-# only cache local items.
-variables:
-  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-
-# Pip's cache doesn't store the python packages
-# https://pip.pypa.io/en/stable/reference/pip_install/#caching
-#
-# If you want to also cache the installed packages, you have to install
-# them in a virtualenv and cache it as well.
-cache:
-  paths:
-    - .cache/pip
-    - venv/
+image: python:3.11-bullseye
 
 before_script:
-  - python -V  # Print out python version for debugging
+  - python -V
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate
+  - pip install .
 
 stages:
+  - test
   - deploy
 
-# test:
-#   script:
-#     - python setup.py test
-#     - pip install tox flake8  # you can also use tox
-#     - tox -e py36,flake8
-
-# run:
-#   #stage: build
-#   script:
-#     - python setup.py bdist_wheel
-#     # an alternative approach is to install and run:
-#     - pip install dist/*
-#     # run the command here
-#   artifacts:
-#     paths:
-#       - dist/*.whl
+tests:
+  stage: test
+  script:
+    - pip install h5py
+    - python -m unittest discover tests --verbose
 
 pages:
   stage: deploy
@@ -51,8 +24,7 @@ pages:
     - ls -lht
     - apt-get -yq update
     - apt-get -yq install pandoc
-    - pip install ./  # installing pestoseis
-    # for syntax highliting of html version of jupyter notebooks
+    - pip install ./
     - pip install ipython 
     - pip install sphinx sphinx-rtd-theme nbsphinx parso pandoc>=2.11
     - cd docs ; make html
@@ -62,3 +34,4 @@ pages:
       - public
   only:
     - main
+    
