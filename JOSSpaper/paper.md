@@ -20,7 +20,7 @@ authors:
     orcid: 0000-0003-0444-4998
     affiliation: 1
   - name: Andreas Fichtner
-	orcid: 0000-0003-3090-963X 
+    orcid: 0000-0003-3090-963X 
     affiliation: 1 
 affiliations:
  - name: Institute of Geophysics, ETH Zurich, Switzerland
