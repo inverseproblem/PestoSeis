@@ -9,12 +9,12 @@ paper:
   stage: deploy
   variables:
     GIT_SHA: $CI_COMMIT_SHA
-    JOURNAL: joss
+    JOURNAL: jose
   script:
-    - inara -o pdf,cff JOSSpaper/paper.md
+    - inara -o pdf,cff JOSEpaper/paper.md
   allow_failure: false
   artifacts:
     paths:
-      - JOSSpaper/paper.pdf
-      - JOSSpaper/CITATION.cff
+      - JOSEpaper/paper.pdf
+      - JOSEpaper/CITATION.cff
   needs: []

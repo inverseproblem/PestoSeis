@@ -12,7 +12,7 @@ tags:
 authors:
   - name: Andrea Zunino^[corresponding author]
     orcid: 0000-0002-3415-162X
-    affiliation: "1"
+    affiliation: 1
   - name: Patrick Marty
     orcid: 0000-0002-1763-3731
     affiliation: 1
@@ -25,7 +25,7 @@ authors:
 affiliations:
  - name: Institute of Geophysics, ETH Zurich, Switzerland
    index: 1
-date: 14 November 2022
+date: 28 August 2024
 bibliography: PestoSeis.bib
 
 ---
@@ -49,7 +49,7 @@ are provided to demonstrate how the included algorithms work.
 
 `PestoSeis` is a numerical laboratory written in the Python language and 
 contains a suite of functionalities which can be used to perform commonly used calculations
-in acoustics, with a focus on seismic applications. 
+in acoustic and elastic settings, with a focus on seismic applications. 
 More specifically, `PestoSeis` contains functions ranging from simple straight ray 
 computations to a full-waveform elastic solver for solving the wave equation in
 two-dimensional (2D) problems. 
