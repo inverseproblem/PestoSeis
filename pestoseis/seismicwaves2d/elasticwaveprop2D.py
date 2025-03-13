@@ -264,7 +264,7 @@ def _solveelawaveq2D_CPML(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, recpos)
     maxvp = ( np.sqrt( (lamb+2.0*mu)/rho )).max()
     Courant_number = maxvp * inpar["dt"] * np.sqrt(1.0/dx**2 + 1.0/dz**2)
     if Courant_number > 1.0 :
-        println(" The stability criterion is violated. Quitting.")
+        print(" The stability criterion is violated. Quitting.")
         return
     
     #minvp = minimum( sqrt( (lambda+2.0*mu)./rho ))
@@ -827,7 +827,7 @@ def _solveelawaveq2D_ReflBound(inpar, rockprops, ijsrc, sourcetf, srcdomfreq, re
     maxvp = ( np.sqrt( (lamb+2.0*mu)/rho )).max()
     Courant_number = maxvp * inpar["dt"] * np.sqrt(1.0/dx**2 + 1.0/dz**2)
     if Courant_number > 1.0 :
-        println(" The stability criterion is violated. Quitting.")
+        print(" The stability criterion is violated. Quitting.")
         return
     
     #minvp = minimum( sqrt( (lambda+2.0*mu)./rho ))

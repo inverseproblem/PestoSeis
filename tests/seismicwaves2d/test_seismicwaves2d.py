@@ -74,14 +74,14 @@ def import_pestoseis_data(filename: str) -> dict:
             # data["waveforms"][mask] *= -1
         else:
             data["waveforms"] = f["seism"][:, :]
-        data["nt"] = data["waveforms"].shape[1]
-        data["start_time"] = 0.0
-        data["end_time"] = f["dt"][()] * data["nt"]
-        data["dh"] = float(f["dh"][()])
-        data["nx"] = int(f["nx"][()])
-        data["nz"] = int(f["nz"][()])
-        data["recpos"] = f["recpos"][:, :]
-        data["srcij"] = f["srcij"][:]
+            data["nt"] = data["waveforms"].shape[1]
+            data["start_time"] = 0.0
+            data["end_time"] = f["dt"][()] * data["nt"]
+            data["dh"] = float(f["dh"][()])
+            data["nx"] = int(f["nx"][()])
+            data["nz"] = int(f["nz"][()])
+            data["recpos"] = f["recpos"][:, :]
+            data["srcij"] = f["srcij"][:]
 
     data["t"] = np.linspace(
         data["start_time"], data["end_time"], data["waveforms"].shape[1]
@@ -391,6 +391,9 @@ def _test_acoustic_homogeneous(free_surface: bool, threshold: float = 0.02) -> b
         receivers,
         outfileh5=f"pestoseis_acoustic_hom_{suffix}.h5",
     )
+
+    import os
+    print("********** pwd:",os.getcwd())
 
     ref = import_pestoseis_data(
         f"reference_solutions/pestoseis_acoustic_hom_{suffix}_ref.h5"
