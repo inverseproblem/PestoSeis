@@ -8,7 +8,7 @@ Installation --- loading the module
 
 The simplest way is to use the `pip` installer: ::
 
-   pip install git+https://gitlab.com/anzun/PestoSeis
+   pip install git+https://github.com/inverseproblem/PestoSeis
 
 Otherwise, if a local copy is available, a simple way to load the package/module from a local folder is to start a script with adding to the path the location the folder containing the package. This way Python will be able to find the module and therefore load it.
 Then something along the along the following lines in ``myscript.py`` should work: ::
