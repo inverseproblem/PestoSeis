@@ -7,6 +7,9 @@ from matplotlib.lines import Line2D
 import pestoseis.seismicwaves2d
 import unittest
 
+inpdir="tests/seismicwaves2d/reference_solutions/"
+
+
 # +
 scale = 2
 # scale = 4
@@ -74,15 +77,16 @@ def import_pestoseis_data(filename: str) -> dict:
             # data["waveforms"][mask] *= -1
         else:
             data["waveforms"] = f["seism"][:, :]
-            data["nt"] = data["waveforms"].shape[1]
-            data["start_time"] = 0.0
-            data["end_time"] = f["dt"][()] * data["nt"]
-            data["dh"] = float(f["dh"][()])
-            data["nx"] = int(f["nx"][()])
-            data["nz"] = int(f["nz"][()])
-            data["recpos"] = f["recpos"][:, :]
-            data["srcij"] = f["srcij"][:]
 
+        data["nt"] = data["waveforms"].shape[1]
+        data["start_time"] = 0.0
+        data["end_time"] = f["dt"][()] * data["nt"]
+        data["dh"] = float(f["dh"][()])
+        data["nx"] = int(f["nx"][()])
+        data["nz"] = int(f["nz"][()])
+        data["recpos"] = f["recpos"][:, :]
+        data["srcij"] = f["srcij"][:]
+    
     data["t"] = np.linspace(
         data["start_time"], data["end_time"], data["waveforms"].shape[1]
     )
@@ -258,12 +262,12 @@ def _acoustic_ref_data(free_surface: bool, homogeneous: bool = True) -> None:
     )
     _plot_compare_pestoseis_salvus(
         f"pestoseis_acoustic_{suffix_1}_{suffix_2}_ref.h5",
-        f"reference_solutions/salvus_acoustic_{suffix_1}_{suffix_2}_ref.h5",
+        f"{inpdir}salvus_acoustic_{suffix_1}_{suffix_2}_ref.h5",
     )
 
     data = import_pestoseis_data(f"pestoseis_acoustic_{suffix_1}_{suffix_2}_ref.h5")
     ref = import_salvus_data(
-        f"reference_solutions/salvus_acoustic_{suffix_1}_{suffix_2}_ref.h5", interp=True
+        f"{inpdir}salvus_acoustic_{suffix_1}_{suffix_2}_ref.h5", interp=True
     )
 
     diff = np.linalg.norm(data["waveforms"] - ref["waveforms"])
@@ -333,12 +337,12 @@ def _elastic_ref_data(free_surface: bool, homogeneous: bool = True) -> None:
     )
     _plot_compare_pestoseis_salvus(
         f"pestoseis_elastic_{suffix_1}_{suffix_2}_ref.h5",
-        f"reference_solutions/salvus_elastic_{suffix_1}_{suffix_2}_ref.h5",
+        f"{inpdir}salvus_elastic_{suffix_1}_{suffix_2}_ref.h5",
     )
 
     data = import_pestoseis_data(f"pestoseis_elastic_{suffix_1}_{suffix_2}_ref.h5")
     ref = import_salvus_data(
-        f"reference_solutions/salvus_elastic_{suffix_1}_{suffix_2}_ref.h5", interp=True
+        f"{inpdir}salvus_elastic_{suffix_1}_{suffix_2}_ref.h5", interp=True
     )
 
     #     diff = np.linalg.norm(data["waveforms"] - ref["waveforms"])
@@ -392,11 +396,8 @@ def _test_acoustic_homogeneous(free_surface: bool, threshold: float = 0.02) -> b
         outfileh5=f"pestoseis_acoustic_hom_{suffix}.h5",
     )
 
-    import os
-    print("********** pwd:",os.getcwd())
-
     ref = import_pestoseis_data(
-        f"reference_solutions/pestoseis_acoustic_hom_{suffix}_ref.h5"
+        f"{inpdir}pestoseis_acoustic_hom_{suffix}_ref.h5"
     )["waveforms"]
 
     # Ensure sampling between the reference data and the simulated data are the same
@@ -451,7 +452,7 @@ def _test_acoustic_gradient(threshold: float = 0.02) -> bool:
     )
 
     ref = import_pestoseis_data(
-        f"reference_solutions/pestoseis_acoustic_grad_{suffix}_ref.h5"
+        f"{inpdir}pestoseis_acoustic_grad_{suffix}_ref.h5"
     )["waveforms"]
 
     # Ensure sampling between the reference data and the simulated data are the same
@@ -526,7 +527,7 @@ def _test_elastic_homogeneous(free_surface: bool, threshold: float = 5e-9) -> bo
     data = np.linalg.norm(data, axis=2)
 
     ref = import_pestoseis_data(
-        f"reference_solutions/pestoseis_elastic_hom_{suffix}_ref.h5"
+        f"{inpdir}pestoseis_elastic_hom_{suffix}_ref.h5"
     )["waveforms"]
 
     # Ensure sampling between the reference data and the simulated data are the same
@@ -601,7 +602,7 @@ def _test_elastic_gradient(threshold: float = 5e-9) -> bool:
     data = np.linalg.norm(data, axis=2)
 
     ref = import_pestoseis_data(
-        f"reference_solutions/pestoseis_elastic_grad_{suffix}_ref.h5"
+        f"{inpdir}pestoseis_elastic_grad_{suffix}_ref.h5"
     )["waveforms"]
 
     # Ensure sampling between the reference data and the simulated data are the same

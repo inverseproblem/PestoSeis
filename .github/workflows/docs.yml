@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Python package
+name: documentation
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  docs:
 
     runs-on: ubuntu-latest
     strategy:
@@ -27,16 +27,21 @@ jobs:
     - name: Install dependencies
       run: |
         pwd
+        #apt-get -yq install pandoc
         python -m pip install --upgrade pip
         python -m pip install .
-        python -m pip install h5py flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Lint with flake8
+        python -m pip install ipython
+        python -m pip install sphinx sphinx-rtd-theme nbsphinx parso
+        #python -m pip install pandoc
+    - name: Sphinx build
       run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        #flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test 
-      run: |
-        pytest
+        sphinx-build docs/source build
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        publish_branch: gh-pages
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public
+        force_orphan: true
+
+
