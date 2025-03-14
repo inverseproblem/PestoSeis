@@ -29,7 +29,7 @@ PestoSeis is primarily aimed at being a piece of educational software and has be
 To install PestoSeis, simply run the following command from the terminal:
 
 ```
-pip install git+https://gitlab.com/anzun/PestoSeis
+pip install git+https://github.com/inverseproblem/PestoSeis
 ```
 
 ## Documentation
