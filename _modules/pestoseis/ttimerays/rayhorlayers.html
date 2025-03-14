@@ -1,0 +1,380 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pestoseis.ttimerays.rayhorlayers &mdash; PestoSeis 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=83a61292"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PestoSeis
+              <img src="../../../_static/PestoSeisLogo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation — loading the module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ttimerays_guide.html">Traveltimes and rays – using <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../seismicwaves2d_guide.html">Seismic wave propagation – using <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/index.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developerdocs.html">Developer zone</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PestoSeis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pestoseis.ttimerays.rayhorlayers</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pestoseis.ttimerays.rayhorlayers</h1><div class="highlight"><pre>
+<span></span>
+<span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#    PestoSeis, a numerical laboratory to learn about seismology, written</span>
+<span class="c1">#    in the Python language.</span>
+<span class="c1">#    Copyright (C) 2021  Andrea Zunino </span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#    it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#    (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#    GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#    You should have received a copy of the GNU General Public License</span>
+<span class="c1">#    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Calculate rays in a horizontally layered model.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1">############################################################################</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">__NP</span>
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="tracerayhorlay">
+<a class="viewcode-back" href="../../../API/ttimerays.html#pestoseis.ttimerays.tracerayhorlay">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">tracerayhorlay</span><span class="p">(</span><span class="n">laydep</span><span class="p">,</span> <span class="n">vel</span><span class="p">,</span> <span class="n">xystart</span><span class="p">,</span><span class="n">takeoffangle</span><span class="p">,</span><span class="n">maxnumiterations</span><span class="o">=</span><span class="mi">20000</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Trace rays in a horizontally layered model. </span>
+<span class="sd">      </span>
+<span class="sd">    Args: </span>
+<span class="sd">      laydep (ndarray): input depth of layers  </span>
+<span class="sd">      vel (ndarray): velocity for each layer </span>
+<span class="sd">      xystart(ndarray): origin coordinates of the ray </span>
+<span class="sd">      takeoffangle (float): take off angle</span>
+<span class="sd">      maxnumiterations (int): limit the number of ray segments to calculate, in case </span>
+<span class="sd">                               the ray never reaches the surface</span>
+
+<span class="sd">    Returns: </span>
+<span class="sd">         (ndarray,float,float): coordinates of the the ray path, traveltime </span>
+<span class="sd">                                and distance covered </span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># v1,theta1</span>
+    <span class="c1">#  </span>
+    <span class="c1"># --------xpt1------------</span>
+    <span class="c1">#           \</span>
+    <span class="c1"># v2,theta2  \</span>
+    <span class="c1">#             \  </span>
+    <span class="c1"># ------------xpt2--------</span>
+    <span class="c1">#        </span>
+    <span class="c1">#  </span>
+    <span class="c1">#   |\</span>
+    <span class="c1">#   | \   theta</span>
+    <span class="c1">#   |  \</span>
+    <span class="c1">#   |--&gt;\</span>
+    <span class="c1">#   |    *</span>
+    <span class="c1">#</span>
+
+    <span class="k">assert</span> <span class="n">laydep</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">vel</span><span class="o">.</span><span class="n">size</span><span class="c1">#+1</span>
+    <span class="k">assert</span> <span class="n">xystart</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;=</span><span class="mf">0.0</span>
+    <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">laydep</span><span class="o">&gt;</span><span class="mf">0.0</span><span class="p">)</span> <span class="c1"># first layer starts at 0 by definition</span>
+
+    <span class="n">laydep</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="n">__NP</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">laydep</span><span class="p">))</span>
+    <span class="n">nlay</span> <span class="o">=</span> <span class="n">laydep</span><span class="o">.</span><span class="n">size</span><span class="o">-</span><span class="mi">1</span>
+
+    <span class="n">ids</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">laydep</span><span class="o">&gt;=</span><span class="n">xystart</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="c1">## &gt;= !!</span>
+    <span class="n">ideplay</span> <span class="o">=</span> <span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="c1">#__NP.argmin(abs(pt[1]-laydep[ids]))</span>
+    <span class="n">raypar</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">__NP</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">takeoffangle</span><span class="p">))</span><span class="o">/</span><span class="n">vel</span><span class="p">[</span><span class="n">ideplay</span><span class="p">]</span>
+    <span class="n">thetarad</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">takeoffangle</span><span class="p">)</span>
+
+    <span class="n">raycoo</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">raycoo</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xystart</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">xystart</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+    
+    <span class="c1">##=================</span>
+    
+    <span class="n">i</span><span class="o">=-</span><span class="mi">1</span>
+    <span class="n">tt</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">firstsegment</span><span class="o">=</span><span class="kc">True</span>
+    
+    <span class="k">while</span> <span class="kc">True</span> <span class="p">:</span>
+        <span class="n">i</span><span class="o">+=</span><span class="mi">1</span> <span class="c1"># start from 0</span>
+
+        <span class="n">pt</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">raycoo</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">raycoo</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
+        
+        <span class="c1">## find closest layer below starting point (z)...</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">laydep</span><span class="o">&gt;=</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="c1">## &gt;= !!</span>
+        <span class="n">ideplay</span> <span class="o">=</span> <span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="c1">#__NP.argmin(abs(pt[1]-laydep[ids]))</span>
+        <span class="c1">#print(i,ids)</span>
+        
+        <span class="k">if</span> <span class="n">ideplay</span><span class="o">&gt;</span><span class="n">nlay</span><span class="o">-</span><span class="mi">1</span> <span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; timeray(): take off angle: </span><span class="si">{}</span><span class="s2">.  Error, not enough layers!!!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">takeoffangle</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">raycoo</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">1</span> <span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; timeray(): take off angle: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">takeoffangle</span><span class="p">))</span>
+        
+        <span class="c1">##===============================</span>
+        
+        <span class="k">if</span> <span class="n">__NP</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">thetarad</span><span class="p">)</span><span class="o">&gt;=</span><span class="mf">0.0</span> <span class="p">:</span>
+            <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;down&quot;</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;up&quot;</span>
+              
+        <span class="c1">##===============================</span>
+        
+        <span class="k">if</span> <span class="n">direction</span><span class="o">==</span><span class="s2">&quot;down&quot;</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">firstsegment</span><span class="p">)</span> <span class="p">:</span>
+            <span class="c1">## arcsin domain goes [-1 1], so if</span>
+            <span class="c1">##   asarg&gt;=0.0 we have a turning ray</span>
+            <span class="n">asarg</span> <span class="o">=</span> <span class="n">vel</span><span class="p">[</span><span class="n">ideplay</span><span class="p">]</span> <span class="o">*</span> <span class="n">raypar</span>
+            
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">asarg</span><span class="p">)</span><span class="o">&gt;=</span><span class="mf">1.0</span> <span class="p">:</span>
+                <span class="c1"># turning ray</span>
+                <span class="c1"># get the new angle (Snell&#39;s law), vel of layer above        </span>
+                <span class="n">thetarad</span> <span class="o">=</span>  <span class="n">__NP</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.0</span> <span class="o">-</span> <span class="n">thetarad</span> <span class="o">+</span> <span class="n">__NP</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.0</span>
+                <span class="n">zlay</span> <span class="o">=</span> <span class="n">laydep</span><span class="p">[</span><span class="n">ideplay</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">laythick</span> <span class="o">=</span> <span class="n">laydep</span><span class="p">[</span><span class="n">ideplay</span><span class="p">]</span><span class="o">-</span><span class="n">laydep</span><span class="p">[</span><span class="n">ideplay</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">vellay</span> <span class="o">=</span> <span class="n">vel</span><span class="p">[</span><span class="n">ideplay</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># get the new angle (Snell&#39;s law), vel of layer below</span>
+                <span class="n">thetarad</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span> <span class="n">vel</span><span class="p">[</span><span class="n">ideplay</span><span class="p">]</span> <span class="o">*</span> <span class="n">raypar</span> <span class="p">)</span>
+                <span class="n">zlay</span> <span class="o">=</span> <span class="n">laydep</span><span class="p">[</span><span class="n">ideplay</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">laythick</span> <span class="o">=</span> <span class="n">laydep</span><span class="p">[</span><span class="n">ideplay</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">laydep</span><span class="p">[</span><span class="n">ideplay</span><span class="p">]</span>
+                <span class="n">vellay</span> <span class="o">=</span> <span class="n">vel</span><span class="p">[</span><span class="n">ideplay</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="n">direction</span><span class="o">==</span><span class="s2">&quot;up&quot;</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">firstsegment</span><span class="p">)</span> <span class="p">:</span>
+            <span class="c1"># get the new angle (Snell&#39;s law), vel of layer above</span>
+            <span class="n">asarg</span> <span class="o">=</span> <span class="n">vel</span><span class="p">[</span><span class="n">ideplay</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">raypar</span>
+            
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">asarg</span><span class="p">)</span><span class="o">&gt;=</span><span class="mf">1.0</span><span class="p">:</span>
+                <span class="c1"># turning ray</span>
+                <span class="n">thetarad</span> <span class="o">=</span> <span class="n">thetarad</span> <span class="o">-</span> <span class="n">__NP</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.0</span> 
+                <span class="n">zlay</span> <span class="o">=</span> <span class="n">laydep</span><span class="p">[</span><span class="n">ideplay</span><span class="p">]</span> <span class="c1">#laydep[ideplay+1]</span>
+                <span class="n">laythick</span> <span class="o">=</span> <span class="n">laydep</span><span class="p">[</span><span class="n">ideplay</span><span class="p">]</span><span class="o">-</span><span class="n">laydep</span><span class="p">[</span><span class="n">ideplay</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1">#laydep[ideplay+1]-laydep[ideplay]</span>
+                <span class="n">vellay</span> <span class="o">=</span> <span class="n">vel</span><span class="p">[</span><span class="n">ideplay</span><span class="p">]</span> <span class="c1"># vel[ideplay+1]</span>
+            <span class="k">else</span> <span class="p">:</span>           
+                <span class="c1">## going up..</span>
+                <span class="n">thetarad</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.0</span> <span class="o">-</span><span class="n">__NP</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span> <span class="n">vel</span><span class="p">[</span><span class="n">ideplay</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">raypar</span> <span class="p">)</span> <span class="o">+</span> <span class="n">__NP</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.0</span>
+                <span class="n">zlay</span> <span class="o">=</span> <span class="n">laydep</span><span class="p">[</span><span class="n">ideplay</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">laythick</span> <span class="o">=</span> <span class="n">laydep</span><span class="p">[</span><span class="n">ideplay</span><span class="p">]</span> <span class="o">-</span> <span class="n">laydep</span><span class="p">[</span><span class="n">ideplay</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">vellay</span> <span class="o">=</span> <span class="n">vel</span><span class="p">[</span><span class="n">ideplay</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                
+        <span class="c1">#############</span>
+        <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span> <span class="p">:</span>
+            <span class="n">firstsegment</span><span class="o">=</span><span class="kc">False</span> <span class="c1"># take off (so angle is fixed)</span>
+            <span class="k">if</span> <span class="n">direction</span><span class="o">==</span><span class="s2">&quot;down&quot;</span><span class="p">:</span>
+                <span class="n">zlay</span> <span class="o">=</span> <span class="n">laydep</span><span class="p">[</span><span class="n">ideplay</span><span class="p">]</span>
+                <span class="n">vellay</span> <span class="o">=</span> <span class="n">vel</span><span class="p">[</span><span class="n">ideplay</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">direction</span><span class="o">==</span><span class="s2">&quot;up&quot;</span><span class="p">:</span>
+                <span class="n">zlay</span> <span class="o">=</span> <span class="n">laydep</span><span class="p">[</span><span class="n">ideplay</span><span class="p">]</span>
+                <span class="n">vellay</span> <span class="o">=</span> <span class="n">vel</span><span class="p">[</span><span class="n">ideplay</span><span class="p">]</span>
+                
+        <span class="c1">#####################################</span>
+    
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">__NP</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">thetarad</span><span class="p">))</span><span class="o">&lt;=</span><span class="mf">1e-12</span> <span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; timeray(): take off angle: </span><span class="si">{}</span><span class="s2">. Horizontal ray.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__NP</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">thetarad</span><span class="p">)))</span>
+            <span class="k">return</span> <span class="n">raycoo</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span>
+        <span class="k">elif</span> <span class="nb">abs</span><span class="p">(</span><span class="n">__NP</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">thetarad</span><span class="p">))</span><span class="o">&lt;=</span><span class="mf">1e-12</span> <span class="p">:</span>
+            <span class="n">xray</span> <span class="o">=</span> <span class="n">raycoo</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="c1"># get the angular coefficient of ray segment</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">thetarad</span><span class="p">)</span><span class="o">/</span><span class="n">__NP</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">thetarad</span><span class="p">)</span>
+            <span class="c1"># find new intersection with layer at zl</span>
+            <span class="c1"># intersection of two straight lines</span>
+            <span class="c1">#  z = m*x +(z1-mx1)</span>
+            <span class="c1">#  z = zlayer</span>
+            <span class="n">xray</span> <span class="o">=</span> <span class="p">(</span><span class="n">zlay</span> <span class="o">+</span> <span class="n">m</span><span class="o">*</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="n">m</span>
+        
+            
+        <span class="c1">##-----------------------------------</span>
+        <span class="c1">## Do ray path calculations</span>
+        <span class="n">curdist</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="p">(</span><span class="n">xray</span><span class="o">-</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">zlay</span><span class="o">-</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span>
+        <span class="n">dist</span> <span class="o">+=</span> <span class="n">curdist</span>
+        <span class="n">tt</span> <span class="o">+=</span> <span class="n">curdist</span><span class="o">/</span><span class="n">vellay</span>
+
+        <span class="c1">##-----------------------------------</span>
+        <span class="n">raycoo</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="n">raycoo</span><span class="p">,</span> <span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">xray</span><span class="p">,</span><span class="n">zlay</span><span class="p">]])</span> <span class="p">]</span>
+       
+        <span class="k">if</span> <span class="p">(</span><span class="n">raycoo</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;</span><span class="mf">0.0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">zlay</span><span class="o">-</span><span class="mf">0.0</span><span class="p">)</span><span class="o">&lt;=</span><span class="mf">1e-6</span><span class="p">)</span> <span class="p">:</span> <span class="c1">#direction==&quot;up&quot; and (abs(zlay-0.0)&lt;=1e-6) :</span>
+            <span class="k">break</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">raycoo</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="mf">0.0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">zlay</span><span class="o">-</span><span class="mf">0.0</span><span class="p">)</span><span class="o">&lt;=</span><span class="mf">1e-6</span><span class="p">)</span> <span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="k">elif</span> <span class="n">i</span><span class="o">&gt;</span><span class="n">maxnumiterations</span> <span class="p">:</span>
+            <span class="k">break</span>
+        
+    <span class="c1">#############################</span>
+    <span class="c1">#### return coordinates of the ray path, total traveltime and total length</span>
+    <span class="k">return</span> <span class="n">raycoo</span><span class="p">,</span><span class="n">tt</span><span class="p">,</span><span class="n">dist</span></div>
+
+        
+
+<span class="c1">############################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_test</span><span class="p">()</span> <span class="p">:</span>
+    
+    <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">PL</span>
+ 
+    <span class="n">Nlay</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">laydepth</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">2000.0</span><span class="p">,</span><span class="n">Nlay</span><span class="o">+</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">vp</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">2000.0</span><span class="p">,</span><span class="mf">3000.0</span><span class="p">,</span><span class="n">Nlay</span><span class="p">)</span>
+  
+    <span class="n">xystart</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>  <span class="c1">## ( x, y(depth) )</span>
+    <span class="n">takeoffangle</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">90.0</span><span class="p">,</span><span class="mf">10.0</span><span class="p">)</span>
+
+    <span class="n">nta</span> <span class="o">=</span> <span class="n">takeoffangle</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">tt</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nta</span><span class="p">)</span>
+    <span class="n">totdist</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nta</span><span class="p">)</span>
+    <span class="n">xdist</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nta</span><span class="p">)</span>
+    
+    <span class="n">PL</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+    <span class="n">PL</span><span class="o">.</span><span class="n">subplot2grid</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">colspan</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">rowspan</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">PL</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Rays&quot;</span><span class="p">)</span>
+    <span class="c1">#PL.subplot(121)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nta</span><span class="p">):</span>
+        <span class="n">raycoo</span><span class="p">,</span><span class="n">tt</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">totdist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">tracerayhorlay</span><span class="p">(</span><span class="n">laydepth</span><span class="p">,</span> <span class="n">vp</span><span class="p">,</span> <span class="n">xystart</span><span class="p">,</span><span class="n">takeoffangle</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">)</span>
+        <span class="n">xdist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">raycoo</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1">#print takeoffangle[i], raycoo</span>
+        <span class="n">PL</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">raycoo</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">raycoo</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;-k&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+        <span class="n">PL</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">raycoo</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">raycoo</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;or&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+        <span class="n">PL</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">raycoo</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">raycoo</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;ob&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+
+    <span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span><span class="n">xdist</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">laydepth</span><span class="p">:</span>
+        <span class="n">PL</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+
+    <span class="n">PL</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="n">laydepth</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="mf">0.0</span><span class="p">])</span>
+    <span class="n">PL</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x [m]&quot;</span><span class="p">)</span>
+    <span class="n">PL</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y [m]&quot;</span><span class="p">)</span>
+    <span class="c1">##PL.xlimp([0.0,depthwe.max()])</span>
+    <span class="c1">##PL.gca().invert_yaxis()</span>
+    
+    <span class="n">PL</span><span class="o">.</span><span class="n">subplot2grid</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="n">rowspan</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="c1">#PL.subplot(122)</span>
+    <span class="n">PL</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Velocity&quot;</span><span class="p">)</span>
+    <span class="n">PL</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">__NP</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">vp</span><span class="p">),</span><span class="n">__NP</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="n">laydepth</span><span class="p">),</span> <span class="n">where</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;vp&#39;</span><span class="p">)</span>
+    <span class="c1">#PL.plot(vp,depthvp,label=&quot;vp&quot;)a</span>
+    <span class="n">PL</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
+    <span class="n">PL</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">PL</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="n">laydepth</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="mf">0.0</span><span class="p">])</span>
+    <span class="n">PL</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Vp [m/s]&quot;</span><span class="p">)</span>
+    <span class="n">PL</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Depth [m]&quot;</span><span class="p">)</span>
+
+    <span class="n">PL</span><span class="o">.</span><span class="n">subplot2grid</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">colspan</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">PL</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Traveltimes at the surface&quot;</span><span class="p">)</span>
+    <span class="n">PL</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xdist</span><span class="p">,</span><span class="n">tt</span><span class="p">,</span><span class="s1">&#39;o&#39;</span><span class="p">)</span>
+    <span class="n">PL</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x [m]&quot;</span><span class="p">)</span>
+    <span class="n">PL</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+
+    <span class="n">PL</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+    <span class="n">PL</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    
+<span class="c1">#############################################</span>
+<span class="c1">#############################################</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span> <span class="p">:</span>
+
+    <span class="n">_test</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Andrea Zunino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

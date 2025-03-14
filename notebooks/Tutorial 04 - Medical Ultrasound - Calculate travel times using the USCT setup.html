@@ -1,0 +1,462 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial 04 - Medical Ultrasound - Calculate travel times using the USCT setup &mdash; PestoSeis 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=83a61292"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial 05 - Acoustic Wave Propagation" href="Tutorial%2005%20-%20Acoustic%20Wave%20Propagation.html" />
+    <link rel="prev" title="Tutorial 03 - Velocity inversion" href="Tutorial%2003%20-%20Velocity%20inversion.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PestoSeis
+              <img src="../_static/PestoSeisLogo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation — loading the module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ttimerays_guide.html">Traveltimes and rays – using <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../seismicwaves2d_guide.html">Seismic wave propagation – using <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Tutorial%2001%20-%20Earthquake%20location.html">Tutorial 01 - Earthquake location</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial%2002%20-%20Trace%20rays.html">Tutorial 02 - Trace rays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial%2003%20-%20Velocity%20inversion.html">Tutorial 03 - Velocity inversion</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tutorial 04 - Medical Ultrasound - Calculate travel times using the USCT setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Problem-Setup">Problem Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Compute-the-Traveltimes">Compute the Traveltimes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Trace-the-Rays">Trace the Rays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Plot-the-Results">Plot the Results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#References">References</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial%2005%20-%20Acoustic%20Wave%20Propagation.html">Tutorial 05 - Acoustic Wave Propagation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial%2006%20-%20Elastic%20Wave%20Propagation.html">Tutorial 06 - Elastic Wave Propagation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial%2007%20-%20Processing%20seismic%20data%20I.html">Tutorial 07 - Processing seismic data I</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial%2008%20-%20Processing%20seismic%20data%20II.html">Tutorial 08 - Processing seismic data II</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../API/index.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerdocs.html">Developer zone</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PestoSeis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tutorials.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Tutorial 04 - Medical Ultrasound - Calculate travel times using the USCT setup</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/Tutorial 04 - Medical Ultrasound - Calculate travel times using the USCT setup.ipynb" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p><a class="reference external" href="/home/runner/work/PestoSeis/PestoSeis/docs/source/notebooks/Tutorial%2004%20-%20Medical%20Ultrasound%20-%20Calculate%20travel%20times%20using%20the%20USCT%20setup.ipynb">Download This Notebook</a></p>
+<section id="Tutorial-04---Medical-Ultrasound---Calculate-travel-times-using-the-USCT-setup">
+<h1>Tutorial 04 - Medical Ultrasound - Calculate travel times using the USCT setup<a class="headerlink" href="#Tutorial-04---Medical-Ultrasound---Calculate-travel-times-using-the-USCT-setup" title="Link to this heading"></a></h1>
+<p>This exercise illustrate that the methods used in seismics are ubiquitous in many other research areas. Therefore, understanding the methods asslows one to bridge the gap between different fields of research.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pestoseis.ttimerays</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tr</span>
+</pre></div>
+</div>
+</div>
+<section id="Problem-Setup">
+<h2>Problem Setup<a class="headerlink" href="#Problem-Setup" title="Link to this heading"></a></h2>
+<p>In this exercise, the input velocity model describes the speed-of-sound distribution within a breast phantom that mimicks a cross-sectional slice through a breast. The phantom shapes are kept desiberately simple in order to be able to evaluate the accuracy of the calculated travel times. Such setups are for instance used in breast screening applications using ultrasound computed tomography (USCT) (e.g. <a class="reference external" href="https://doi.org/10.1121/10.0011540">Ulrich et al., 2022</a>).</p>
+<p>Let’s start off by setting up a circular source-receiver array. In USCT we have a lot more freedom compared to the seismic application when it comes to the design of our experiement. In particular, we have the possibility to illuminate the unknown object from all angles. Additionaly, it is common to have transducer elements that can be used in transmit as well as in receive mode. Therefore the source and receivers are usually at the same location around the breast phantom. For this experiment
+however, we move the receiver positions inside the source array, since PestoSeis cannot candle coniciding source-receiver positions.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nrec</span> <span class="o">=</span> <span class="mi">100</span> <span class="c1"># number of receivers</span>
+<span class="n">nsrc</span> <span class="o">=</span> <span class="mi">100</span> <span class="c1"># number of sources</span>
+<span class="n">rsrc</span> <span class="o">=</span> <span class="mf">0.075</span> <span class="c1"># Radius of source array [m]</span>
+<span class="n">rrec</span> <span class="o">=</span> <span class="mf">0.073</span> <span class="c1"># Radius of receiver array [m]</span>
+<span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">nsrc</span><span class="p">))</span> <span class="c1"># angle</span>
+<span class="n">x_src</span> <span class="o">=</span> <span class="n">rsrc</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+<span class="n">y_src</span> <span class="o">=</span> <span class="n">rsrc</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+<span class="n">x_rec</span> <span class="o">=</span> <span class="n">rrec</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+<span class="n">y_rec</span> <span class="o">=</span> <span class="n">rrec</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+
+<span class="n">sources</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x_src</span><span class="p">,</span> <span class="n">y_src</span><span class="p">])</span>
+<span class="n">receivers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">x_rec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y_rec</span><span class="p">[</span><span class="mi">0</span><span class="p">])]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">x_rec</span><span class="p">[</span><span class="mi">50</span><span class="p">],</span> <span class="n">y_rec</span><span class="p">[</span><span class="mi">50</span><span class="p">])])))</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">### setup grid object</span>
+<span class="n">nx</span> <span class="o">=</span> <span class="mi">201</span>
+<span class="n">ny</span> <span class="o">=</span> <span class="mi">201</span>
+<span class="n">dh</span> <span class="o">=</span> <span class="mf">0.001</span>
+<span class="n">xinit</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.1</span>
+<span class="n">yinit</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.1</span>
+<span class="n">gridpar</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">setupgrid</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span><span class="n">dh</span><span class="p">,</span><span class="n">xinit</span><span class="p">,</span><span class="n">yinit</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Next, we design a velocity model that mimicks a cross-sectional slice through a breast. Here, we use a very simple model with only two speed-of-sound inclusions. Feel free to modify the speed-of-sound values or insert more shapes to make the model more complicated.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_spherical_inclusion</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    make a model with spherical inclusions</span>
+<span class="sd">    Args:</span>
+<span class="sd">       nx,ny (float,float): sizes of the input 2D model</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      (ndarray): the velocity model as a 2D array</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">+</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">+</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span>
+    <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s2">&quot;ij&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Add 3 spherical inclusions</span>
+    <span class="n">vp</span> <span class="o">=</span> <span class="mf">1500.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">xx</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">xx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">yy</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.05</span>
+    <span class="n">vp</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1550.0</span>
+
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">xx</span> <span class="o">-</span> <span class="mf">0.025</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">yy</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.015</span>
+    <span class="n">vp</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1600.0</span>
+
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">xx</span> <span class="o">+</span> <span class="mf">0.025</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">yy</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.015</span>
+    <span class="n">vp</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1450.0</span>
+
+    <span class="k">return</span> <span class="n">vp</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">velmod</span> <span class="o">=</span> <span class="n">get_spherical_inclusion</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Compute-the-Traveltimes">
+<h2>Compute the Traveltimes<a class="headerlink" href="#Compute-the-Traveltimes" title="Link to this heading"></a></h2>
+<p>Similar to in the previous exercise, we want to compute the traveltimes for the different source-receiver positions. Let’s first take a look at our setup!</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">plotvelmod</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">velmod</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="mi">1450</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="mi">1650</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">sources</span><span class="p">[</span><span class="mi">1</span><span class="p">,:],</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">receivers</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">receivers</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s2">&quot;^k&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">receivers</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">receivers</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s2">&quot;^k&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&lt;matplotlib.lines.Line2D at 0x7f8494512b00&gt;]
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Tutorial_04_-_Medical_Ultrasound_-_Calculate_travel_times_using_the_USCT_setup_11_1.png" src="../_images/notebooks_Tutorial_04_-_Medical_Ultrasound_-_Calculate_travel_times_using_the_USCT_setup_11_1.png" />
+</div>
+</div>
+<p>We first compute the travel times to all the receivers by solving the Eikonal euqtaion:</p>
+<div class="math notranslate nohighlight">
+\[|\nabla t(\mathbf{x})|^2=\big(\frac{\partial t(\mathbf{x})}{\partial x_1}\big)^2+\big(\frac{\partial t(\mathbf{x})}{\partial x_2}\big)^2=\frac{1}{c(\mathbf{x})^2}\;\;\;\text{with}\;\mathbf{x}\in\mathbb{R}^2, \mathbf{x}=[x_1,x_2]^{\text{T}}.\]</div>
+<p>Note that this equation is non-linear due to the explicit dependency of the path on the velocity model. We therefore need to include the velocity model in the travel time calculation as seen below.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># this function needs the shapes of the source and the receiver arrays to match along the second axis</span>
+<span class="n">ttpick</span><span class="p">,</span><span class="n">ttime</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">traveltime</span><span class="p">(</span><span class="n">velmod</span><span class="p">,</span> <span class="n">gridpar</span><span class="p">,</span> <span class="n">sources</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">receivers</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Calculating traveltime for source 100 of 100
+</pre></div></div>
+</div>
+</section>
+<section id="Trace-the-Rays">
+<h2>Trace the Rays<a class="headerlink" href="#Trace-the-Rays" title="Link to this heading"></a></h2>
+<p>Now that we have the traveltimes we can trace the rays to see the ray paths throughout the domain. In PestoSeis, we have the possibility to trace bent rays, as well as straight rays. Bent rays obay Fermat’s principle stating that the travel time along a path is minimized. To compute the bent ray paths from the previously obtained travel times, a ray is traced back from a receiver to each source location by stepping in the negative direction of the spatial gradient of the travel times. Once the
+backtraced ray hits a cell boundary, the spatial travel time gradient is again evaluated on the entire grid and the ray is advanced until it hits another boundary. This is executed until the ray hits the source position.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># this function needs the shapes of the source and the receiver arrays to match along the SECOND axis</span>
+<span class="n">rays</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">traceallrays</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span> <span class="n">sources</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span> <span class="n">ttime</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+tracing rays for source 100 of 100
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># this function needs the shapes of the source and the receiver arrays to match along the FIRST axis</span>
+<span class="c1"># straightrays = tr.traceall_straight_rays(gridpar, sources.T, receivers)</span>
+<span class="n">straightrays</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">traceall_straight_rays</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span> <span class="n">sources</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">receivers</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+tracing rays for source 100 of 100
+</pre></div></div>
+</div>
+</section>
+<section id="Plot-the-Results">
+<h2>Plot the Results<a class="headerlink" href="#Plot-the-Results" title="Link to this heading"></a></h2>
+<p>We can not plot the following results:</p>
+<ul class="simple">
+<li><p>The traveltimes for each receiver receiver position</p></li>
+<li><p>The ray paths travelled through the domain</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.gridspec</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gridspec</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mi">12</span><span class="p">))</span>
+<span class="n">gs</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Traveltimes&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ttpick</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ttpick</span><span class="p">[</span><span class="n">i</span><span class="p">][:],</span><span class="s1">&#39;.-&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;src </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;time [s]&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">plotrays</span><span class="p">(</span><span class="n">sources</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">receivers</span><span class="p">,</span><span class="n">rays</span><span class="p">)</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">plotgrid</span><span class="p">(</span><span class="n">gridpar</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;bent rays on grid&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x [m]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y [m]&quot;</span><span class="p">)</span>
+
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">plotvelmod</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">velmod</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="mi">1450</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="mi">1650</span><span class="p">)</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">plotrays</span><span class="p">(</span><span class="n">sources</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">receivers</span><span class="p">,</span><span class="n">rays</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;bent rays&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x [m]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y [m]&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">plotvelmod</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">velmod</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="mi">1450</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="mi">1650</span><span class="p">)</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">plotrays</span><span class="p">(</span><span class="n">sources</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">receivers</span><span class="p">,</span><span class="n">straightrays</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;straight rays&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x [m]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y [m]&quot;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Tutorial_04_-_Medical_Ultrasound_-_Calculate_travel_times_using_the_USCT_setup_20_0.png" src="../_images/notebooks_Tutorial_04_-_Medical_Ultrasound_-_Calculate_travel_times_using_the_USCT_setup_20_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">nice_ray_plot</span><span class="p">(</span><span class="n">src</span><span class="p">,</span><span class="n">rec</span><span class="p">,</span><span class="n">rays1</span><span class="p">,</span><span class="n">rays2</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot rays as polylines.</span>
+
+<span class="sd">    :param src: coordinates of the sources</span>
+<span class="sd">    :param rec: coordinates of the receivers</span>
+<span class="sd">    :param rays: seismic rays, as outputted by traceallrays()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rays1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">src</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">src</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;*k&#39;</span><span class="p">,</span><span class="n">zorder</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rays1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">rays1</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">][</span><span class="s1">&#39;xy&#39;</span><span class="p">][:,</span><span class="mi">0</span><span class="p">],</span>
+                      <span class="n">rays1</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">][</span><span class="s1">&#39;xy&#39;</span><span class="p">][:,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;--&#39;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;straight ray&quot;</span> <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">j</span><span class="o">==</span><span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="c1">#         for k in range(rays2.shape[0]) :</span>
+<span class="c1">#             plt.plot(rays[k,j][&#39;xy&#39;][:,0],</span>
+<span class="c1">#                       rays2[k,j][&#39;xy&#39;][:,1],&#39;-&#39;,color=&#39;black&#39;,linewidth=1.5, label=&quot;bent ray&quot; if k==0 and j==0 else &quot;&quot;)</span>
+<span class="c1">#             plt.legend()</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">rec</span><span class="p">[</span><span class="n">r</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">rec</span><span class="p">[</span><span class="n">r</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;vk&#39;</span><span class="p">,</span><span class="n">zorder</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="k">return</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">nice_velmod_plot</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">velmod</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot velocity model as an image.</span>
+
+<span class="sd">    :param gridpar: grid parameters dictionary (as defined by setupgrid())</span>
+<span class="sd">    :param velmod: velocity model</span>
+<span class="sd">    :param vmin,vmax: optional values to clip the colorbar min and max values</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">vmin</span><span class="o">==</span><span class="kc">None</span> <span class="ow">and</span> <span class="n">vmax</span><span class="o">==</span><span class="kc">None</span> <span class="p">:</span>
+        <span class="n">vmin</span><span class="o">=</span><span class="n">velmod</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">vmax</span><span class="o">=</span><span class="n">velmod</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="n">extent_vel</span> <span class="o">=</span> <span class="p">[</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xvelmin&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span><span class="p">,</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xvelmax&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span><span class="p">,</span>
+                  <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yvelmax&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span><span class="p">,</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yvelmin&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span> <span class="p">]</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">velmod</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span><span class="n">extent</span><span class="o">=</span><span class="n">extent_vel</span><span class="p">,</span>
+              <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;upper&#39;</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;seismic&quot;</span><span class="p">,</span><span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="o">+</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s1">&#39;c[m/s]&#39;</span><span class="p">)</span>
+    <span class="k">return</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">12</span><span class="p">))</span>
+<span class="n">nice_velmod_plot</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">velmod</span><span class="p">)</span>
+<span class="n">nice_ray_plot</span><span class="p">(</span><span class="n">sources</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">receivers</span><span class="p">,</span><span class="n">straightrays</span><span class="p">,</span><span class="n">rays</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x[m]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y[m]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Ray paths&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="References">
+<h2>References<a class="headerlink" href="#References" title="Link to this heading"></a></h2>
+<p>Ulrich, I. E., Boehm, C., Zunino, A., Bösch, C., Fichtner, A., “Diffuse ultrasound computed tomography”, 2022, The Journal of the Acoustical Society of America, <a class="reference external" href="https://doi.org/10.1121/10.0011540">https://doi.org/10.1121/10.0011540</a></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Tutorial%2003%20-%20Velocity%20inversion.html" class="btn btn-neutral float-left" title="Tutorial 03 - Velocity inversion" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Tutorial%2005%20-%20Acoustic%20Wave%20Propagation.html" class="btn btn-neutral float-right" title="Tutorial 05 - Acoustic Wave Propagation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Andrea Zunino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

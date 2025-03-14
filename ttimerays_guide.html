@@ -1,0 +1,446 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Traveltimes and rays – using ttimerays &mdash; PestoSeis 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=83a61292"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Seismic wave propagation – using seismicwaves2d" href="seismicwaves2d_guide.html" />
+    <link rel="prev" title="Installation — loading the module" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PestoSeis
+              <img src="_static/PestoSeisLogo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation — loading the module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Traveltimes and rays – using <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#setup-of-grid-parameters-and-models">Setup of grid parameters and models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visualization">Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#computation-of-traveltimes">Computation of traveltimes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rays">Rays</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#trace-rays-in-a-2d-heterogeneous-model">Trace rays in a 2D heterogeneous model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#trace-straight-rays">Trace <em>straight</em> rays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#trace-rays-in-a-horizontally-layered-medium">Trace rays in a <em>horizontally layered</em> medium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ray-tomography">Ray tomography</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="seismicwaves2d_guide.html">Seismic wave propagation – using <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="API/index.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developerdocs.html">Developer zone</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PestoSeis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Traveltimes and rays – using <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ttimerays_guide.rst" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="traveltimes-and-rays-using-ttimerays">
+<span id="ttimerays-guide"></span><h1>Traveltimes and rays – using <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code><a class="headerlink" href="#traveltimes-and-rays-using-ttimerays" title="Link to this heading"></a></h1>
+<p>Computing travel times and rays through a velocity model is comprised of two main steps:</p>
+<ol class="arabic simple">
+<li><p>Discretizing the velocity model on a numerical grid.</p></li>
+<li><p>Formulating the forward problem of wave front propagation and finding a solution for the discretized model numerically.</p></li>
+</ol>
+<p>PestoSeis offers functions performing both steps and provides additional visualization tools.</p>
+<section id="setup-of-grid-parameters-and-models">
+<h2>Setup of grid parameters and models<a class="headerlink" href="#setup-of-grid-parameters-and-models" title="Link to this heading"></a></h2>
+<p>In order to compute traveltimes and rays, a 2D grid must be generated to discretize the computational domain. The grid is set up by defining its dimensions in terms of number of cells in the two <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> directions and cell size. Within each cell, the velocity is constant.
+See <a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.setupgrid" title="pestoseis.ttimerays.setupgrid"><code class="xref py py-func docutils literal notranslate"><span class="pre">pestoseis.ttimerays.setupgrid()</span></code></a> for how to create the <em>dictionary</em> holding the grid parameters needed for subsequent computations.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pestoseis.ttimerays</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tr</span>
+
+<span class="c1"># create a 2D grid with 50x30 cells</span>
+<span class="n">nx</span><span class="p">,</span><span class="n">ny</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span><span class="mi">30</span>
+<span class="c1"># size of the cells</span>
+<span class="n">dh</span> <span class="o">=</span> <span class="mf">5.0</span>
+<span class="c1"># origin of grid axes</span>
+<span class="n">xinit</span><span class="p">,</span><span class="n">yinit</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span>
+
+<span class="c1"># create the dictionary containing the grid parameters</span>
+<span class="n">gridpar</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">setupgrid</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">dh</span><span class="p">,</span> <span class="n">xinit</span><span class="p">,</span> <span class="n">yinit</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="visualization">
+<h2>Visualization<a class="headerlink" href="#visualization" title="Link to this heading"></a></h2>
+<p>Some functions for different kinds of plots are provided (click on the function
+name to get the docstring):</p>
+<ul class="simple">
+<li><p>plot the grid: <a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.plotgrid" title="pestoseis.ttimerays.plotgrid"><code class="xref py py-func docutils literal notranslate"><span class="pre">pestoseis.ttimerays.plotgrid()</span></code></a></p></li>
+<li><p>plot the traveltime array: <a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.plotttimemod" title="pestoseis.ttimerays.plotttimemod"><code class="xref py py-func docutils literal notranslate"><span class="pre">pestoseis.ttimerays.plotttimemod()</span></code></a></p></li>
+<li><p>plot the velocity model: <a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.plotvelmod" title="pestoseis.ttimerays.plotvelmod"><code class="xref py py-func docutils literal notranslate"><span class="pre">pestoseis.ttimerays.plotvelmod()</span></code></a></p></li>
+<li><p>plot (previously traced) rays: <a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.plotrays" title="pestoseis.ttimerays.plotrays"><code class="xref py py-func docutils literal notranslate"><span class="pre">pestoseis.ttimerays.plotrays()</span></code></a></p></li>
+</ul>
+<p>Example of plotting the grid:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pestoseis.ttimerays</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tr</span>
+<span class="c1"># import the plotting library</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
+
+<span class="c1"># create a 2D grid with 50x30 cells</span>
+<span class="n">nx</span><span class="p">,</span><span class="n">ny</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span><span class="mi">30</span>
+<span class="c1"># size of the cells</span>
+<span class="n">dh</span> <span class="o">=</span> <span class="mf">5.5</span>
+<span class="c1"># origin of grid axes</span>
+<span class="n">xinit</span><span class="p">,</span><span class="n">yinit</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span>
+
+<span class="c1"># create the dictionary containing the grid parameters</span>
+<span class="n">gridpar</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">setupgrid</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">dh</span><span class="p">,</span> <span class="n">xinit</span><span class="p">,</span> <span class="n">yinit</span><span class="p">)</span>
+
+<span class="c1"># plot the grid</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">plotgrid</span><span class="p">(</span><span class="n">gridpar</span><span class="p">)</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>which produces the following image</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/gridpl.png"><img alt="_images/gridpl.png" src="_images/gridpl.png" style="width: 400px;" />
+</a>
+</figure>
+<p>Other examples are provided in the following sections.</p>
+</section>
+<section id="computation-of-traveltimes">
+<h2>Computation of traveltimes<a class="headerlink" href="#computation-of-traveltimes" title="Link to this heading"></a></h2>
+<p>One possible way to model wave propagation in a medium is to assume that waves can be approximated by rays of infinite frequency along the path between a source and a receiver. If we consider a specific ray <span class="math notranslate nohighlight">\(i\)</span> along a path <span class="math notranslate nohighlight">\(\Gamma_i\)</span>, then we can obtain the traveltime <span class="math notranslate nohighlight">\(t_i\)</span> belonging to that ray by solving the line integral</p>
+<div class="math notranslate nohighlight">
+\[t_i=\int_{\Gamma_i(s(\mathbf{x}))}s(\mathbf{x}(l))dl,\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{x}=[x,y]^{\text{T}}\)</span> in <span class="math notranslate nohighlight">\(\mathbb{R}^2\)</span> and <span class="math notranslate nohighlight">\(s=s(\mathbf{x})\)</span> is the slowness map of the medium and is related to velocity by <span class="math notranslate nohighlight">\(s(\mathbf{x})=\frac{1}{c(\mathbf{x})}\)</span>, <span class="math notranslate nohighlight">\(dl\)</span> is an infinitesimal line segment on the path and <span class="math notranslate nohighlight">\(\mathbf{x(}l)\)</span> is the parametrization of the spatial variable in terms of <span class="math notranslate nohighlight">\(l\)</span>. To solve this line integral is difficult since it is non-linear in the ray path, which means that the path taken by the ray itself depends on the velocity structure of the medium, which is unknown in realistic experiments. One way to circumvent the explicit need to find ray paths to compute travel times is to decribe the propagation of wavefronts through a medium in 2D with the eikonal equation</p>
+<div class="math notranslate nohighlight">
+\[\left|\nabla t(\mathbf{x})\right|^2=\bigg(\frac{\partial t(\mathbf{x})}{\partial x}\bigg)^2+\bigg(\frac{\partial t(\mathbf{x})}{\partial y}\bigg)^2=s(\mathbf{x})^2,\]</div>
+<p>where <span class="math notranslate nohighlight">\(t(\mathbf{x})\)</span> is the traveltime of the wavefront. Note that due to the absolute value, this equation is also non-linear but there exist efficient methods that allow us to solve this partial differential equation equation numerically on a grid. PestoSeis makes use of the Fast Marching Method (FMM), which obtains the traveltime from a source point in a grid to all the other grid points for a given slowness field. In PestoSeis, traveltime calculation given a velocity model and one or more sources and related receivers can be performed using the function <a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.traveltime" title="pestoseis.ttimerays.traveltime"><code class="xref py py-func docutils literal notranslate"><span class="pre">pestoseis.ttimerays.traveltime()</span></code></a>. By default the function returns both the traveltimes at the receivers and also the entire 2D traveltime array(s) for subsequent ray tracing.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># import the traveltime-rays sub-module</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pestoseis.ttimerays</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="c1"># import the plotting library</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
+
+<span class="c1"># create a 2D grid with 50x30 cells</span>
+<span class="n">nx</span><span class="p">,</span><span class="n">ny</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span><span class="mi">30</span>
+<span class="c1"># size of the cells</span>
+<span class="n">dh</span> <span class="o">=</span> <span class="mf">5.5</span>
+<span class="c1"># origin of grid axes</span>
+<span class="n">xinit</span><span class="p">,</span><span class="n">yinit</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span>
+
+<span class="c1"># create the dictionary containing the grid parameters</span>
+<span class="n">gridpar</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">setupgrid</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">dh</span><span class="p">,</span> <span class="n">xinit</span><span class="p">,</span> <span class="n">yinit</span><span class="p">)</span>
+
+<span class="c1"># define a velocity model</span>
+<span class="n">velmod</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nx</span><span class="p">):</span>
+  <span class="n">velmod</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">6.0</span><span class="p">,</span><span class="n">ny</span><span class="p">)</span>
+
+<span class="c1"># define the position of sources and receivers, e.g.,</span>
+<span class="n">recs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">30.4</span><span class="p">,</span> <span class="mf">22.3</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mf">10.1</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mf">12.4</span><span class="p">,</span>  <span class="mf">9.5</span><span class="p">]])</span>
+<span class="n">srcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span> <span class="mf">3.4</span><span class="p">,</span>  <span class="mf">2.3</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mf">42.4</span><span class="p">,</span> <span class="mf">15.5</span><span class="p">]])</span>
+<span class="c1">## calculate all traveltimes</span>
+<span class="n">ttpick</span><span class="p">,</span><span class="n">ttime</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">traveltime</span><span class="p">(</span><span class="n">velmod</span><span class="p">,</span><span class="n">gridpar</span><span class="p">,</span><span class="n">srcs</span><span class="p">,</span><span class="n">recs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ttpick</span></code> contains an array whose elements are the traveltimes at receivers for each source. In this example we have two sources, hence <code class="docutils literal notranslate"><span class="pre">ttpick</span></code> has two elements: each of them contains an array with three elements representing the traveltime for each receiver with respect to the source. Similarly, <code class="docutils literal notranslate"><span class="pre">ttime</span></code> is an array of arrays. In this example we have three sources, so ttime contains three arrays where each of them holds the traveltimes at all grid nodes (for the entire model) for one of the sources.</p>
+<p>To plot the velocity model one can use the function <a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.plotvelmod" title="pestoseis.ttimerays.plotvelmod"><code class="xref py py-func docutils literal notranslate"><span class="pre">pestoseis.ttimerays.plotvelmod()</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">plotvelmod</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">velmod</span><span class="p">)</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/velmod1.png"><img alt="_images/velmod1.png" src="_images/velmod1.png" style="width: 400px;" />
+</a>
+</figure>
+<p>To plot the resulting traveltimes for a selected source (source #1 in this example), one can use the function <a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.plotttimemod" title="pestoseis.ttimerays.plotttimemod"><code class="xref py py-func docutils literal notranslate"><span class="pre">pestoseis.ttimerays.plotttimemod()</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">plotttimemod</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">ttime</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/traveltimes1.png"><img alt="_images/traveltimes1.png" src="_images/traveltimes1.png" style="width: 400px;" />
+</a>
+</figure>
+</section>
+<section id="rays">
+<h2>Rays<a class="headerlink" href="#rays" title="Link to this heading"></a></h2>
+<section id="trace-rays-in-a-2d-heterogeneous-model">
+<h3>Trace rays in a 2D heterogeneous model<a class="headerlink" href="#trace-rays-in-a-2d-heterogeneous-model" title="Link to this heading"></a></h3>
+<p>Even though solving the eikonal equation as previously describes results in traveltime information on all grid points without the need to explicitly calculate the ray paths through the medium, there are still stituations where we are interested in obtaining the ray paths between the sources and the receivers. For instance, to set up a tomographic problem, we need to know the length of a ray within each grid cell to set up a sparse <cite>tomography matrix</cite>. We can make use of the previously computed traveltimes to trace (approximately) the rays using the function <a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.traceallrays" title="pestoseis.ttimerays.traceallrays"><code class="xref py py-func docutils literal notranslate"><span class="pre">pestoseis.ttimerays.traceallrays()</span></code></a>. This function traces the rays starting from a receiver position by following the gradient of the traveltimes <span class="math notranslate nohighlight">\(\nabla t(\mathbf{x})\)</span> back through the computed traveltime field to the source. Hence the computed ray path consists of piecewise linear segments (within each grid cell).</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># import the traveltime-rays sub-module</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pestoseis.ttimerays</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="c1"># import the plotting library</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
+
+<span class="c1"># create a 2D grid with 50x30 cells</span>
+<span class="n">nx</span><span class="p">,</span><span class="n">ny</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span><span class="mi">60</span>
+<span class="c1"># size of the cells</span>
+<span class="n">dh</span> <span class="o">=</span> <span class="mf">2.5</span>
+<span class="c1"># origin of grid axes</span>
+<span class="n">xinit</span><span class="p">,</span><span class="n">yinit</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span>
+
+<span class="c1"># create the dictionary containing the grid parameters</span>
+<span class="n">gridpar</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">setupgrid</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">dh</span><span class="p">,</span> <span class="n">xinit</span><span class="p">,</span> <span class="n">yinit</span><span class="p">)</span>
+
+<span class="c1"># define a velocity model</span>
+<span class="n">velmod</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nx</span><span class="p">):</span>
+  <span class="n">velmod</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">6.0</span><span class="p">,</span><span class="n">ny</span><span class="p">)</span>
+
+<span class="c1"># define the position of sources and receivers, e.g.,</span>
+<span class="n">recs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">30.4</span><span class="p">,</span> <span class="mf">22.3</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mf">10.1</span><span class="p">,</span>  <span class="mf">20.0</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mf">12.4</span><span class="p">,</span>  <span class="mf">9.5</span><span class="p">]])</span>
+<span class="n">srcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span> <span class="mf">3.4</span><span class="p">,</span>  <span class="mf">2.3</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mf">42.4</span><span class="p">,</span> <span class="mf">15.5</span><span class="p">]])</span>
+<span class="c1">## calculate all traveltimes</span>
+<span class="n">ttpick</span><span class="p">,</span><span class="n">ttime</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">traveltime</span><span class="p">(</span><span class="n">velmod</span><span class="p">,</span><span class="n">gridpar</span><span class="p">,</span><span class="n">srcs</span><span class="p">,</span><span class="n">recs</span><span class="p">)</span>
+
+<span class="c1">## now trace rays (ttime contains a set of 2D traveltime arrays)</span>
+<span class="n">rays</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">traceallrays</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">srcs</span><span class="p">,</span><span class="n">recs</span><span class="p">,</span><span class="n">ttime</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The computed rays take ray bending in a heterogeneous media into account (in the limit of the grid cell size).
+The output <code class="docutils literal notranslate"><span class="pre">rays</span></code> is an array of objects where the number of objects corresponds to the number of receivers. Each object is in turn an array with as many elements as the number of sources. Each of this elements contains all the information relative to a single ray: the coordinates of the points of the ray, the indices of which cells it crosses and the length of the segments in such cells.</p>
+<p>The function <code class="xref py py-func docutils literal notranslate"><span class="pre">pestoseis.plotrays()</span></code> ` is used to visualize the results::</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">plotrays</span><span class="p">(</span><span class="n">srcs</span><span class="p">,</span><span class="n">recs</span><span class="p">,</span><span class="n">rays</span><span class="p">)</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/rays1.png"><img alt="_images/rays1.png" src="_images/rays1.png" style="width: 400px;" />
+</a>
+</figure>
+</section>
+<section id="trace-straight-rays">
+<h3>Trace <em>straight</em> rays<a class="headerlink" href="#trace-straight-rays" title="Link to this heading"></a></h3>
+<p>A very common simplification to the non-linear formulation of the travel time inegral is to invoke the <em>straight-ray approximation</em> by linearizing the integral with respect to the ray path, fixing the geometry of a ray to a straight line between a source and a receiver. This simplifies the integral formulation to</p>
+<div class="math notranslate nohighlight">
+\[t_i=\int_{\Gamma_i}s(\mathbf{x}(l))dl,\]</div>
+<p>with <span class="math notranslate nohighlight">\(t_i\)</span> being the traveltime of the ith ray. On the grid, the discrete formulation of this integral is given by the sum</p>
+<div class="math notranslate nohighlight">
+\[t_i=\sum_{j=1}^nl_{ij}s_j,\]</div>
+<p>where <span class="math notranslate nohighlight">\(l_{ij}\)</span> is the segment of ray <span class="math notranslate nohighlight">\(i\)</span> in cell <span class="math notranslate nohighlight">\(j\)</span> and <span class="math notranslate nohighlight">\(n\)</span> is the total number of cells. To trace straight rays, use the function <a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.traceall_straight_rays" title="pestoseis.ttimerays.traceall_straight_rays"><code class="xref py py-func docutils literal notranslate"><span class="pre">pestoseis.ttimerays.traceall_straight_rays()</span></code></a>.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># import the traveltime-rays sub-module</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pestoseis.ttimerays</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="c1"># import the plotting library</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
+
+<span class="c1"># create a 2D grid with 50x30 cells</span>
+<span class="n">nx</span><span class="p">,</span><span class="n">ny</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span><span class="mi">30</span>
+<span class="c1"># size of the cells</span>
+<span class="n">dh</span> <span class="o">=</span> <span class="mf">5.5</span>
+<span class="c1"># origin of grid axes</span>
+<span class="n">xinit</span><span class="p">,</span><span class="n">yinit</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span>
+
+<span class="c1"># create the dictionary containing the grid parameters</span>
+<span class="n">gridpar</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">setupgrid</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">dh</span><span class="p">,</span> <span class="n">xinit</span><span class="p">,</span> <span class="n">yinit</span><span class="p">)</span>
+
+<span class="c1"># define a velocity model</span>
+<span class="n">velmod</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nx</span><span class="p">):</span>
+  <span class="n">velmod</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">6.0</span><span class="p">,</span><span class="n">ny</span><span class="p">)</span>
+
+<span class="c1"># define the position of sources and receivers, e.g.,</span>
+<span class="n">recs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">30.4</span><span class="p">,</span> <span class="mf">22.3</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mf">10.1</span><span class="p">,</span>  <span class="mf">20.0</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mf">12.4</span><span class="p">,</span>  <span class="mf">9.5</span><span class="p">]])</span>
+<span class="n">srcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span> <span class="mf">3.4</span><span class="p">,</span>  <span class="mf">2.3</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mf">42.4</span><span class="p">,</span> <span class="mf">15.5</span><span class="p">]])</span>
+
+<span class="c1">## now trace straight rays</span>
+<span class="n">rays</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">traceall_straight_rays</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">srcs</span><span class="p">,</span><span class="n">recs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The output <code class="docutils literal notranslate"><span class="pre">rays</span></code> has the same structure than the output of <a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.traceallrays" title="pestoseis.ttimerays.traceallrays"><code class="xref py py-func docutils literal notranslate"><span class="pre">pestoseis.ttimerays.traceallrays()</span></code></a>: see above for a description.
+The function <code class="xref py py-func docutils literal notranslate"><span class="pre">pestoseis.plotrays()</span></code> ` is used to visualize the results::</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">plotrays</span><span class="p">(</span><span class="n">srcs</span><span class="p">,</span><span class="n">recs</span><span class="p">,</span><span class="n">rays</span><span class="p">)</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/straightrays1.png"><img alt="_images/straightrays1.png" src="_images/straightrays1.png" style="width: 400px;" />
+</a>
+</figure>
+</section>
+<section id="trace-rays-in-a-horizontally-layered-medium">
+<h3>Trace rays in a <em>horizontally layered</em> medium<a class="headerlink" href="#trace-rays-in-a-horizontally-layered-medium" title="Link to this heading"></a></h3>
+<p>As a third option to trace rays, Pestoseis offers the possibility to compute ray paths, traveltime and the distance covered in  a horizonally layered medium. Provided the depths of the layers and their velocity, the function <a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.tracerayhorlay" title="pestoseis.ttimerays.tracerayhorlay"><code class="xref py py-func docutils literal notranslate"><span class="pre">pestoseis.ttimerays.tracerayhorlay()</span></code></a> applies Snell’s law <span class="math notranslate nohighlight">\(\text{sin}\theta_1s_1=\text{sin}\theta_2s_2\)</span>, with <span class="math notranslate nohighlight">\(\theta_1\)</span> being the angle of incidence in layer 1 with slowness <span class="math notranslate nohighlight">\(s_1\)</span> and <span class="math notranslate nohighlight">\(\theta_2\)</span> being the angle of transmission in layer 2 with slowness <span class="math notranslate nohighlight">\(s_2\)</span>, repeatedly for each interface the ray encounters. The geometrical setup is the following:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/geom-rays-horlayers.png"><img alt="_images/geom-rays-horlayers.png" src="_images/geom-rays-horlayers.png" style="width: 300px;" />
+</a>
+</figure>
+<p>As an input, the angle <em>theta</em> being the take off angle, measured anti-clockwise from the vertical as well as the number of horizontal layers, the depth location of the indicidual interfaces and the velocity within each layer are required.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pestoseis.ttimerays</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="c1"># number of layers</span>
+<span class="n">Nlay</span> <span class="o">=</span> <span class="mi">120</span>
+<span class="c1"># depth of layers -- includes both top and bottom (Nlay+1)</span>
+<span class="n">laydepth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">2000.0</span><span class="p">,</span><span class="n">Nlay</span><span class="o">+</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+<span class="c1"># velocity</span>
+<span class="n">vel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">2000.0</span><span class="p">,</span><span class="mf">3000.0</span><span class="p">,</span><span class="n">Nlay</span><span class="p">)</span>
+<span class="c1"># origin of ray</span>
+<span class="n">xystart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+<span class="c1"># take off angle</span>
+<span class="n">takeoffangle</span> <span class="o">=</span> <span class="mf">45.0</span>
+
+<span class="c1"># trace a single ray</span>
+<span class="n">raypath</span><span class="p">,</span><span class="n">tt</span><span class="p">,</span><span class="n">dist</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">tracerayhorlay</span><span class="p">(</span><span class="n">laydepth</span><span class="p">,</span> <span class="n">vel</span><span class="p">,</span> <span class="n">xystart</span><span class="p">,</span> <span class="n">takeoffangle</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To show the ray path a simple plot can be created::</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">raypath</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">raypath</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;.-&#39;</span><span class="p">)</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/horrays1.png"><img alt="_images/horrays1.png" src="_images/horrays1.png" style="width: 500px;" />
+</a>
+</figure>
+</section>
+<section id="ray-tomography">
+<h3>Ray tomography<a class="headerlink" href="#ray-tomography" title="Link to this heading"></a></h3>
+<p>The previously computed traveltimes and rays can be used to set up a tomographic problem. PestoSeis provides the function <a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.lininv" title="pestoseis.ttimerays.lininv"><code class="xref py py-func docutils literal notranslate"><span class="pre">pestoseis.ttimerays.lininv()</span></code></a> to perform a simple linear inversion under Gaussian assumptions (least squares approach). In order to run the inversion the <cite>tomography matrix</cite> (containing the length of the rays in each cell), the prior mean model and covariances for observed data and model parameters are needed. If we imagine to perform an experiment using a grid of <span class="math notranslate nohighlight">\(n\)</span> cells and a total number of <span class="math notranslate nohighlight">\(m\)</span> source-receiver pairs, resulting in <span class="math notranslate nohighlight">\(m\)</span> rays, then we can leverage the benefit of the linear forward problem by building a linear system of equations</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{eqnarray}
+   \begin{gathered}
+      t_1=l_{11}s_1+\dots+l_{1j}s_{j}+\dots+l_{1n}s_n \\
+      \vdots \\
+      t_i=l_{i1}s_1+\dots+l_{ij}s_{j}+\dots+l_{in}s_n \\
+      \vdots \\
+      t_m=l_{m1}s_1+\dots+l_{mj}s_{j}+\dots+l_{mn}s_n.
+   \end{gathered}
+\end{eqnarray}\end{split}\]</div>
+<p>This can be condensed to matrix vector notation by introducing the forward modelling matrix <span class="math notranslate nohighlight">\(\mathbf{G}\)</span> of dimensions <span class="math notranslate nohighlight">\(m\times n\)</span> that collects all line segments <span class="math notranslate nohighlight">\(l_{ij}\)</span> for every source-receiver pair as</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{d}_{\text{obs}}=\mathbf{G}\mathbf{m},\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{d}_{\text{obs}}\)</span> is the vector of observed traveltimes from every source to every receiver and <span class="math notranslate nohighlight">\(\mathbf{m}\)</span> is the model vector containing the slowness map that is supposed to be inferred in the inversion.</p>
+<p>After calculating the rays using <a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.traceallrays" title="pestoseis.ttimerays.traceallrays"><code class="xref py py-func docutils literal notranslate"><span class="pre">pestoseis.ttimerays.traceallrays()</span></code></a> the tomography matrix <span class="math notranslate nohighlight">\(\mathbf{G}\)</span> can be built subsequently using <a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.buildtomomat" title="pestoseis.ttimerays.buildtomomat"><code class="xref py py-func docutils literal notranslate"><span class="pre">pestoseis.ttimerays.buildtomomat()</span></code></a>. This kind of inversion can be unstable. The model that fits the data best is the one that minimizes the <em>least-squares misfit functional</em></p>
+<div class="math notranslate nohighlight">
+\[S( \mathbf{m}) = \frac{1}{2} ( \mathbf{G} \mathbf{m} - \mathbf{d}_{\sf{obs}} )^{\sf{T}}
+\mathbf{C}^{-1}_{\rm{D}} ( \mathbf{G} \mathbf{m} - \mathbf{d}_{\sf{obs}} )
++ \frac{1}{2} ( \mathbf{m} - \mathbf{m}_{\sf{prior}} )^{\sf{T}} \mathbf{C}^{-1}_{\rm{M}}
+  ( \mathbf{m} - \mathbf{m}_{\sf{prior}} ).\]</div>
+<p>The results are the posterior mean model and covariance matrix (we are under Gaussian assumptions).</p>
+<p>The posterior covariance matrix is given by</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{\widetilde{C}}_{\rm{M}} =  \left( \mathbf{G}^{\sf{T}} \,
+\mathbf{C}^{-1}_{\rm{D}} \, \mathbf{G} + \mathbf{C}^{-1}_{\rm{M}} \right)^{-1}\]</div>
+<p>and the center of posterior Gaussian (the mean model) is</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{\widetilde{m}}
+= \mathbf{m}_{\rm{prior}}+ \mathbf{\widetilde{C}}_{\rm{M}} \, \mathbf{G}^{\sf{T}} \, \mathbf{C}^{-1}_{\rm{D}} \left(\mathbf{d}_{\rm{obs}} - \mathbf{G} \mathbf{m}_{\rm{prior}} \right) .\]</div>
+<p>The functions provided for performing a tomographic inversion can be used as following. For a complete example see the relevant Jupyter notebook in the Tutorials section.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">...</span><span class="p">]</span>
+
+<span class="c1"># trace rays</span>
+<span class="n">rays</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">traceallrays</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">sources</span><span class="p">,</span><span class="n">receivers</span><span class="p">,</span><span class="n">bkgttimegrd</span><span class="p">)</span>
+<span class="c1"># build the tomography matrix</span>
+<span class="n">tomomat</span><span class="p">,</span><span class="n">residualsvector</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">buildtomomat</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span> <span class="n">rays</span><span class="p">,</span> <span class="n">residuals</span><span class="p">)</span>
+
+<span class="c1"># Perform the actual inversion using a &quot;least-squares&quot; approach</span>
+<span class="n">postm</span><span class="p">,</span><span class="n">postC_m</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">lininv</span><span class="p">(</span><span class="n">tomomat</span><span class="p">,</span><span class="n">cov_m</span><span class="p">,</span><span class="n">cov_d</span><span class="p">,</span><span class="n">mprior</span><span class="p">,</span><span class="n">residualsvector</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation — loading the module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="seismicwaves2d_guide.html" class="btn btn-neutral float-right" title="Seismic wave propagation – using seismicwaves2d" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Andrea Zunino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

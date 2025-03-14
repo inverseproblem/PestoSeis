@@ -1,0 +1,329 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial 03 - Velocity inversion &mdash; PestoSeis 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=83a61292"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial 04 - Medical Ultrasound - Calculate travel times using the USCT setup" href="Tutorial%2004%20-%20Medical%20Ultrasound%20-%20Calculate%20travel%20times%20using%20the%20USCT%20setup.html" />
+    <link rel="prev" title="Tutorial 02 - Trace rays" href="Tutorial%2002%20-%20Trace%20rays.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PestoSeis
+              <img src="../_static/PestoSeisLogo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation — loading the module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ttimerays_guide.html">Traveltimes and rays – using <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../seismicwaves2d_guide.html">Seismic wave propagation – using <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Tutorial%2001%20-%20Earthquake%20location.html">Tutorial 01 - Earthquake location</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial%2002%20-%20Trace%20rays.html">Tutorial 02 - Trace rays</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tutorial 03 - Velocity inversion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#1.-Problem-Setup">1. Problem Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#2.-Trace-Ray-Paths">2. Trace Ray Paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#3.-Build-the-Tomography-Matrix">3. Build the Tomography Matrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#4.-Perform-the-Least-Squares-Inversion">4. Perform the Least-Squares Inversion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#5.-Plotting-the-Results">5. Plotting the Results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial%2004%20-%20Medical%20Ultrasound%20-%20Calculate%20travel%20times%20using%20the%20USCT%20setup.html">Tutorial 04 - Medical Ultrasound - Calculate travel times using the USCT setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial%2005%20-%20Acoustic%20Wave%20Propagation.html">Tutorial 05 - Acoustic Wave Propagation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial%2006%20-%20Elastic%20Wave%20Propagation.html">Tutorial 06 - Elastic Wave Propagation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial%2007%20-%20Processing%20seismic%20data%20I.html">Tutorial 07 - Processing seismic data I</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial%2008%20-%20Processing%20seismic%20data%20II.html">Tutorial 08 - Processing seismic data II</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../API/index.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerdocs.html">Developer zone</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PestoSeis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tutorials.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Tutorial 03 - Velocity inversion</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/Tutorial 03 - Velocity inversion.ipynb" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p><a class="reference external" href="/home/runner/work/PestoSeis/PestoSeis/docs/source/notebooks/Tutorial%2003%20-%20Velocity%20inversion.ipynb">Download This Notebook</a></p>
+<section id="Tutorial-03---Velocity-inversion">
+<h1>Tutorial 03 - Velocity inversion<a class="headerlink" href="#Tutorial-03---Velocity-inversion" title="Link to this heading"></a></h1>
+<p>Starting out by importing the relevant modules we’ll need for this exercise:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pestoseis.ttimerays</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tr</span>
+</pre></div>
+</div>
+</div>
+<section id="1.-Problem-Setup">
+<h2>1. Problem Setup<a class="headerlink" href="#1.-Problem-Setup" title="Link to this heading"></a></h2>
+<p>The objective of this exercise is to retrieve the velocity model for the given traveltimes. In other words, we want to solve the inverse problem of finding the structure of the Earth from some set of observed measurements.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">i</span> <span class="o">=</span> <span class="mi">3</span> <span class="c1"># 1 2 3</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;inputdata/exe3_input_model_</span><span class="si">{}</span><span class="s1">.npy&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+inputdata/exe3_input_model_3.npy
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inpdat</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="n">gridpar</span><span class="o">=</span><span class="n">inpdat</span><span class="p">[</span><span class="s1">&#39;gridpar&#39;</span><span class="p">]</span>
+<span class="n">sources</span><span class="o">=</span><span class="n">inpdat</span><span class="p">[</span><span class="s1">&#39;srcs&#39;</span><span class="p">]</span>
+<span class="n">receivers</span><span class="o">=</span><span class="n">inpdat</span><span class="p">[</span><span class="s1">&#39;recs&#39;</span><span class="p">]</span>
+<span class="n">bkgttimegrd</span><span class="o">=</span><span class="n">inpdat</span><span class="p">[</span><span class="s1">&#39;bkgttimegrd&#39;</span><span class="p">]</span>
+<span class="n">bkgttpick</span><span class="o">=</span><span class="n">inpdat</span><span class="p">[</span><span class="s1">&#39;bkgttpick&#39;</span><span class="p">]</span>
+<span class="n">cov_m</span><span class="o">=</span><span class="n">inpdat</span><span class="p">[</span><span class="s1">&#39;cov_m&#39;</span><span class="p">]</span>
+<span class="n">cov_d</span><span class="o">=</span><span class="n">inpdat</span><span class="p">[</span><span class="s1">&#39;cov_d&#39;</span><span class="p">]</span>
+<span class="n">mprior</span><span class="o">=</span><span class="n">inpdat</span><span class="p">[</span><span class="s1">&#39;mprior&#39;</span><span class="p">]</span>
+<span class="n">residuals</span><span class="o">=</span><span class="n">inpdat</span><span class="p">[</span><span class="s1">&#39;residuals&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="2.-Trace-Ray-Paths">
+<h2>2. Trace Ray Paths<a class="headerlink" href="#2.-Trace-Ray-Paths" title="Link to this heading"></a></h2>
+<p>Trace the rays in the given background velocity model. This background velocity model serves as a first <em>guess</em> of the structure of the subsurface. This model is used to <em>fix</em> the path of the rays, but not the velocity structures within the domain. The subsequent inversion process will refine the velocity structures that we see in the domain.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rays</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">traceallrays</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">sources</span><span class="p">,</span><span class="n">receivers</span><span class="p">,</span><span class="n">bkgttimegrd</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+tracing rays for source 23 of 23
+</pre></div></div>
+</div>
+</section>
+<section id="3.-Build-the-Tomography-Matrix">
+<h2>3. Build the Tomography Matrix<a class="headerlink" href="#3.-Build-the-Tomography-Matrix" title="Link to this heading"></a></h2>
+<p>To compute the inverse problem, we need to construct a tomography matrix that we can use as an input into the least-squares solver.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tomomat</span><span class="p">,</span><span class="n">residualsvector</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">buildtomomat</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span> <span class="n">rays</span><span class="p">,</span> <span class="n">residuals</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Building forward matrix
+</pre></div></div>
+</div>
+</section>
+<section id="4.-Perform-the-Least-Squares-Inversion">
+<h2>4. Perform the Least-Squares Inversion<a class="headerlink" href="#4.-Perform-the-Least-Squares-Inversion" title="Link to this heading"></a></h2>
+<p>This step performs the actual inversion using a least-squares solver. The objective function of this inverse problem is defined as</p>
+<div class="math notranslate nohighlight">
+\[S(\mathbf{m}) = \frac{1}{2} \left( \mathbf{G} \mathbf{m} - \mathbf{d}_\text{obs} \right)^\intercal \mathbf{C}_\text{D}^{-1} \left( \mathbf{G} \mathbf{m} - \mathbf{d}_\text{obs} \right) + \frac{1}{2} \left( \mathbf{m} - \mathbf{m}_\text{prior} \right)^\intercal \mathbf{C}_\text{M}^{-1} \left( \mathbf{m} - \mathbf{m}_\text{prior} \right).\]</div>
+<p> Furthermore, the posterior covariance matrix is given by</p>
+<div class="math notranslate nohighlight">
+\[\tilde{\mathbf{C}}_\text{M} = \left( \mathbf{G}^\intercal \mathbf{C}_\text{D}^{-1} \mathbf{G} + \mathbf{G}_\text{M}^{-1} \right)^{-1}\]</div>
+<p> and the center of the posterior Gaussian (the mean model) is given by</p>
+<div class="math notranslate nohighlight">
+\[\tilde{\mathbf{m}} = \mathbf{m}_\text{prior} + \tilde{\mathbf{C}}_\text{M} \mathbf{G}^\intercal \mathbf{C}_\text{D}^{-1} \left(\mathbf{d}_\text{obs} - \mathbf{G} \mathbf{m}_\text{prior} \right).\]</div>
+<p> These computations are handled internally when executing <code class="docutils literal notranslate"><span class="pre">lininv()</span></code> within the <code class="docutils literal notranslate"><span class="pre">pestoseis.ttimerays</span></code> submodule.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">postm</span><span class="p">,</span><span class="n">postC_m</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">lininv</span><span class="p">(</span><span class="n">tomomat</span><span class="p">,</span><span class="n">cov_m</span><span class="p">,</span><span class="n">cov_d</span><span class="p">,</span><span class="n">mprior</span><span class="p">,</span><span class="n">residualsvector</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Computing posterior mean model and covariance...
+</pre></div></div>
+</div>
+</section>
+<section id="5.-Plotting-the-Results">
+<h2>5. Plotting the Results<a class="headerlink" href="#5.-Plotting-the-Results" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.gridspec</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gridspec</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">17</span><span class="p">))</span>
+<span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span>
+<span class="n">gs</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Traveltimes&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">residuals</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">residuals</span><span class="p">[</span><span class="n">i</span><span class="p">][:],</span><span class="s1">&#39;.-&#39;</span><span class="p">)</span><span class="c1">#,label=&#39;src {}&#39;.format(i))</span>
+    <span class="c1">#plt.plot(bkgttpick[i][:],&#39;-&#39;)</span>
+    <span class="c1">#plt.plot(ttpickmat[i*nrec:(i+1)*nrec],&#39;-k&#39;)</span>
+<span class="c1">#plt.legend()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Grid, rays&#39;</span><span class="p">)</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">plotrays</span><span class="p">(</span><span class="n">sources</span><span class="p">,</span><span class="n">receivers</span><span class="p">,</span><span class="n">rays</span><span class="p">)</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">plotgrid</span><span class="p">(</span><span class="n">gridpar</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">,:</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Prior model&#39;</span><span class="p">)</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">plotvelmod</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="mf">1.0</span><span class="o">/</span><span class="n">tr</span><span class="o">.</span><span class="n">rollmod</span><span class="p">(</span><span class="n">mprior</span><span class="p">,</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;nx&#39;</span><span class="p">],</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;ny&#39;</span><span class="p">]))</span>
+<span class="c1">#tr.plotrays(sources,receivers,rays)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">,:</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Posterior mean model&#39;</span><span class="p">)</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">plotvelmod</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="mf">1.0</span><span class="o">/</span><span class="n">tr</span><span class="o">.</span><span class="n">rollmod</span><span class="p">(</span><span class="n">postm</span><span class="p">,</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;nx&#39;</span><span class="p">],</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;ny&#39;</span><span class="p">]))</span>
+<span class="c1">#tr.plotrays(sources,receivers,rays)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;cov_d&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cov_d</span><span class="p">,</span><span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span><span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;cov_m&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cov_m</span><span class="p">,</span><span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span><span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;tomomat&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">tomomat</span><span class="p">,</span><span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span><span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+
+<span class="c1"># plt.figure()</span>
+<span class="c1"># ref= np.load(&#39;refmod_lowres.npy&#39;)</span>
+<span class="c1"># plotvelmod(gridpar,ref)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Tutorial_03_-_Velocity_inversion_13_0.png" src="../_images/notebooks_Tutorial_03_-_Velocity_inversion_13_0.png" />
+</div>
+</div>
+<p>In the above plots we can see the how we were able to take a fairly rough starting model (containing a pretty approximate estimate of the shape of the model) and then refined this within the subsequent inversions.</p>
+<p>Try to re-run the notebook with different value of <code class="docutils literal notranslate"><span class="pre">i</span></code>. i.e., with different input datasets.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Tutorial%2002%20-%20Trace%20rays.html" class="btn btn-neutral float-left" title="Tutorial 02 - Trace rays" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Tutorial%2004%20-%20Medical%20Ultrasound%20-%20Calculate%20travel%20times%20using%20the%20USCT%20setup.html" class="btn btn-neutral float-right" title="Tutorial 04 - Medical Ultrasound - Calculate travel times using the USCT setup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Andrea Zunino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

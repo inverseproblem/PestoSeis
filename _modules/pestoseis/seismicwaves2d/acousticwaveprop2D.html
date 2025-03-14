@@ -1,0 +1,1312 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pestoseis.seismicwaves2d.acousticwaveprop2D &mdash; PestoSeis 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=83a61292"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PestoSeis
+              <img src="../../../_static/PestoSeisLogo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation — loading the module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ttimerays_guide.html">Traveltimes and rays – using <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../seismicwaves2d_guide.html">Seismic wave propagation – using <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/index.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developerdocs.html">Developer zone</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PestoSeis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pestoseis.seismicwaves2d.acousticwaveprop2D</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pestoseis.seismicwaves2d.acousticwaveprop2D</h1><div class="highlight"><pre>
+<span></span>
+<span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#    PestoSeis, a numerical laboratory to learn about seismology, written</span>
+<span class="c1">#    in the Python language.</span>
+<span class="c1">#    Copyright (C) 2021  Andrea Zunino </span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#    it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#    (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#    GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#    You should have received a copy of the GNU General Public License</span>
+<span class="c1">#    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions to calculate acoustic wave propagation in 2D</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1">#######################################################################</span>
+<span class="c1">#######################################################################</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">h5</span>
+
+<span class="c1">#############################################################################</span>
+<span class="c1">#############################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_bilinear_interp</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">hgrid</span><span class="p">,</span> <span class="n">pt</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Bilinear interpolation (2D).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xreq</span><span class="o">=</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">yreq</span><span class="o">=</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">xh</span><span class="o">=</span><span class="n">xreq</span><span class="o">/</span><span class="n">hgrid</span>
+    <span class="n">yh</span><span class="o">=</span><span class="n">yreq</span><span class="o">/</span><span class="n">hgrid</span>
+    <span class="n">i</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">xh</span><span class="p">))</span> <span class="c1"># index starts from 0 so no +1</span>
+    <span class="n">j</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">yh</span><span class="p">))</span> <span class="c1"># index starts from 0 so no +1</span>
+    <span class="n">xd</span><span class="o">=</span><span class="n">xh</span><span class="o">-</span><span class="n">i</span> <span class="c1"># index starts from 0 so no +1</span>
+    <span class="n">yd</span><span class="o">=</span><span class="n">yh</span><span class="o">-</span><span class="n">j</span> <span class="c1"># index starts from 0 so no +1</span>
+    <span class="n">intval</span><span class="o">=</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">xd</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">yd</span><span class="p">)</span><span class="o">+</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">yd</span><span class="p">)</span><span class="o">*</span><span class="n">xd</span><span class="o">+</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">xd</span><span class="p">)</span><span class="o">*</span><span class="n">yd</span><span class="o">+</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">xd</span><span class="o">*</span><span class="n">yd</span>
+    <span class="c1">#print xreq,yreq,xh,yh,i,j,xd,yd    </span>
+    <span class="k">return</span> <span class="n">intval</span>
+
+<span class="c1">#############################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_initGaussboundcon</span><span class="p">(</span><span class="n">nptsgau</span><span class="o">=</span><span class="mi">60</span> <span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initialize Gaussian taper boundary conditions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1">## Damping region size in grid points</span>
+    <span class="c1">##nptsgau = 50 #21</span>
+    <span class="c1">### decay = 0.015 and 20-30 pts is a tipical value found in literature...</span>
+    <span class="c1">### decay = 0.0053 and 60 pts was found on the web...</span>
+    <span class="n">decay</span> <span class="o">=</span> <span class="mf">0.25</span><span class="o">/</span><span class="n">nptsgau</span>  <span class="c1">## 0.24/nptsgau  #0.48/nptsgau</span>
+    
+    <span class="n">xdist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">nptsgau</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">damp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span> <span class="o">-</span><span class="p">((</span><span class="n">decay</span> <span class="o">*</span> <span class="p">(</span><span class="n">nptsgau</span> <span class="o">-</span> <span class="n">xdist</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="n">leftdp</span>   <span class="o">=</span> <span class="n">damp</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">rightdp</span>  <span class="o">=</span> <span class="n">damp</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">bottomdp</span> <span class="o">=</span> <span class="n">damp</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">topdp</span>    <span class="o">=</span> <span class="n">damp</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># import matplotlib.pyplot as plt</span>
+    <span class="c1"># plt.figure()</span>
+    <span class="c1"># plt.plot(damp)</span>
+    <span class="c1"># plt.show()</span>
+
+    <span class="k">return</span> <span class="n">nptsgau</span><span class="p">,</span><span class="n">leftdp</span><span class="p">,</span><span class="n">rightdp</span><span class="p">,</span><span class="n">bottomdp</span><span class="p">,</span><span class="n">topdp</span>
+
+<span class="c1">#############################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_calc_Kab_CPML</span><span class="p">(</span><span class="n">nptspml</span><span class="p">,</span><span class="n">gridspacing</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">Npower</span><span class="p">,</span><span class="n">d0</span><span class="p">,</span>
+                       <span class="n">alpha_max_pml</span><span class="p">,</span><span class="n">K_max_pml</span><span class="p">,</span><span class="n">onwhere</span> <span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">      Initialize/calculate the C-PML coefficients for boundary conditions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># L = thickness of adsorbing layer</span>
+    <span class="k">if</span> <span class="n">onwhere</span><span class="o">==</span><span class="s2">&quot;grdpts&quot;</span> <span class="p">:</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">nptspml</span><span class="o">*</span><span class="n">gridspacing</span>
+        <span class="c1"># distances </span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="n">nptspml</span><span class="o">*</span><span class="n">gridspacing</span><span class="p">,</span><span class="n">gridspacing</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">onwhere</span><span class="o">==</span><span class="s2">&quot;halfgrdpts&quot;</span> <span class="p">:</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">nptspml</span><span class="o">*</span><span class="n">gridspacing</span>
+        <span class="c1"># distances </span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">gridspacing</span><span class="o">/</span><span class="mf">2.0</span><span class="p">,</span><span class="n">nptspml</span><span class="o">*</span><span class="n">gridspacing</span><span class="p">,</span><span class="n">gridspacing</span><span class="p">)</span>
+        
+    <span class="n">d</span> <span class="o">=</span> <span class="n">d0</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="n">L</span><span class="p">)</span><span class="o">**</span><span class="n">Npower</span>    
+    <span class="n">alpha</span> <span class="o">=</span>  <span class="n">alpha_max_pml</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="n">L</span><span class="p">))</span> <span class="c1"># + 0.1 * alpha_max_pml ????</span>
+
+    <span class="n">K</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="p">(</span><span class="n">K_max_pml</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="n">L</span><span class="p">)</span><span class="o">**</span><span class="n">Npower</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span> <span class="o">-</span> <span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="n">K</span> <span class="o">+</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt</span> <span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">d</span> <span class="o">*</span> <span class="p">(</span><span class="n">b</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">K</span><span class="o">*</span><span class="p">(</span><span class="n">d</span><span class="o">+</span><span class="n">K</span><span class="o">*</span><span class="n">alpha</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">K</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span>
+
+
+<span class="c1">#############################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">solveacoustic2D</span><span class="p">(</span><span class="n">inpar</span><span class="p">,</span> <span class="n">ijsrc</span><span class="p">,</span> <span class="n">Vp</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">sourcetf</span><span class="p">,</span> <span class="n">srcdomfreq</span><span class="p">,</span> <span class="n">recpos</span><span class="p">,</span><span class="n">saveh5</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">outfileh5</span><span class="o">=</span><span class="s2">&quot;acoustic_snapshots.h5&quot;</span><span class="p">):</span>
+
+    <span class="k">raise</span><span class="p">(</span><span class="s2">&quot;Acoustic - density and Vp: To be implemented...&quot;</span><span class="p">)</span>
+    <span class="c1">#_solveacouwaveq2D_Vp_density_CPML( inpar, ijsrc, Vp, density, sourcetf, srcdomfreq, recpos )</span>
+    <span class="k">return</span>
+
+<span class="c1">#############################################################################</span>
+
+<div class="viewcode-block" id="solveacoustic2D">
+<a class="viewcode-back" href="../../../API/seismicwaves2d.html#pestoseis.seismicwaves2d.solveacoustic2D">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">solveacoustic2D</span><span class="p">(</span> <span class="n">inpar</span><span class="p">,</span> <span class="n">ijsrc</span><span class="p">,</span> <span class="n">velmod</span><span class="p">,</span> <span class="n">sourcetf</span><span class="p">,</span> <span class="n">srcdomfreq</span><span class="p">,</span> <span class="n">recpos</span><span class="p">,</span> <span class="n">saveh5</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">outfileh5</span><span class="o">=</span><span class="s2">&quot;acoustic_snapshots.h5&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solve the acoustic wave equation in 2D using finite differences on a staggered grid. </span>
+<span class="sd">    Wrapper function for various boundary conditions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        inpar (dict): dictionary containing various input parameters</span>
+
+<span class="sd">                      * inpar[&quot;ntimesteps&quot;] (int) number of time steps</span>
+<span class="sd">                      * inpar[&quot;nx&quot;] (int) number of grid nodes in the x direction</span>
+<span class="sd">                      * inpar[&quot;nz&quot;] (int) number of grid nodes in the z direction</span>
+<span class="sd">                      * inpar[&quot;dt&quot;] (float) time step for the simulation</span>
+<span class="sd">                      * inpar[&quot;dh&quot;] (float) grid spacing (same in x and z)</span>
+<span class="sd">                      * inpar[&quot;savesnapshot&quot;] (bool) switch to save snapshots of the entire wavefield</span>
+<span class="sd">                      * inpar[&quot;snapevery&quot;] (int) save snapshots every &quot;snapevery&quot; iterations</span>
+<span class="sd">                      * inpar[&quot;freesurface&quot;] (bool) True for free surface boundary condition at the top, False for PML</span>
+<span class="sd">                      * inpar[&quot;boundcond&quot;] (string) Type of boundary conditions &quot;PML&quot;,&quot;GaussTap&quot; or &quot;ReflBou&quot;</span>
+<span class="sd">        ijsrc (ndarray(int,int)): integers representing the position of the source on the grid</span>
+<span class="sd">        velmod (ndarray(nx,nz)): two-dimensional velocity model</span>
+<span class="sd">        sourcetf (ndarray): source time function</span>
+<span class="sd">        srcdomfreq (float): source dominant frequency</span>
+<span class="sd">        recpos (ndarray): position of the receivers, a two-column array [x,z]</span>
+<span class="sd">        saveh5 (bool): whether to save results to HDF5 file or not</span>
+<span class="sd">        outfileh5 (string): name of the output HDF5 file</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        seism (ndarray): seismograms recorded at the receivers</span>
+<span class="sd">        psave (ndarray): set of snapshots of the wavefield (if inpar[&quot;savesnapshot&quot;]==True)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;boundcond&quot;</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;PML&quot;</span> <span class="p">:</span>
+        <span class="n">seism</span><span class="p">,</span><span class="n">psave</span> <span class="o">=</span> <span class="n">_solveacouwaveq2D_CPML</span><span class="p">(</span> <span class="n">inpar</span><span class="p">,</span> <span class="n">ijsrc</span><span class="p">,</span> <span class="n">velmod</span><span class="p">,</span> <span class="n">sourcetf</span><span class="p">,</span> <span class="n">srcdomfreq</span><span class="p">,</span> <span class="n">recpos</span> <span class="p">)</span> 
+
+    <span class="k">elif</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;boundcond&quot;</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;GaussTap&quot;</span> <span class="p">:</span>
+        <span class="n">seism</span><span class="p">,</span><span class="n">psave</span> <span class="o">=</span> <span class="n">_solveacouwaveq2D_GaussTaper</span><span class="p">(</span> <span class="n">inpar</span><span class="p">,</span> <span class="n">ijsrc</span><span class="p">,</span> <span class="n">velmod</span><span class="p">,</span> <span class="n">sourcetf</span><span class="p">,</span> <span class="n">srcdomfreq</span><span class="p">,</span> <span class="n">recpos</span> <span class="p">)</span> 
+
+    <span class="k">elif</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;boundcond&quot;</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;ReflBou&quot;</span> <span class="p">:</span>
+        <span class="n">seism</span><span class="p">,</span><span class="n">psave</span> <span class="o">=</span> <span class="n">_solveacouwaveq2D_ReflBound</span><span class="p">(</span> <span class="n">inpar</span><span class="p">,</span> <span class="n">ijsrc</span><span class="p">,</span> <span class="n">velmod</span><span class="p">,</span> <span class="n">sourcetf</span><span class="p">,</span> <span class="n">srcdomfreq</span><span class="p">,</span> <span class="n">recpos</span> <span class="p">)</span>
+
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="k">raise</span><span class="p">(</span><span class="s2">&quot;Wrong boundary condition type&quot;</span><span class="p">)</span>
+
+    <span class="c1">##############################</span>
+    <span class="k">if</span> <span class="n">saveh5</span><span class="p">:</span>
+        <span class="c1">## save stuff</span>
+        <span class="n">hf</span> <span class="o">=</span> <span class="n">h5</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">outfileh5</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;savesnapshot&quot;</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span> <span class="p">:</span>
+            <span class="n">hf</span><span class="p">[</span><span class="s2">&quot;press&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">psave</span>
+            <span class="n">hf</span><span class="p">[</span><span class="s2">&quot;snapevery&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;snapevery&quot;</span><span class="p">]</span>
+        <span class="n">hf</span><span class="p">[</span><span class="s2">&quot;seism&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">seism</span>
+        <span class="n">hf</span><span class="p">[</span><span class="s2">&quot;vel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">velmod</span>
+        <span class="n">hf</span><span class="p">[</span><span class="s2">&quot;srctf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sourcetf</span>
+        <span class="n">hf</span><span class="p">[</span><span class="s2">&quot;dh&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;dh&quot;</span><span class="p">]</span>
+        <span class="n">hf</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">]</span>
+        <span class="n">hf</span><span class="p">[</span><span class="s2">&quot;nx&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nx&quot;</span><span class="p">]</span>
+        <span class="n">hf</span><span class="p">[</span><span class="s2">&quot;nz&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nz&quot;</span><span class="p">]</span>
+        <span class="n">hf</span><span class="p">[</span><span class="s2">&quot;recpos&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">recpos</span>
+        <span class="n">hf</span><span class="p">[</span><span class="s2">&quot;srcij&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ijsrc</span>
+        <span class="n">hf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved acoustic simulation and parameters to &quot;</span><span class="p">,</span><span class="n">outfileh5</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">seism</span><span class="p">,</span><span class="n">psave</span></div>
+
+
+<span class="c1">#############################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_solveacouwaveq2D_CPML</span><span class="p">(</span> <span class="n">inpar</span><span class="p">,</span> <span class="n">ijsrc</span><span class="p">,</span> <span class="n">vel</span><span class="p">,</span> <span class="n">sourcetf</span><span class="p">,</span> <span class="n">srcdomfreq</span><span class="p">,</span> <span class="n">recpos</span> <span class="p">)</span> <span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solve the acoustic wave equation in 2D using finite differences on a staggered grid. </span>
+<span class="sd">    CPML boundary conditions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        inpar (dict): dictionary containing various input parameters:</span>
+
+<span class="sd">                      * inpar[&quot;ntimesteps&quot;] (int) number of time steps</span>
+<span class="sd">                      * inpar[&quot;nx&quot;] (int) number of grid nodes in the x direction</span>
+<span class="sd">                      * inpar[&quot;nz&quot;] (int) number of grid nodes in the z direction</span>
+<span class="sd">                      * inpar[&quot;dt&quot;] (float) time step for the simulation</span>
+<span class="sd">                      * inpar[&quot;dh&quot;] (float) grid spacing (same in x and z)</span>
+<span class="sd">                      * inpar[&quot;savesnapshot&quot;] (bool) switch to save snapshots of the entire wavefield</span>
+<span class="sd">                      * inpar[&quot;snapevery&quot;] (int) save snapshots every &quot;snapevery&quot; iterations</span>
+<span class="sd">                      * inpar[&quot;freesurface&quot;] (bool) True for free surface boundary condition at the top, False for PML</span>
+<span class="sd">                      * inpar[&quot;boundcond&quot;] (string) Type of boundary conditions &quot;PML&quot; </span>
+<span class="sd">        ijsrc (ndarray(int,int)): integers representing the position of the source on the grid</span>
+<span class="sd">        vel (ndarray(nx,nz)): two-dimensional velocity model</span>
+<span class="sd">        sourcetf (ndarray): source time function</span>
+<span class="sd">        srcdomfreq (float): source dominant frequency</span>
+<span class="sd">        recpos (ndarray): position of the receivers, a two-column array [x,z]</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        seism (ndarray): seismograms recorded at the receivers</span>
+<span class="sd">        psave (ndarray): set of snapshots of the wavefield (if inpar[&quot;savesnapshot&quot;]==True)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">assert</span><span class="p">(</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;boundcond&quot;</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;PML&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting ACOUSTIC solver with CPML boundary condition.&quot;</span><span class="p">)</span>
+    
+    <span class="c1">##</span>
+    <span class="c1">## The second-order staggered-grid formulation of Madariaga (1976) and Virieux (1986) is used:</span>
+    <span class="c1">##</span>
+    <span class="c1">##          p          dp/dx       p   </span>
+    <span class="c1">##            +---------+---------+ ---&gt; x  </span>
+    <span class="c1">##            |         |         |</span>
+    <span class="c1">##            |         |         |</span>
+    <span class="c1">##            |         |         |</span>
+    <span class="c1">##            |         |         |</span>
+    <span class="c1">##            |         |         |</span>
+    <span class="c1">##      dp/dz +---------+         |</span>
+    <span class="c1">##            |                   |</span>
+    <span class="c1">##            |                   |</span>
+    <span class="c1">##            |                   |</span>
+    <span class="c1">##            |                   |</span>
+    <span class="c1">##            |                   |</span>
+    <span class="c1">##            +-------------------+  </span>
+    <span class="c1">##           p                     p</span>
+    <span class="c1">##            |</span>
+    <span class="c1">##            |</span>
+    <span class="c1">##            \/ z</span>
+    <span class="c1">##</span>
+
+    <span class="c1">#############################</span>
+    <span class="n">dh</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;dh&quot;</span><span class="p">]</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">dh</span>
+    <span class="n">dz</span> <span class="o">=</span> <span class="n">dh</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">]</span>
+
+    <span class="c1">##############################</span>
+    <span class="c1">## Check stability criterion</span>
+    <span class="c1">##############################</span>
+    <span class="n">maxvp</span> <span class="o">=</span> <span class="n">vel</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; Stability criterion, CFL number:&quot;</span><span class="p">,(</span><span class="n">maxvp</span><span class="o">*</span><span class="n">dt</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="o">/</span><span class="n">dz</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">maxvp</span><span class="o">*</span><span class="n">dt</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">dz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">)</span>
+    
+
+    <span class="c1">##############################</span>
+    <span class="c1">#   Parameters</span>
+    <span class="c1">##############################</span>
+    <span class="c1">## pml = c-pml, else reflsurf</span>
+    <span class="c1">## freesur = free surf for top</span>
+    <span class="k">if</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;freesurface&quot;</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span> <span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; * Free surface at the top *&quot;</span><span class="p">)</span>
+        <span class="n">freeboundtop</span><span class="o">=</span><span class="kc">True</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; * Absorbing boundary at the top *&quot;</span><span class="p">)</span>
+        <span class="n">freeboundtop</span><span class="o">=</span><span class="kc">False</span>
+
+    <span class="c1">##---------------------------</span>
+    <span class="n">f0</span> <span class="o">=</span> <span class="n">srcdomfreq</span> <span class="c1"># source</span>
+    
+    <span class="c1">## keep it simple for now...</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nx&quot;</span><span class="p">]</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nz&quot;</span><span class="p">]</span>
+    
+    <span class="c1">##############################</span>
+    <span class="c1">#   Parameters for PML</span>
+    <span class="c1">##############################</span>
+    <span class="n">nptspml_x</span> <span class="o">=</span> <span class="mi">21</span> <span class="c1">## 21 ref coeff set for 21 absorbing nodes</span>
+    <span class="n">nptspml_z</span> <span class="o">=</span> <span class="mi">21</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">nptspml_x</span><span class="o">&lt;</span><span class="n">ijsrc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="p">(</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">nptspml_x</span><span class="p">))</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">ijsrc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="p">(</span><span class="n">nz</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">nptspml_z</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">freeboundtop</span><span class="o">==</span><span class="kc">False</span><span class="p">:</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">nptspml_z</span><span class="o">&lt;</span><span class="n">ijsrc</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="nb">print</span><span class="p">((</span><span class="s2">&quot; Size of PML layers in grid points: </span><span class="si">{}</span><span class="s2"> in x and </span><span class="si">{}</span><span class="s2"> in z&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nptspml_x</span><span class="p">,</span><span class="n">nptspml_z</span><span class="p">)))</span>
+    
+    <span class="n">Npower</span> <span class="o">=</span> <span class="mf">2.0</span>
+    <span class="k">assert</span> <span class="n">Npower</span> <span class="o">&gt;=</span> <span class="mi">1</span>
+    
+    <span class="n">K_max_pml</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">alpha_max_pml</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">f0</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span> 
+    
+    <span class="c1"># reflection coefficient (INRIA report section 6.1)</span>
+    <span class="c1"># http://hal.inria.fr/docs/00/07/32/19/PDF/RR-3471.pdf</span>
+    <span class="n">Rcoef</span> <span class="o">=</span> <span class="mf">0.0001</span>  <span class="c1"># for 20 nodes   ## 0.001 for a PML thickness of 10 nodes</span>
+       
+    <span class="c1"># thickness of the PML layer in meters</span>
+    <span class="n">thickness_pml_x</span> <span class="o">=</span> <span class="n">nptspml_x</span> <span class="o">*</span> <span class="n">dx</span>
+    <span class="n">thickness_pml_z</span> <span class="o">=</span> <span class="n">nptspml_z</span> <span class="o">*</span> <span class="n">dz</span>
+    
+    <span class="c1"># compute d0 from INRIA report section 6.1 http://hal.inria.fr/docs/00/07/32/19/PDF/RR-3471.pdf</span>
+    <span class="n">d0_x</span> <span class="o">=</span> <span class="o">-</span> <span class="p">(</span><span class="n">Npower</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">maxvp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Rcoef</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">thickness_pml_x</span><span class="p">)</span>
+    <span class="n">d0_z</span> <span class="o">=</span> <span class="o">-</span> <span class="p">(</span><span class="n">Npower</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">maxvp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Rcoef</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">thickness_pml_z</span><span class="p">)</span>
+    
+    <span class="c1">##############################</span>
+    <span class="c1">#   Damping parameters</span>
+    <span class="c1">##############################    </span>
+    <span class="c1"># --- damping in the x direction ---</span>
+    <span class="c1"># assuming the number of grid points for PML is the same on </span>
+    <span class="c1">#    both sides    </span>
+    <span class="c1"># damping profile at the grid points</span>
+    <span class="n">K_xpml</span><span class="p">,</span><span class="n">a_xpml</span><span class="p">,</span><span class="n">b_xpml</span> <span class="o">=</span> <span class="n">_calc_Kab_CPML</span><span class="p">(</span><span class="n">nptspml_x</span><span class="p">,</span><span class="n">dh</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">Npower</span><span class="p">,</span><span class="n">d0_x</span><span class="p">,</span><span class="n">alpha_max_pml</span><span class="p">,</span><span class="n">K_max_pml</span><span class="p">,</span><span class="s2">&quot;grdpts&quot;</span><span class="p">)</span>
+    <span class="c1"># damping profile at half the grid points</span>
+    <span class="n">K_xpml_half</span><span class="p">,</span><span class="n">a_xpml_half</span><span class="p">,</span><span class="n">b_xpml_half</span> <span class="o">=</span> <span class="n">_calc_Kab_CPML</span><span class="p">(</span><span class="n">nptspml_x</span><span class="p">,</span><span class="n">dh</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">Npower</span><span class="p">,</span><span class="n">d0_x</span><span class="p">,</span><span class="n">alpha_max_pml</span><span class="p">,</span><span class="n">K_max_pml</span><span class="p">,</span><span class="s2">&quot;halfgrdpts&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># --- damping in the z direction ---</span>
+    <span class="c1"># assuming the number of grid points for PML is the same on</span>
+    <span class="c1"># both sides    </span>
+    <span class="c1"># damping profile at the grid points</span>
+    <span class="n">K_zpml</span><span class="p">,</span><span class="n">a_zpml</span><span class="p">,</span><span class="n">b_zpml</span> <span class="o">=</span> <span class="n">_calc_Kab_CPML</span><span class="p">(</span><span class="n">nptspml_z</span><span class="p">,</span><span class="n">dh</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">Npower</span><span class="p">,</span><span class="n">d0_z</span><span class="p">,</span><span class="n">alpha_max_pml</span><span class="p">,</span><span class="n">K_max_pml</span><span class="p">,</span><span class="s2">&quot;grdpts&quot;</span><span class="p">)</span>
+    <span class="c1"># damping profile at half the grid points</span>
+    <span class="n">K_zpml_half</span><span class="p">,</span><span class="n">a_zpml_half</span><span class="p">,</span><span class="n">b_zpml_half</span> <span class="o">=</span> <span class="n">_calc_Kab_CPML</span><span class="p">(</span><span class="n">nptspml_z</span><span class="p">,</span><span class="n">dh</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">Npower</span><span class="p">,</span><span class="n">d0_z</span><span class="p">,</span><span class="n">alpha_max_pml</span><span class="p">,</span><span class="n">K_max_pml</span><span class="p">,</span><span class="s2">&quot;halfgrdpts&quot;</span><span class="p">)</span>
+
+    
+    <span class="c1">#######################</span>
+    <span class="c1">#  x direction</span>
+    <span class="c1">#######################</span>
+    <span class="n">K_x</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span>
+    <span class="n">a_x</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span>
+    <span class="n">b_x</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span>
+    <span class="n">K_x_half</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span>
+    <span class="n">a_x_half</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span>
+    <span class="n">b_x_half</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span>
+    
+    <span class="c1"># reverse coefficients to get increasing damping away from inner model</span>
+    <span class="c1"># left boundary</span>
+    <span class="n">K_x</span><span class="p">[:</span><span class="n">nptspml_x</span><span class="p">]</span>  <span class="o">=</span> <span class="n">K_xpml</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1">#[end:-1:1]</span>
+    <span class="n">a_x</span><span class="p">[:</span><span class="n">nptspml_x</span><span class="p">]</span>  <span class="o">=</span> <span class="n">a_xpml</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">b_x</span><span class="p">[:</span><span class="n">nptspml_x</span><span class="p">]</span>  <span class="o">=</span> <span class="n">b_xpml</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># half stuff...</span>
+    <span class="c1"># reverse coefficients to get increasing damping away from inner model</span>
+    <span class="c1">#  One less element on left boundary (end-1...)</span>
+    <span class="c1">#    because of the staggered grid</span>
+    <span class="n">K_x_half</span><span class="p">[:</span><span class="n">nptspml_x</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">K_xpml_half</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1">#[end:-1:1]</span>
+    <span class="n">a_x_half</span><span class="p">[:</span><span class="n">nptspml_x</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">a_xpml_half</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">b_x_half</span><span class="p">[:</span><span class="n">nptspml_x</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">b_xpml_half</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c1"># right boundary </span>
+    <span class="n">rightpml</span> <span class="o">=</span> <span class="n">nx</span><span class="o">-</span><span class="n">nptspml_x</span>  <span class="c1"># julia: nx-nptspml_x+1 </span>
+    <span class="n">K_x</span><span class="p">[</span><span class="n">rightpml</span><span class="p">:]</span>   <span class="o">=</span> <span class="n">K_xpml</span>
+    <span class="n">a_x</span><span class="p">[</span><span class="n">rightpml</span><span class="p">:]</span>   <span class="o">=</span> <span class="n">a_xpml</span>
+    <span class="n">b_x</span><span class="p">[</span><span class="n">rightpml</span><span class="p">:]</span>   <span class="o">=</span> <span class="n">b_xpml</span>
+    <span class="c1"># half</span>
+    <span class="n">K_x_half</span><span class="p">[</span><span class="n">rightpml</span><span class="p">:]</span>   <span class="o">=</span> <span class="n">K_xpml_half</span>
+    <span class="n">a_x_half</span><span class="p">[</span><span class="n">rightpml</span><span class="p">:]</span>   <span class="o">=</span> <span class="n">a_xpml_half</span>
+    <span class="n">b_x_half</span><span class="p">[</span><span class="n">rightpml</span><span class="p">:]</span>   <span class="o">=</span> <span class="n">b_xpml_half</span>
+    
+    <span class="c1">#######################</span>
+    <span class="c1">#  z direction</span>
+    <span class="c1">#######################</span>
+    <span class="n">K_z</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span>
+    <span class="n">a_z</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span>
+    <span class="n">b_z</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span>
+    <span class="c1"># half</span>
+    <span class="n">K_z_half</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span>
+    <span class="n">a_z_half</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span>
+    <span class="n">b_z_half</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span>
+    
+    <span class="c1"># bottom </span>
+    <span class="n">bottompml</span><span class="o">=</span><span class="n">nz</span><span class="o">-</span><span class="n">nptspml_z</span>  <span class="c1"># julia: nz-nptspml_z+1</span>
+    <span class="n">K_z</span><span class="p">[</span><span class="n">bottompml</span><span class="p">:]</span>  <span class="o">=</span> <span class="n">K_zpml</span>
+    <span class="n">a_z</span><span class="p">[</span><span class="n">bottompml</span><span class="p">:]</span>  <span class="o">=</span> <span class="n">a_zpml</span>
+    <span class="n">b_z</span><span class="p">[</span><span class="n">bottompml</span><span class="p">:]</span>  <span class="o">=</span> <span class="n">b_zpml</span>
+    <span class="c1"># half</span>
+    <span class="n">K_z_half</span><span class="p">[</span><span class="n">bottompml</span><span class="p">:]</span>  <span class="o">=</span> <span class="n">K_zpml_half</span>
+    <span class="n">a_z_half</span><span class="p">[</span><span class="n">bottompml</span><span class="p">:]</span>  <span class="o">=</span> <span class="n">a_zpml_half</span>
+    <span class="n">b_z_half</span><span class="p">[</span><span class="n">bottompml</span><span class="p">:]</span>  <span class="o">=</span> <span class="n">b_zpml_half</span>
+    
+    <span class="c1"># if PML also on top of model...</span>
+    <span class="k">if</span> <span class="n">freeboundtop</span><span class="o">==</span><span class="kc">False</span> <span class="p">:</span>
+        <span class="c1"># on grid</span>
+        <span class="n">K_z</span><span class="p">[:</span><span class="n">nptspml_z</span><span class="p">]</span>  <span class="o">=</span> <span class="n">K_zpml</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">a_z</span><span class="p">[:</span><span class="n">nptspml_z</span><span class="p">]</span>  <span class="o">=</span> <span class="n">a_zpml</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">b_z</span><span class="p">[:</span><span class="n">nptspml_z</span><span class="p">]</span>  <span class="o">=</span> <span class="n">b_zpml</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>    
+        <span class="c1"># half</span>
+        <span class="c1">#  One less element on top boundary (end-1...)</span>
+        <span class="c1">#    because of the staggered grid</span>
+        <span class="n">K_z_half</span><span class="p">[:</span><span class="n">nptspml_z</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="o">=</span> <span class="n">K_zpml_half</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">a_z_half</span><span class="p">[:</span><span class="n">nptspml_z</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="o">=</span> <span class="n">a_zpml_half</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">b_z_half</span><span class="p">[:</span><span class="n">nptspml_z</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="o">=</span> <span class="n">b_zpml_half</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1">#####################################################</span>
+
+    <span class="c1">## Arrays to export snapshots</span>
+    <span class="k">if</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;savesnapshot&quot;</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span> <span class="p">:</span>
+        <span class="n">ntsave</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;ntimesteps&quot;</span><span class="p">]</span><span class="o">//</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;snapevery&quot;</span><span class="p">]</span>
+        <span class="n">psave</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nx&quot;</span><span class="p">],</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nz&quot;</span><span class="p">],</span><span class="n">ntsave</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">tsave</span><span class="o">=</span><span class="mi">1</span>
+
+    <span class="c1">## Arrays to return seismograms</span>
+    <span class="n">nrecs</span> <span class="o">=</span> <span class="n">recpos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">receiv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nrecs</span><span class="p">,</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;ntimesteps&quot;</span><span class="p">]))</span>
+
+    <span class="c1"># Source time function</span>
+    <span class="c1">#lensrctf = sourcetf.size</span>
+    <span class="n">isrc</span> <span class="o">=</span> <span class="n">ijsrc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">jsrc</span> <span class="o">=</span> <span class="n">ijsrc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c1">## Initialize arrays</span>
+    <span class="n">dpdx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">dpdz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">pcur</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">pold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">pnew</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    
+    <span class="c1">##--------------------------------------------</span>
+    <span class="c1"># PML arrays</span>
+    <span class="c1"># Arrays with size of PML areas would be sufficient and save memory,</span>
+    <span class="c1">#   however allocating arrays with same size than model simplifies</span>
+    <span class="c1">#   the code in the loops</span>
+    <span class="n">psi_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">psi_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">xi_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">xi_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+
+    <span class="c1">##---------------------------------------------------</span>
+    <span class="c1">## to make the Numpy broadcast Hadamard product correct along x</span>
+    <span class="n">a_x</span> <span class="o">=</span> <span class="n">a_x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">b_x</span> <span class="o">=</span> <span class="n">b_x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">K_x</span> <span class="o">=</span> <span class="n">K_x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">a_x_half</span> <span class="o">=</span> <span class="n">a_x_half</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">b_x_half</span> <span class="o">=</span> <span class="n">b_x_half</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">K_x_half</span> <span class="o">=</span> <span class="n">K_x_half</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="c1">################################</span>
+    <span class="n">fact</span> <span class="o">=</span> <span class="n">vel</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">dt</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">dh</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">mean_vel_sq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">vel</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+
+       
+    <span class="c1">## time loop</span>
+    <span class="nb">print</span><span class="p">((</span><span class="s2">&quot; Time step dt: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dt</span><span class="p">)))</span>
+
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;ntimesteps&quot;</span><span class="p">])</span> <span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">t</span><span class="o">%</span><span class="mi">100</span><span class="o">==</span><span class="mi">0</span> <span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2"> Time step </span><span class="si">{}</span><span class="s2"> of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;ntimesteps&quot;</span><span class="p">]))</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+
+        <span class="k">if</span> <span class="n">freeboundtop</span><span class="o">==</span><span class="kc">True</span> <span class="p">:</span>
+            <span class="c1">##-------------------------------------------</span>
+            <span class="c1">## free surface boundary cond.</span>
+            <span class="n">pcur</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="c1">#dpdx = pcur[2:,0]-2.0*pcur[1:-1,0]+pcur[:-2,0]</span>
+            <span class="c1">#dpdz = pcur[1:-1,1]-2.0*pcur[1:-1,0] +0.0 #pcur[1:-1,:-2]</span>
+            <span class="n">pnew</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="c1">#2.0*pcur[1:-1,0] -pold[1:-1,0] + fact[1:-1,0]*(dpdx) + fact[1:-1,0]*(dpdz) </span>
+            <span class="c1">##-------------------------------------------</span>
+
+
+        <span class="c1">##=================================================</span>
+        <span class="c1">## second order stencil</span>
+        <span class="c1">##-----------------------------------------</span>
+        <span class="c1">## first derivatives</span>
+        <span class="n">dpdx</span> <span class="o">=</span> <span class="n">pcur</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># forward </span>
+        <span class="n">dpdz</span> <span class="o">=</span> <span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">:]</span><span class="o">-</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">psi_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">b_x_half</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">K_x_half</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">psi_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">a_x_half</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">dpdx</span>
+        <span class="n">psi_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">b_z_half</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">K_z_half</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">psi_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">a_z_half</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">dpdz</span>
+
+        <span class="c1"># second derivatives </span>
+        <span class="n">dpdx2</span> <span class="o">=</span> <span class="n">pcur</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mf">2.0</span><span class="o">*</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">pcur</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">dpdz2</span> <span class="o">=</span> <span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">:]</span><span class="o">-</span><span class="mf">2.0</span><span class="o">*</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="n">dpsidx</span> <span class="o">=</span> <span class="n">psi_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">psi_x</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">dpsidz</span> <span class="o">=</span> <span class="n">psi_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">psi_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">xi_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">b_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">K_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">xi_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">a_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">dpdx2</span> <span class="o">+</span> <span class="n">dpsidx</span><span class="p">)</span>
+        <span class="n">xi_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">b_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">K_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">xi_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">a_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">dpdz2</span> <span class="o">+</span> <span class="n">dpsidz</span><span class="p">)</span>
+        
+        <span class="n">damp</span> <span class="o">=</span> <span class="n">fact</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">dpsidx</span> <span class="o">+</span> <span class="n">dpsidz</span> <span class="o">+</span> <span class="n">xi_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">xi_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        
+        <span class="c1"># update pressure</span>
+        <span class="n">pnew</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span><span class="n">pold</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">fact</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">dpdx2</span> <span class="o">+</span> <span class="n">dpdz2</span><span class="p">)</span> <span class="o">+</span> <span class="n">damp</span>
+     
+        <span class="c1"># inject source</span>
+        <span class="c1"># pnew[isrc,jsrc] = pnew[isrc,jsrc] + dt**2*sourcetf[t]</span>
+        <span class="n">pnew</span><span class="p">[</span><span class="n">isrc</span><span class="p">,</span><span class="n">jsrc</span><span class="p">]</span> <span class="o">=</span> <span class="n">pnew</span><span class="p">[</span><span class="n">isrc</span><span class="p">,</span><span class="n">jsrc</span><span class="p">]</span> <span class="o">+</span> <span class="n">dt</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">sourcetf</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">*</span><span class="n">mean_vel_sq</span> <span class="o">/</span> <span class="n">dh</span><span class="o">**</span><span class="mi">2</span>
+
+        <span class="c1"># assign the new pold and pcur</span>
+        <span class="n">pold</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="n">pcur</span><span class="p">[:,:]</span>
+        <span class="n">pcur</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="n">pnew</span><span class="p">[:,:]</span>
+
+        <span class="c1">##=================================================</span>
+        
+        <span class="c1">##### receivers</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrecs</span><span class="p">)</span> <span class="p">:</span>
+            <span class="n">rec_press</span> <span class="o">=</span> <span class="n">_bilinear_interp</span><span class="p">(</span><span class="n">pcur</span><span class="p">,</span><span class="n">dh</span><span class="p">,</span><span class="n">recpos</span><span class="p">[</span><span class="n">r</span><span class="p">,:])</span>
+            <span class="n">receiv</span><span class="p">[</span><span class="n">r</span><span class="p">,</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec_press</span>
+        
+        <span class="c1">#### save snapshots</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;savesnapshot&quot;</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">t</span><span class="o">%</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;snapevery&quot;</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="p">:</span>
+            <span class="n">psave</span><span class="p">[:,:,</span><span class="n">tsave</span><span class="p">]</span> <span class="o">=</span> <span class="n">pcur</span>
+            <span class="n">tsave</span><span class="o">=</span><span class="n">tsave</span><span class="o">+</span><span class="mi">1</span>
+
+    <span class="c1">##================================</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;savesnapshot&quot;</span><span class="p">]</span><span class="o">==</span><span class="kc">False</span> <span class="p">:</span>
+        <span class="n">psave</span> <span class="o">=</span> <span class="kc">None</span>
+        
+    <span class="k">return</span> <span class="n">receiv</span><span class="p">,</span><span class="n">psave</span>
+
+<span class="c1">#############################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_solveacouwaveq2D_Vp_density_CPML</span><span class="p">(</span> <span class="n">inpar</span><span class="p">,</span> <span class="n">ijsrc</span><span class="p">,</span> <span class="n">Vp</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">sourcetf</span><span class="p">,</span> <span class="n">srcdomfreq</span><span class="p">,</span> <span class="n">recpos</span> <span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solve the acoustic wave equation in 2D using finite differences on a staggered grid. </span>
+<span class="sd">    Velocity and density as input parameters. CPML boundary conditions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        inpar (dict): dictionary containing various input parameters:</span>
+
+<span class="sd">                      * inpar[&quot;ntimesteps&quot;] (int) number of time steps</span>
+<span class="sd">                      * inpar[&quot;nx&quot;] (int) number of grid nodes in the x direction</span>
+<span class="sd">                      * inpar[&quot;nz&quot;] (int) number of grid nodes in the z direction</span>
+<span class="sd">                      * inpar[&quot;dt&quot;] (float) time step for the simulation</span>
+<span class="sd">                      * inpar[&quot;dh&quot;] (float) grid spacing (same in x and z)</span>
+<span class="sd">                      * inpar[&quot;savesnapshot&quot;] (bool) switch to save snapshots of the entire wavefield</span>
+<span class="sd">                      * inpar[&quot;snapevery&quot;] (int) save snapshots every &quot;snapevery&quot; iterations</span>
+<span class="sd">                      * inpar[&quot;freesurface&quot;] (bool) True for free surface boundary condition at the top, False for PML</span>
+<span class="sd">                      * inpar[&quot;boundcond&quot;] (string) Type of boundary conditions &quot;PML&quot;</span>
+<span class="sd">        ijsrc (ndarray(int,int)): integers representing the position of the source on the grid</span>
+<span class="sd">        density (ndarray(nx,nz)): two-dimensional density model</span>
+<span class="sd">        Vp (ndarray(nx,nz)): two-dimensional velocity model</span>
+<span class="sd">        sourcetf (ndarray): source time function</span>
+<span class="sd">        srcdomfreq (float): source dominant frequency</span>
+<span class="sd">        recpos (ndarray): position of the receivers, a two-column array [x,z]</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        seism (ndarray): seismograms recorded at the receivers</span>
+<span class="sd">        psave (ndarray): set of snapshots of the wavefield (if inpar[&quot;savesnapshot&quot;]==True)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;boundcond&quot;</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;PML&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> WARNING: UNTESTED!!!!! </span><span class="se">\n</span><span class="s2">Starting ACOUSTIC &#39;Vp_density&#39; solver with CPML boundary condition.&quot;</span><span class="p">)</span>
+    
+    <span class="c1">##</span>
+    <span class="c1">## The second-order staggered-grid formulation of Madariaga (1976) and Virieux (1986) is used:</span>
+    <span class="c1">##</span>
+    <span class="c1">##          p          dp/dx       p   </span>
+    <span class="c1">##            +---------+---------+ ---&gt; x  </span>
+    <span class="c1">##            |         |         |</span>
+    <span class="c1">##            |         |         |</span>
+    <span class="c1">##            |         |         |</span>
+    <span class="c1">##            |         |         |</span>
+    <span class="c1">##            |         |         |</span>
+    <span class="c1">##      dp/dz +---------+         |</span>
+    <span class="c1">##            |                   |</span>
+    <span class="c1">##            |                   |</span>
+    <span class="c1">##            |                   |</span>
+    <span class="c1">##            |                   |</span>
+    <span class="c1">##            |                   |</span>
+    <span class="c1">##            +-------------------+  </span>
+    <span class="c1">##           p                     p</span>
+    <span class="c1">##            |</span>
+    <span class="c1">##            |</span>
+    <span class="c1">##            \/ z</span>
+    <span class="c1">##</span>
+
+    <span class="c1">#############################</span>
+    <span class="n">dh</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;dh&quot;</span><span class="p">]</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">dh</span>
+    <span class="n">dz</span> <span class="o">=</span> <span class="n">dh</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">]</span>
+    <span class="n">kappa</span> <span class="o">=</span> <span class="n">density</span> <span class="o">*</span> <span class="n">Vp</span><span class="o">**</span><span class="mi">2</span>
+
+    <span class="c1">##############################</span>
+    <span class="c1">## Check stability criterion</span>
+    <span class="c1">##############################</span>
+    <span class="n">maxvp</span> <span class="o">=</span> <span class="n">Vp</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; Stability criterion, CFL number:&quot;</span><span class="p">,(</span><span class="n">maxvp</span><span class="o">*</span><span class="n">dt</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="o">/</span><span class="n">dz</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">maxvp</span><span class="o">*</span><span class="n">dt</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">dz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">)</span>
+    
+    <span class="c1">##############################</span>
+    <span class="c1">#   Parameters</span>
+    <span class="c1">##############################</span>
+    <span class="c1">## pml = c-pml, else reflsurf</span>
+    <span class="c1">## freesur = free surf for top</span>
+    <span class="k">if</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;freesurface&quot;</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span> <span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; * Free surface at the top *&quot;</span><span class="p">)</span>
+        <span class="n">freeboundtop</span><span class="o">=</span><span class="kc">True</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; * Absorbing boundary at the top *&quot;</span><span class="p">)</span>
+        <span class="n">freeboundtop</span><span class="o">=</span><span class="kc">False</span>
+
+    <span class="c1">##---------------------------</span>
+    <span class="n">f0</span> <span class="o">=</span> <span class="n">srcdomfreq</span> <span class="c1"># source</span>
+    
+    <span class="c1">## keep it simple for now...</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nx&quot;</span><span class="p">]</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nz&quot;</span><span class="p">]</span>
+    
+    <span class="c1">##############################</span>
+    <span class="c1">#   Parameters for PML</span>
+    <span class="c1">##############################</span>
+    <span class="n">nptspml_x</span> <span class="o">=</span> <span class="mi">21</span> <span class="c1">## 21 ref coeff set for 21 absorbing nodes</span>
+    <span class="n">nptspml_z</span> <span class="o">=</span> <span class="mi">21</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">nptspml_x</span><span class="o">&lt;</span><span class="n">ijsrc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="p">(</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">nptspml_x</span><span class="p">))</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">ijsrc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="p">(</span><span class="n">nz</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">nptspml_z</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">freeboundtop</span><span class="o">==</span><span class="kc">False</span><span class="p">:</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">nptspml_z</span><span class="o">&lt;</span><span class="n">ijsrc</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="nb">print</span><span class="p">((</span><span class="s2">&quot; Size of PML layers in grid points: </span><span class="si">{}</span><span class="s2"> in x and </span><span class="si">{}</span><span class="s2"> in z&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nptspml_x</span><span class="p">,</span><span class="n">nptspml_z</span><span class="p">)))</span>
+    
+    <span class="n">Npower</span> <span class="o">=</span> <span class="mf">2.0</span>
+    <span class="k">assert</span> <span class="n">Npower</span> <span class="o">&gt;=</span> <span class="mi">1</span>
+    
+    <span class="n">K_max_pml</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">alpha_max_pml</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">f0</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span> 
+    
+    <span class="c1"># reflection coefficient (INRIA report section 6.1)</span>
+    <span class="c1"># http://hal.inria.fr/docs/00/07/32/19/PDF/RR-3471.pdf</span>
+    <span class="n">Rcoef</span> <span class="o">=</span> <span class="mf">0.0001</span>  <span class="c1"># 0.0001 for 20 nodes   ## 0.001 for a PML thickness of 10 nodes</span>
+       
+    <span class="c1"># thickness of the PML layer in meters</span>
+    <span class="n">thickness_pml_x</span> <span class="o">=</span> <span class="n">nptspml_x</span> <span class="o">*</span> <span class="n">dx</span>
+    <span class="n">thickness_pml_z</span> <span class="o">=</span> <span class="n">nptspml_z</span> <span class="o">*</span> <span class="n">dz</span>
+    
+    <span class="c1"># compute d0 from INRIA report section 6.1 http://hal.inria.fr/docs/00/07/32/19/PDF/RR-3471.pdf</span>
+    <span class="n">d0_x</span> <span class="o">=</span> <span class="o">-</span> <span class="p">(</span><span class="n">Npower</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">maxvp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Rcoef</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">thickness_pml_x</span><span class="p">)</span>
+    <span class="n">d0_z</span> <span class="o">=</span> <span class="o">-</span> <span class="p">(</span><span class="n">Npower</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">maxvp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Rcoef</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">thickness_pml_z</span><span class="p">)</span>
+    
+    <span class="c1">##############################</span>
+    <span class="c1">#   Damping parameters</span>
+    <span class="c1">##############################    </span>
+    <span class="c1"># --- damping in the x direction ---</span>
+    <span class="c1"># assuming the number of grid points for PML is the same on </span>
+    <span class="c1">#    both sides    </span>
+    <span class="c1"># damping profile at the grid points</span>
+    <span class="n">K_xpml</span><span class="p">,</span><span class="n">a_xpml</span><span class="p">,</span><span class="n">b_xpml</span> <span class="o">=</span> <span class="n">_calc_Kab_CPML</span><span class="p">(</span><span class="n">nptspml_x</span><span class="p">,</span><span class="n">dh</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">Npower</span><span class="p">,</span><span class="n">d0_x</span><span class="p">,</span><span class="n">alpha_max_pml</span><span class="p">,</span><span class="n">K_max_pml</span><span class="p">,</span><span class="s2">&quot;grdpts&quot;</span><span class="p">)</span>
+    <span class="c1"># damping profile at half the grid points</span>
+    <span class="n">K_xpml_half</span><span class="p">,</span><span class="n">a_xpml_half</span><span class="p">,</span><span class="n">b_xpml_half</span> <span class="o">=</span> <span class="n">_calc_Kab_CPML</span><span class="p">(</span><span class="n">nptspml_x</span><span class="p">,</span><span class="n">dh</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">Npower</span><span class="p">,</span><span class="n">d0_x</span><span class="p">,</span><span class="n">alpha_max_pml</span><span class="p">,</span><span class="n">K_max_pml</span><span class="p">,</span><span class="s2">&quot;halfgrdpts&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># --- damping in the z direction ---</span>
+    <span class="c1"># assuming the number of grid points for PML is the same on</span>
+    <span class="c1"># both sides    </span>
+    <span class="c1"># damping profile at the grid points</span>
+    <span class="n">K_zpml</span><span class="p">,</span><span class="n">a_zpml</span><span class="p">,</span><span class="n">b_zpml</span> <span class="o">=</span> <span class="n">_calc_Kab_CPML</span><span class="p">(</span><span class="n">nptspml_z</span><span class="p">,</span><span class="n">dh</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">Npower</span><span class="p">,</span><span class="n">d0_z</span><span class="p">,</span><span class="n">alpha_max_pml</span><span class="p">,</span><span class="n">K_max_pml</span><span class="p">,</span><span class="s2">&quot;grdpts&quot;</span><span class="p">)</span>
+    <span class="c1"># damping profile at half the grid points</span>
+    <span class="n">K_zpml_half</span><span class="p">,</span><span class="n">a_zpml_half</span><span class="p">,</span><span class="n">b_zpml_half</span> <span class="o">=</span> <span class="n">_calc_Kab_CPML</span><span class="p">(</span><span class="n">nptspml_z</span><span class="p">,</span><span class="n">dh</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">Npower</span><span class="p">,</span><span class="n">d0_z</span><span class="p">,</span><span class="n">alpha_max_pml</span><span class="p">,</span><span class="n">K_max_pml</span><span class="p">,</span><span class="s2">&quot;halfgrdpts&quot;</span><span class="p">)</span>
+
+    
+    <span class="c1">#######################</span>
+    <span class="c1">#  x direction</span>
+    <span class="c1">#######################</span>
+    <span class="n">K_x</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span>
+    <span class="n">a_x</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span>
+    <span class="n">b_x</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span>
+    <span class="n">K_x_half</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span>
+    <span class="n">a_x_half</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span>
+    <span class="n">b_x_half</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span>
+    
+    <span class="c1"># reverse coefficients to get increasing damping away from inner model</span>
+    <span class="c1"># left boundary</span>
+    <span class="n">K_x</span><span class="p">[:</span><span class="n">nptspml_x</span><span class="p">]</span>  <span class="o">=</span> <span class="n">K_xpml</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1">#[end:-1:1]</span>
+    <span class="n">a_x</span><span class="p">[:</span><span class="n">nptspml_x</span><span class="p">]</span>  <span class="o">=</span> <span class="n">a_xpml</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">b_x</span><span class="p">[:</span><span class="n">nptspml_x</span><span class="p">]</span>  <span class="o">=</span> <span class="n">b_xpml</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># half stuff...</span>
+    <span class="c1"># reverse coefficients to get increasing damping away from inner model</span>
+    <span class="c1">#  One less element on left boundary (end-1...)</span>
+    <span class="c1">#    because of the staggered grid</span>
+    <span class="n">K_x_half</span><span class="p">[:</span><span class="n">nptspml_x</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">K_xpml_half</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1">#[end:-1:1]</span>
+    <span class="n">a_x_half</span><span class="p">[:</span><span class="n">nptspml_x</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">a_xpml_half</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">b_x_half</span><span class="p">[:</span><span class="n">nptspml_x</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">b_xpml_half</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c1"># right boundary </span>
+    <span class="n">rightpml</span> <span class="o">=</span> <span class="n">nx</span><span class="o">-</span><span class="n">nptspml_x</span>  <span class="c1"># julia: nx-nptspml_x+1 </span>
+    <span class="n">K_x</span><span class="p">[</span><span class="n">rightpml</span><span class="p">:]</span>   <span class="o">=</span> <span class="n">K_xpml</span>
+    <span class="n">a_x</span><span class="p">[</span><span class="n">rightpml</span><span class="p">:]</span>   <span class="o">=</span> <span class="n">a_xpml</span>
+    <span class="n">b_x</span><span class="p">[</span><span class="n">rightpml</span><span class="p">:]</span>   <span class="o">=</span> <span class="n">b_xpml</span>
+    <span class="c1"># half</span>
+    <span class="n">K_x_half</span><span class="p">[</span><span class="n">rightpml</span><span class="p">:]</span>   <span class="o">=</span> <span class="n">K_xpml_half</span>
+    <span class="n">a_x_half</span><span class="p">[</span><span class="n">rightpml</span><span class="p">:]</span>   <span class="o">=</span> <span class="n">a_xpml_half</span>
+    <span class="n">b_x_half</span><span class="p">[</span><span class="n">rightpml</span><span class="p">:]</span>   <span class="o">=</span> <span class="n">b_xpml_half</span>
+    
+    <span class="c1">#######################</span>
+    <span class="c1">#  z direction</span>
+    <span class="c1">#######################</span>
+    <span class="n">K_z</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span>
+    <span class="n">a_z</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span>
+    <span class="n">b_z</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span>
+    <span class="c1"># half</span>
+    <span class="n">K_z_half</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span>
+    <span class="n">a_z_half</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span>
+    <span class="n">b_z_half</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span>
+    
+    <span class="c1"># bottom </span>
+    <span class="n">bottompml</span><span class="o">=</span><span class="n">nz</span><span class="o">-</span><span class="n">nptspml_z</span>  <span class="c1"># julia: nz-nptspml_z+1</span>
+    <span class="n">K_z</span><span class="p">[</span><span class="n">bottompml</span><span class="p">:]</span>  <span class="o">=</span> <span class="n">K_zpml</span>
+    <span class="n">a_z</span><span class="p">[</span><span class="n">bottompml</span><span class="p">:]</span>  <span class="o">=</span> <span class="n">a_zpml</span>
+    <span class="n">b_z</span><span class="p">[</span><span class="n">bottompml</span><span class="p">:]</span>  <span class="o">=</span> <span class="n">b_zpml</span>
+    <span class="c1"># half</span>
+    <span class="n">K_z_half</span><span class="p">[</span><span class="n">bottompml</span><span class="p">:]</span>  <span class="o">=</span> <span class="n">K_zpml_half</span>
+    <span class="n">a_z_half</span><span class="p">[</span><span class="n">bottompml</span><span class="p">:]</span>  <span class="o">=</span> <span class="n">a_zpml_half</span>
+    <span class="n">b_z_half</span><span class="p">[</span><span class="n">bottompml</span><span class="p">:]</span>  <span class="o">=</span> <span class="n">b_zpml_half</span>
+    
+    <span class="c1"># if PML also on top of model...</span>
+    <span class="k">if</span> <span class="n">freeboundtop</span><span class="o">==</span><span class="kc">False</span> <span class="p">:</span>
+        <span class="c1"># on grid</span>
+        <span class="n">K_z</span><span class="p">[:</span><span class="n">nptspml_z</span><span class="p">]</span>  <span class="o">=</span> <span class="n">K_zpml</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">a_z</span><span class="p">[:</span><span class="n">nptspml_z</span><span class="p">]</span>  <span class="o">=</span> <span class="n">a_zpml</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">b_z</span><span class="p">[:</span><span class="n">nptspml_z</span><span class="p">]</span>  <span class="o">=</span> <span class="n">b_zpml</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>    
+        <span class="c1"># half</span>
+        <span class="c1">#  One less element on top boundary (end-1...)</span>
+        <span class="c1">#    because of the staggered grid</span>
+        <span class="n">K_z_half</span><span class="p">[:</span><span class="n">nptspml_z</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="o">=</span> <span class="n">K_zpml_half</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">a_z_half</span><span class="p">[:</span><span class="n">nptspml_z</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="o">=</span> <span class="n">a_zpml_half</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">b_z_half</span><span class="p">[:</span><span class="n">nptspml_z</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="o">=</span> <span class="n">b_zpml_half</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1">#####################################################</span>
+
+    <span class="c1">## Arrays to export snapshots</span>
+    <span class="k">if</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;savesnapshot&quot;</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span> <span class="p">:</span>
+        <span class="n">ntsave</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;ntimesteps&quot;</span><span class="p">]</span><span class="o">//</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;snapevery&quot;</span><span class="p">]</span>
+        <span class="n">psave</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nx&quot;</span><span class="p">],</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nz&quot;</span><span class="p">],</span><span class="n">ntsave</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">tsave</span><span class="o">=</span><span class="mi">1</span>
+
+    <span class="c1">## Arrays to return seismograms</span>
+    <span class="n">nrecs</span> <span class="o">=</span> <span class="n">recpos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">receiv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nrecs</span><span class="p">,</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;ntimesteps&quot;</span><span class="p">]))</span>
+
+    <span class="c1"># Source time function</span>
+    <span class="c1">#lensrctf = sourcetf.size</span>
+    <span class="n">isrc</span> <span class="o">=</span> <span class="n">ijsrc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">jsrc</span> <span class="o">=</span> <span class="n">ijsrc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c1">## Initialize arrays</span>
+    <span class="n">dpdx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">dpdz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">pcur</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">pold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">pnew</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    
+    <span class="c1">##--------------------------------------------</span>
+    <span class="c1"># PML arrays</span>
+    <span class="c1"># Arrays with size of PML areas would be sufficient and save memory,</span>
+    <span class="c1">#   however allocating arrays with same size than model simplifies</span>
+    <span class="c1">#   the code in the loops</span>
+    <span class="n">psi_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">psi_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">xi_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">xi_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+
+    <span class="c1">##---------------------------------------------------</span>
+    <span class="c1">## to make the Numpy broadcast Hadamard product correct along x</span>
+    <span class="n">a_x</span> <span class="o">=</span> <span class="n">a_x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">b_x</span> <span class="o">=</span> <span class="n">b_x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">K_x</span> <span class="o">=</span> <span class="n">K_x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">a_x_half</span> <span class="o">=</span> <span class="n">a_x_half</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> 
+    <span class="n">b_x_half</span> <span class="o">=</span> <span class="n">b_x_half</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">K_x_half</span> <span class="o">=</span> <span class="n">K_x_half</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="c1">################################</span>
+    
+    <span class="n">fact</span> <span class="o">=</span> <span class="n">dt</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">dh</span><span class="o">**</span><span class="mi">2</span>
+    
+    <span class="n">density_ihalf</span> <span class="o">=</span> <span class="p">(</span><span class="n">density</span><span class="p">[</span><span class="mi">1</span><span class="p">:,:]</span><span class="o">+</span><span class="n">density</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:])</span><span class="o">/</span><span class="mf">2.0</span>
+    <span class="n">density_jhalf</span> <span class="o">=</span> <span class="p">(</span><span class="n">density</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:]</span><span class="o">+</span><span class="n">density</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mf">2.0</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">density_ihalf</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">density_jhalf</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> 
+
+    <span class="c1">## time loop</span>
+    <span class="nb">print</span><span class="p">((</span><span class="s2">&quot; Time step dt: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dt</span><span class="p">)))</span>
+
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;ntimesteps&quot;</span><span class="p">])</span> <span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">t</span><span class="o">%</span><span class="mi">100</span><span class="o">==</span><span class="mi">0</span> <span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2"> Time step </span><span class="si">{}</span><span class="s2"> of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;ntimesteps&quot;</span><span class="p">]))</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+
+        <span class="k">if</span> <span class="n">freeboundtop</span><span class="o">==</span><span class="kc">True</span> <span class="p">:</span>
+            <span class="c1">##-------------------------------------------</span>
+            <span class="c1">## free surface boundary cond.</span>
+            <span class="n">pcur</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="c1">#dpdx = pcur[2:,0]-2.0*pcur[1:-1,0]+pcur[:-2,0]</span>
+            <span class="c1">#dpdz = pcur[1:-1,1]-2.0*pcur[1:-1,0] +0.0 #pcur[1:-1,:-2]</span>
+            <span class="n">pnew</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="c1">#2.0*pcur[1:-1,0] -pold[1:-1,0] + fact[1:-1,0]*(dpdx) + fact[1:-1,0]*(dpdz) </span>
+            <span class="c1">##-------------------------------------------</span>
+
+        <span class="c1">##=================================================</span>
+        <span class="c1">## second order stencil</span>
+        <span class="c1">##  ACOUSTIC &#39;Vp_density&#39;</span>
+        <span class="c1">##-----------------------------------------</span>
+        <span class="c1">## first derivatives</span>
+        <span class="n">dpdx</span> <span class="o">=</span> <span class="p">(</span><span class="n">pcur</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">density_ihalf</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># forward </span>
+        <span class="n">dpdz</span> <span class="o">=</span> <span class="p">(</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">:]</span><span class="o">-</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">density_jhalf</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">psi_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">b_x_half</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">K_x_half</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">psi_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">a_x_half</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">dpdx</span>
+        <span class="n">psi_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">b_z_half</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">K_z_half</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">psi_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">a_z_half</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">dpdz</span>
+
+        <span class="c1"># second derivatives </span>
+        <span class="n">dpdx2</span> <span class="o">=</span> <span class="n">pcur</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mf">2.0</span><span class="o">*</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">pcur</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">dpdz2</span> <span class="o">=</span> <span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">:]</span><span class="o">-</span><span class="mf">2.0</span><span class="o">*</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="n">dpsidx</span> <span class="o">=</span> <span class="n">psi_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">psi_x</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">dpsidz</span> <span class="o">=</span> <span class="n">psi_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">psi_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">xi_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">b_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">K_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">xi_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">a_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">dpdx2</span> <span class="o">+</span> <span class="n">dpsidx</span><span class="p">)</span>
+        <span class="n">xi_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">b_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">K_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">xi_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">a_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">dpdz2</span> <span class="o">+</span> <span class="n">dpsidz</span><span class="p">)</span>
+        
+        <span class="n">damp</span> <span class="o">=</span> <span class="n">fact</span> <span class="o">*</span> <span class="p">(</span><span class="n">dpsidx</span> <span class="o">+</span> <span class="n">dpsidz</span> <span class="o">+</span> <span class="n">xi_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">xi_z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        
+
+        <span class="c1"># update pressure</span>
+        <span class="n">pnew</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span><span class="n">pold</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">fact</span><span class="o">*</span><span class="p">(</span><span class="n">dpdx2</span><span class="o">+</span><span class="n">dpdz2</span><span class="p">)</span><span class="o">*</span><span class="n">kappa</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">damp</span>
+        
+
+        <span class="c1"># inject source</span>
+        <span class="n">pnew</span><span class="p">[</span><span class="n">isrc</span><span class="p">,</span><span class="n">jsrc</span><span class="p">]</span> <span class="o">=</span> <span class="n">pnew</span><span class="p">[</span><span class="n">isrc</span><span class="p">,</span><span class="n">jsrc</span><span class="p">]</span> <span class="o">+</span> <span class="n">dt</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">sourcetf</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+
+        <span class="c1"># assign the new pold and pcur</span>
+        <span class="n">pold</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="n">pcur</span><span class="p">[:,:]</span>
+        <span class="n">pcur</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="n">pnew</span><span class="p">[:,:]</span>
+
+        <span class="c1">##=================================================</span>
+        
+        <span class="c1">##### receivers</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrecs</span><span class="p">)</span> <span class="p">:</span>
+            <span class="n">rec_press</span> <span class="o">=</span> <span class="n">_bilinear_interp</span><span class="p">(</span><span class="n">pcur</span><span class="p">,</span><span class="n">dh</span><span class="p">,</span><span class="n">recpos</span><span class="p">[</span><span class="n">r</span><span class="p">,:])</span>
+            <span class="n">receiv</span><span class="p">[</span><span class="n">r</span><span class="p">,</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec_press</span>
+        
+        <span class="c1">#### save snapshots</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;savesnapshot&quot;</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">t</span><span class="o">%</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;snapevery&quot;</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="p">:</span>
+            <span class="n">psave</span><span class="p">[:,:,</span><span class="n">tsave</span><span class="p">]</span> <span class="o">=</span> <span class="n">pcur</span>
+            <span class="n">tsave</span><span class="o">=</span><span class="n">tsave</span><span class="o">+</span><span class="mi">1</span>
+
+    <span class="c1">##================================</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;savesnapshot&quot;</span><span class="p">]</span><span class="o">==</span><span class="kc">False</span> <span class="p">:</span>
+        <span class="n">psave</span> <span class="o">=</span> <span class="kc">None</span>
+        
+    <span class="k">return</span> <span class="n">receiv</span><span class="p">,</span><span class="n">psave</span>
+
+<span class="c1">#############################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_solveacouwaveq2D_ReflBound</span><span class="p">(</span> <span class="n">inpar</span><span class="p">,</span> <span class="n">ijsrc</span><span class="p">,</span> <span class="n">vel</span><span class="p">,</span> <span class="n">sourcetf</span><span class="p">,</span> <span class="n">srcdomfreq</span><span class="p">,</span> <span class="n">recpos</span> <span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solve the acoustic wave equation in 2D using finite differences on a staggered grid. </span>
+<span class="sd">    Reflective boundary conditions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        inpar (dict): dictionary containing various input parameters:</span>
+
+<span class="sd">                      * inpar[&quot;ntimesteps&quot;] (int) number of time steps</span>
+<span class="sd">                      * inpar[&quot;nx&quot;] (int) number of grid nodes in the x direction</span>
+<span class="sd">                      * inpar[&quot;nz&quot;] (int) number of grid nodes in the z direction</span>
+<span class="sd">                      * inpar[&quot;dt&quot;] (float) time step for the simulation</span>
+<span class="sd">                      * inpar[&quot;dh&quot;] (float) grid spacing (same in x and z)</span>
+<span class="sd">                      * inpar[&quot;savesnapshot&quot;] (bool) switch to save snapshots of the entire wavefield</span>
+<span class="sd">                      * inpar[&quot;snapevery&quot;] (int) save snapshots every &quot;snapevery&quot; iterations</span>
+<span class="sd">                      * inpar[&quot;freesurface&quot;] (bool) True for free surface boundary condition at the top, False for PML</span>
+<span class="sd">                      * inpar[&quot;boundcond&quot;] (string) Type of boundary conditions &quot;ReflBou&quot; </span>
+<span class="sd">        ijsrc (ndarray(int,int)): integers representing the position of the source on the grid</span>
+<span class="sd">        vel (ndarray(nx,nz)): two-dimensional velocity model</span>
+<span class="sd">        sourcetf (ndarray): source time function</span>
+<span class="sd">        srcdomfreq (float): source dominant frequency</span>
+<span class="sd">        recpos (ndarray): position of the receivers, a two-column array [x,z]</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        seism (ndarray): seismograms recorded at the receivers</span>
+<span class="sd">        psave (ndarray): set of snapshots of the wavefield (if inpar[&quot;savesnapshot&quot;]==True)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">assert</span><span class="p">(</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;boundcond&quot;</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;ReflBou&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting ACOUSTIC solver with reflective boundaries all around.&quot;</span><span class="p">)</span>
+
+    <span class="c1">#############################</span>
+    <span class="n">dh</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;dh&quot;</span><span class="p">]</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">dh</span>
+    <span class="n">dz</span> <span class="o">=</span> <span class="n">dh</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">]</span>
+    
+    <span class="c1">##############################</span>
+    <span class="c1">## Check stability criterion</span>
+    <span class="c1">##############################</span>
+    <span class="n">maxvp</span> <span class="o">=</span> <span class="n">vel</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; Stability criterion, CFL number:&quot;</span><span class="p">,(</span><span class="n">maxvp</span><span class="o">*</span><span class="n">dt</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="o">/</span><span class="n">dz</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">maxvp</span><span class="o">*</span><span class="n">dt</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">dz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">)</span>
+    
+
+    <span class="c1">##############################</span>
+    <span class="c1">#   Parameters</span>
+    <span class="c1">##############################</span>
+    <span class="n">f0</span> <span class="o">=</span> <span class="n">srcdomfreq</span> <span class="c1"># source</span>
+    
+    <span class="c1">## keep it simple for now...</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nx&quot;</span><span class="p">]</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nz&quot;</span><span class="p">]</span>
+    
+    <span class="c1">#####################################################</span>
+
+    <span class="c1">## Arrays to export snapshots</span>
+    <span class="k">if</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;savesnapshot&quot;</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span> <span class="p">:</span>
+        <span class="n">ntsave</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;ntimesteps&quot;</span><span class="p">]</span><span class="o">//</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;snapevery&quot;</span><span class="p">]</span>
+        <span class="n">psave</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nx&quot;</span><span class="p">],</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nz&quot;</span><span class="p">],</span><span class="n">ntsave</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">tsave</span><span class="o">=</span><span class="mi">1</span>
+
+    <span class="c1">## Arrays to return seismograms</span>
+    <span class="n">nrecs</span> <span class="o">=</span> <span class="n">recpos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">receiv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nrecs</span><span class="p">,</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;ntimesteps&quot;</span><span class="p">]))</span>
+
+    <span class="c1"># Source time function</span>
+    <span class="n">lensrctf</span> <span class="o">=</span> <span class="n">sourcetf</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">isrc</span> <span class="o">=</span> <span class="n">ijsrc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">jsrc</span> <span class="o">=</span> <span class="n">ijsrc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c1">## Initialize arrays</span>
+    <span class="n">dpdx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">dpdz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">pcur</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">pold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">pnew</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+
+    <span class="c1">################################</span>
+    <span class="n">fact</span> <span class="o">=</span> <span class="n">vel</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">dt</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">dh</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">mean_vel_sq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">vel</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+       
+    <span class="c1">## time loop</span>
+    <span class="nb">print</span><span class="p">((</span><span class="s2">&quot; Time step dt: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dt</span><span class="p">)))</span>
+
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;ntimesteps&quot;</span><span class="p">])</span> <span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">t</span><span class="o">%</span><span class="mi">100</span><span class="o">==</span><span class="mi">0</span> <span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2"> Time step </span><span class="si">{}</span><span class="s2"> of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;ntimesteps&quot;</span><span class="p">]))</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="c1">##=================================================</span>
+        <span class="c1">## second order stencil</span>
+        <span class="n">dpdx</span> <span class="o">=</span> <span class="n">pcur</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mf">2.0</span><span class="o">*</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">pcur</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">dpdz</span> <span class="o">=</span> <span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">:]</span><span class="o">-</span><span class="mf">2.0</span><span class="o">*</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        
+        <span class="c1"># update pressure</span>
+        <span class="n">pnew</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span><span class="n">pold</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">fact</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">dpdx</span><span class="p">)</span> <span class="o">+</span> <span class="n">fact</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">dpdz</span><span class="p">)</span> 
+        
+        <span class="c1"># inject source</span>
+        <span class="n">pnew</span><span class="p">[</span><span class="n">isrc</span><span class="p">,</span><span class="n">jsrc</span><span class="p">]</span> <span class="o">=</span> <span class="n">pnew</span><span class="p">[</span><span class="n">isrc</span><span class="p">,</span><span class="n">jsrc</span><span class="p">]</span> <span class="o">+</span> <span class="n">dt</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">sourcetf</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">*</span><span class="n">mean_vel_sq</span> <span class="o">/</span> <span class="n">dh</span><span class="o">**</span><span class="mi">2</span>
+
+        <span class="c1"># assign the new pold and pcur</span>
+        <span class="n">pold</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="n">pcur</span><span class="p">[:,:]</span>
+        <span class="n">pcur</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="n">pnew</span><span class="p">[:,:]</span>
+
+        <span class="c1">##=================================================</span>
+        
+        <span class="c1">##### receivers</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrecs</span><span class="p">)</span> <span class="p">:</span>
+            <span class="n">rec_press</span> <span class="o">=</span> <span class="n">_bilinear_interp</span><span class="p">(</span><span class="n">pcur</span><span class="p">,</span><span class="n">dh</span><span class="p">,</span><span class="n">recpos</span><span class="p">[</span><span class="n">r</span><span class="p">,:])</span>
+            <span class="n">receiv</span><span class="p">[</span><span class="n">r</span><span class="p">,</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec_press</span>
+        
+        <span class="c1">#### save snapshots</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;savesnapshot&quot;</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">t</span><span class="o">%</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;snapevery&quot;</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="p">:</span>
+            <span class="n">psave</span><span class="p">[:,:,</span><span class="n">tsave</span><span class="p">]</span> <span class="o">=</span> <span class="n">pcur</span>
+            <span class="n">tsave</span><span class="o">=</span><span class="n">tsave</span><span class="o">+</span><span class="mi">1</span>
+
+    <span class="c1">##================================</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;savesnapshot&quot;</span><span class="p">]</span><span class="o">==</span><span class="kc">False</span> <span class="p">:</span>
+        <span class="n">psave</span> <span class="o">=</span> <span class="kc">None</span>
+        
+    <span class="k">return</span> <span class="n">receiv</span><span class="p">,</span><span class="n">psave</span>
+
+
+<span class="c1">#############################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_solveacouwaveq2D_GaussTaper</span><span class="p">(</span> <span class="n">inpar</span><span class="p">,</span> <span class="n">ijsrc</span><span class="p">,</span> <span class="n">vel</span><span class="p">,</span> <span class="n">sourcetf</span><span class="p">,</span> <span class="n">srcdomfreq</span><span class="p">,</span> <span class="n">recpos</span> <span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solve the acoustic wave equation in 2D using finite differences on a staggered grid. </span>
+<span class="sd">    Gaussian taper boundary conditions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        inpar (dict): dictionary containing various input parameters:\n</span>
+
+<span class="sd">                      * inpar[&quot;ntimesteps&quot;] (int) number of time steps\n</span>
+<span class="sd">                      * inpar[&quot;nx&quot;] (int) number of grid nodes in the x direction\n</span>
+<span class="sd">                      * inpar[&quot;nz&quot;] (int) number of grid nodes in the z direction\n</span>
+<span class="sd">                      * inpar[&quot;dt&quot;] (float) time step for the simulation\n</span>
+<span class="sd">                      * inpar[&quot;dh&quot;] (float) grid spacing (same in x and z)\n</span>
+<span class="sd">                      * inpar[&quot;savesnapshot&quot;] (bool) switch to save snapshots of the entire wavefield\n</span>
+<span class="sd">                      * inpar[&quot;snapevery&quot;] (int) save snapshots every &quot;snapevery&quot; iterations\n</span>
+<span class="sd">                      * inpar[&quot;freesurface&quot;] (bool) True for free surface boundary condition at the top, False for PML\n</span>
+<span class="sd">                      * inpar[&quot;boundcond&quot;] (string) Type of boundary conditions &quot;GaussTap&quot;\n </span>
+<span class="sd">        ijsrc (ndarray(int,int)): integers representing the position of the source on the grid</span>
+<span class="sd">        vel (ndarray(nx,nz)): two-dimensional velocity model</span>
+<span class="sd">        sourcetf (ndarray): source time function</span>
+<span class="sd">        srcdomfreq (float): source dominant frequency</span>
+<span class="sd">        recpos (ndarray): position of the receivers, a two-column array [x,z]</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        seism (ndarray): seismograms recorded at the receivers</span>
+<span class="sd">        psave (ndarray): set of snapshots of the wavefield (if inpar[&quot;savesnapshot&quot;]==True)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;boundcond&quot;</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;GaussTap&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting ACOUSTIC solver with Gaussian taper boundary condition.&quot;</span><span class="p">)</span>
+
+    <span class="c1">#############################</span>
+    <span class="n">dh</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;dh&quot;</span><span class="p">]</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">dh</span>
+    <span class="n">dz</span> <span class="o">=</span> <span class="n">dh</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">]</span>
+    
+    <span class="c1">##############################</span>
+    <span class="c1">## Check stability criterion</span>
+    <span class="c1">##############################</span>
+    <span class="n">maxvp</span> <span class="o">=</span> <span class="n">vel</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">counum</span> <span class="o">=</span> <span class="n">maxvp</span> <span class="o">*</span> <span class="n">dt</span><span class="o">*</span>  <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">dh</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">dh</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Courant number: &quot;</span><span class="p">,</span><span class="n">counum</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">counum</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">)</span>
+
+    <span class="c1">##############################</span>
+    <span class="c1">#   Parameters</span>
+    <span class="c1">##############################</span>
+    <span class="k">if</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;freesurface&quot;</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span> <span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;freesurface at the top&quot;</span><span class="p">)</span>
+        <span class="n">freeboundtop</span><span class="o">=</span><span class="kc">True</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="n">freeboundtop</span><span class="o">=</span><span class="kc">False</span>
+
+    <span class="c1">##----------------</span>
+    <span class="n">f0</span> <span class="o">=</span> <span class="n">srcdomfreq</span> <span class="c1"># source</span>
+    
+    <span class="c1">## keep it simple for now...</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nx&quot;</span><span class="p">]</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nz&quot;</span><span class="p">]</span>
+    
+    <span class="c1">## Gaussian taper</span>
+    <span class="n">nptsgau</span> <span class="o">=</span> <span class="mi">50</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">nptsgau</span><span class="o">&lt;</span><span class="n">ijsrc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="p">(</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">nptsgau</span><span class="p">))</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">ijsrc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="p">(</span><span class="n">nz</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">nptsgau</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">freeboundtop</span><span class="o">==</span><span class="kc">False</span><span class="p">:</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">nptsgau</span><span class="o">&lt;</span><span class="n">ijsrc</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        
+    <span class="n">nptsgau</span><span class="p">,</span><span class="n">gtleft</span><span class="p">,</span><span class="n">gtright</span><span class="p">,</span><span class="n">gtbottom</span><span class="p">,</span><span class="n">gttop</span> <span class="o">=</span> <span class="n">_initGaussboundcon</span><span class="p">(</span><span class="n">nptsgau</span><span class="o">=</span><span class="n">nptsgau</span> <span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">((</span><span class="s2">&quot; Size of GaussTaper layers in grid points: </span><span class="si">{}</span><span class="s2"> in both x and z&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nptsgau</span><span class="p">)))</span>
+
+    <span class="c1">#####################################################</span>
+    
+    <span class="c1">## Arrays to export snapshots</span>
+    <span class="k">if</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;savesnapshot&quot;</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span> <span class="p">:</span>
+        <span class="n">ntsave</span> <span class="o">=</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;ntimesteps&quot;</span><span class="p">]</span><span class="o">//</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;snapevery&quot;</span><span class="p">]</span>
+        <span class="n">psave</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nx&quot;</span><span class="p">],</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nz&quot;</span><span class="p">],</span><span class="n">ntsave</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">tsave</span><span class="o">=</span><span class="mi">1</span>
+
+    <span class="c1">## Arrays to return seismograms</span>
+    <span class="n">nrecs</span> <span class="o">=</span> <span class="n">recpos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">receiv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nrecs</span><span class="p">,</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;ntimesteps&quot;</span><span class="p">]))</span>
+
+    <span class="c1"># Source time function</span>
+    <span class="n">lensrctf</span> <span class="o">=</span> <span class="n">sourcetf</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">isrc</span> <span class="o">=</span> <span class="n">ijsrc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">jsrc</span> <span class="o">=</span> <span class="n">ijsrc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c1">## Initialize arrays</span>
+    <span class="n">dpdx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">dpdz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">pcur</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">pold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="n">pnew</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+
+    <span class="c1">################################</span>
+    <span class="n">fact</span> <span class="o">=</span> <span class="n">vel</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">dt</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">dh</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">mean_vel_sq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">vel</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+       
+    <span class="c1">## time loop</span>
+    <span class="nb">print</span><span class="p">((</span><span class="s2">&quot; Time step dt: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dt</span><span class="p">)))</span>
+
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;ntimesteps&quot;</span><span class="p">])</span> <span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">t</span><span class="o">%</span><span class="mi">100</span><span class="o">==</span><span class="mi">0</span> <span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2"> Time step </span><span class="si">{}</span><span class="s2"> of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;ntimesteps&quot;</span><span class="p">]))</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="c1">##=================================================</span>
+                         
+        <span class="c1">## second order stencil</span>
+        <span class="n">dpdx2</span> <span class="o">=</span> <span class="n">pcur</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mf">2.0</span><span class="o">*</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">pcur</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">dpdz2</span> <span class="o">=</span> <span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">:]</span><span class="o">-</span><span class="mf">2.0</span><span class="o">*</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="c1"># update pressure</span>
+        <span class="n">pnew</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">pcur</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span><span class="n">pold</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">fact</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">dpdx2</span> <span class="o">+</span> <span class="n">dpdz2</span><span class="p">)</span> 
+             
+        <span class="c1"># inject source</span>
+        <span class="n">pnew</span><span class="p">[</span><span class="n">isrc</span><span class="p">,</span><span class="n">jsrc</span><span class="p">]</span> <span class="o">=</span> <span class="n">pnew</span><span class="p">[</span><span class="n">isrc</span><span class="p">,</span><span class="n">jsrc</span><span class="p">]</span> <span class="o">+</span> <span class="n">dt</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">sourcetf</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">*</span><span class="n">mean_vel_sq</span> <span class="o">/</span> <span class="n">dh</span><span class="o">**</span><span class="mi">2</span>
+
+        <span class="c1">##---------------------------------------------</span>
+        <span class="c1">## Damp using Gaussian taper function</span>
+        <span class="n">pnew</span><span class="p">[:</span><span class="n">nptsgau</span><span class="p">,:]</span>  <span class="o">*=</span> <span class="n">gtleft</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pnew</span><span class="p">[</span><span class="o">-</span><span class="n">nptsgau</span><span class="p">:,:]</span> <span class="o">*=</span> <span class="n">gtright</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pnew</span><span class="p">[:,</span><span class="o">-</span><span class="n">nptsgau</span><span class="p">:]</span> <span class="o">*=</span> <span class="n">gtbottom</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">pcur</span><span class="p">[:</span><span class="n">nptsgau</span><span class="p">,:]</span>  <span class="o">*=</span> <span class="n">gtleft</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pcur</span><span class="p">[</span><span class="o">-</span><span class="n">nptsgau</span><span class="p">:,:]</span> <span class="o">*=</span> <span class="n">gtright</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pcur</span><span class="p">[:,</span><span class="o">-</span><span class="n">nptsgau</span><span class="p">:]</span> <span class="o">*=</span> <span class="n">gtbottom</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">freeboundtop</span><span class="o">==</span><span class="kc">False</span> <span class="p">:</span>
+             <span class="n">pnew</span><span class="p">[:,:</span><span class="n">nptsgau</span><span class="p">]</span>  <span class="o">*=</span> <span class="n">gttop</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+             <span class="n">pcur</span><span class="p">[:,:</span><span class="n">nptsgau</span><span class="p">]</span>  <span class="o">*=</span> <span class="n">gttop</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1">##----------------------------------------------</span>
+
+        <span class="c1"># assign the new pold and pcur</span>
+        <span class="n">pold</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="n">pcur</span><span class="p">[:,:]</span> <span class="c1">## using [:,:] there is an explicit copy</span>
+        <span class="n">pcur</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="n">pnew</span><span class="p">[:,:]</span>
+
+        <span class="c1">##=================================================</span>
+        
+        <span class="c1">##### receivers</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrecs</span><span class="p">)</span> <span class="p">:</span>
+            <span class="n">rec_press</span> <span class="o">=</span> <span class="n">_bilinear_interp</span><span class="p">(</span><span class="n">pcur</span><span class="p">,</span><span class="n">dh</span><span class="p">,</span><span class="n">recpos</span><span class="p">[</span><span class="n">r</span><span class="p">,:])</span>
+            <span class="n">receiv</span><span class="p">[</span><span class="n">r</span><span class="p">,</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec_press</span>
+        
+        <span class="c1">#### save snapshots</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;savesnapshot&quot;</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">t</span><span class="o">%</span><span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;snapevery&quot;</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="p">:</span>
+            <span class="n">psave</span><span class="p">[:,:,</span><span class="n">tsave</span><span class="p">]</span> <span class="o">=</span> <span class="n">pcur</span>
+            <span class="n">tsave</span><span class="o">=</span><span class="n">tsave</span><span class="o">+</span><span class="mi">1</span>
+
+    <span class="c1">##================================</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+ 
+    <span class="k">if</span> <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;savesnapshot&quot;</span><span class="p">]</span><span class="o">==</span><span class="kc">False</span> <span class="p">:</span>
+        <span class="n">psave</span> <span class="o">=</span> <span class="kc">None</span>
+        
+    <span class="k">return</span> <span class="n">receiv</span><span class="p">,</span><span class="n">psave</span>
+
+
+<span class="c1">#########################################################</span>
+<span class="c1">####################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_testacou</span><span class="p">():</span>
+    
+    <span class="c1"># time</span>
+    <span class="n">nt</span> <span class="o">=</span> <span class="mi">3000</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="mf">0.0004</span> <span class="c1">#s</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="n">nt</span><span class="o">*</span><span class="n">dt</span><span class="p">,</span><span class="n">dt</span><span class="p">)</span> <span class="c1"># s</span>
+    
+    <span class="c1"># space</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="mi">600</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="mi">400</span>
+    <span class="n">dh</span> <span class="o">=</span> <span class="mf">2.5</span> <span class="c1"># m</span>
+
+    <span class="c1"># source</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="mf">0.03</span> <span class="c1"># s</span>
+    <span class="n">f0</span> <span class="o">=</span> <span class="mf">32.0</span> <span class="c1"># 20.0 # Hz</span>
+    <span class="n">ijsrc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">280</span><span class="p">,</span><span class="mi">290</span><span class="p">])</span>
+ 
+    <span class="c1"># source type</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pestoseis.seismicwaves2d.sourcetimefuncs</span><span class="w"> </span><span class="kn">import</span> <span class="n">gaussource</span><span class="p">,</span> <span class="n">rickersource</span>
+    <span class="n">sourcetf</span> <span class="o">=</span> <span class="n">rickersource</span><span class="p">(</span> <span class="n">t</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">f0</span> <span class="p">)</span>
+    <span class="c1">#sourcetf = gaussource( t, t0, f0 )</span>
+
+    <span class="c1">## velocity model</span>
+    <span class="n">velmod</span> <span class="o">=</span> <span class="mf">2000.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">nz</span><span class="p">))</span>
+    <span class="c1"># velmod[:,:40] = 2000.0</span>
+    <span class="c1"># velmod[:,50:200] = 2500.0</span>
+    <span class="c1">#velmod[50:80,50:70] = 3800.0</span>
+    
+    <span class="c1">###############################</span>
+    <span class="n">nrec</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">recpos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nrec</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">recpos</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">100.0</span>
+    <span class="n">recpos</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">200.0</span><span class="p">,</span><span class="n">nx</span><span class="o">*</span><span class="n">dh</span><span class="o">-</span><span class="mf">200.0</span><span class="p">,</span><span class="n">nrec</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;Receiver positions:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">recpos</span><span class="p">)))</span>
+    
+    <span class="c1"># pressure field in space and time</span>
+    <span class="n">inpar</span><span class="o">=</span><span class="p">{}</span>
+    <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;ntimesteps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nt</span>
+    <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nx&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nx</span>
+    <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;nz&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nz</span>
+    <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dt</span>
+    <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;dh&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dh</span>
+    <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;savesnapshot&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;snapevery&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;freesurface&quot;</span><span class="p">]</span>   <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">inpar</span><span class="p">[</span><span class="s2">&quot;boundcond&quot;</span><span class="p">]</span><span class="o">=</span> <span class="s2">&quot;PML&quot;</span> <span class="c1">#&quot;GaussTap&quot;  ## &quot;PML&quot;, &quot;GaussTap&quot;,&quot;ReflBou&quot;</span>
+
+    <span class="c1">#--------------------------</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    
+    <span class="n">seism</span><span class="p">,</span><span class="n">psave</span> <span class="o">=</span> <span class="n">solveacoustic2D</span><span class="p">(</span> <span class="n">inpar</span><span class="p">,</span> <span class="n">ijsrc</span><span class="p">,</span> <span class="n">velmod</span><span class="p">,</span> <span class="n">sourcetf</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">recpos</span> <span class="p">)</span>
+        
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">((</span><span class="s2">&quot;Solver time: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t2</span><span class="o">-</span><span class="n">t1</span><span class="p">)))</span>
+
+    <span class="k">return</span>
+
+<span class="c1">#########################################################</span>
+<span class="c1">#########################################################</span>
+
+<span class="k">if</span> <span class="vm">__name__</span>  <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span> <span class="p">:</span>
+
+    <span class="n">_testacou</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Andrea Zunino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,709 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pestoseis.reflectionseismo.reflseismo &mdash; PestoSeis 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=83a61292"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PestoSeis
+              <img src="../../../_static/PestoSeisLogo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation — loading the module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ttimerays_guide.html">Traveltimes and rays – using <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../seismicwaves2d_guide.html">Seismic wave propagation – using <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/index.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developerdocs.html">Developer zone</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PestoSeis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pestoseis.reflectionseismo.reflseismo</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pestoseis.reflectionseismo.reflseismo</h1><div class="highlight"><pre>
+<span></span>
+<span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#    PestoSeis, a numerical laboratory to learn about seismology, written</span>
+<span class="c1">#    in the Python language.</span>
+<span class="c1">#    Copyright (C) 2021  Andrea Zunino </span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#    it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#    (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#    GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#    You should have received a copy of the GNU General Public License</span>
+<span class="c1">#    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions to generate and process seismic reflection data to mimic an </span>
+<span class="sd">  exploration seismology setup.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1">#######################################################################</span>
+<span class="c1">#######################################################################</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">__np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">__plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">CubicSpline</span> <span class="k">as</span> <span class="n">__CubicSpline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">gaussian_filter</span>
+
+<span class="c1">#######################################################################</span>
+
+<div class="viewcode-block" id="fwdconvolve">
+<a class="viewcode-back" href="../../../API/reflectionseismo.html#pestoseis.reflectionseismo.fwdconvolve">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fwdconvolve</span><span class="p">(</span><span class="n">refle</span><span class="p">,</span><span class="n">wavelet</span><span class="p">,</span><span class="n">dt</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convolve a reflectivity series with a wavelet to compute a seismogram.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       refle (ndarray): reflectivity series</span>
+<span class="sd">       wavelet (ndarray): the wavelet</span>
+<span class="sd">       dt (float): time interval</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">       tarr (ndarry): time array</span>
+<span class="sd">       convo (ndarry): seismic trace resulting from the convolution</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">convo</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">refle</span><span class="p">,</span><span class="n">wavelet</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;full&quot;</span><span class="p">)</span>
+    <span class="n">tarr</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">*</span><span class="n">dt</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">convo</span><span class="o">.</span><span class="n">size</span><span class="p">)])</span>
+
+    <span class="k">return</span> <span class="n">tarr</span><span class="p">,</span><span class="n">convo</span></div>
+
+
+<span class="c1">#######################################################################</span>
+
+<div class="viewcode-block" id="calcreflectivity">
+<a class="viewcode-back" href="../../../API/reflectionseismo.html#pestoseis.reflectionseismo.calcreflectivity">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calcreflectivity</span><span class="p">(</span><span class="n">density</span><span class="p">,</span><span class="n">vel</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">dt</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the reflectivity series given density and velocity as a function </span>
+<span class="sd">      of depth and a time interval.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       density (ndarray): a vector of density values</span>
+<span class="sd">       vel (ndarray): a vector of velocity values</span>
+<span class="sd">       z (ndarray): a vector of depths</span>
+<span class="sd">       dt (float): the time interval</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">       twt (ndarray): the two-way travel time</span>
+<span class="sd">       refltwt (ndarray): the reflectivity series as a function of two-way travel time</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">vel</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">density</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">impdz</span> <span class="o">=</span> <span class="n">density</span><span class="o">*</span><span class="n">vel</span>
+    <span class="n">reflz</span> <span class="o">=</span> <span class="p">(</span><span class="n">impdz</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">-</span><span class="n">impdz</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">impdz</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">+</span><span class="n">impdz</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">twtfromv</span> <span class="o">=</span> <span class="n">_depth2time</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="n">vel</span><span class="p">)</span>
+    <span class="n">twt</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="n">twtfromv</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="n">dt</span><span class="p">)</span>
+    <span class="n">npts</span> <span class="o">=</span> <span class="n">twt</span><span class="o">.</span><span class="n">size</span>    
+
+    <span class="n">refltwt</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">npts</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">reflz</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">__np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">reflz</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">&gt;</span><span class="mf">0.0</span> <span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">__np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">twtfromv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">twt</span><span class="p">))</span>
+            <span class="n">refltwt</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">reflz</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        
+    <span class="k">return</span> <span class="n">twt</span><span class="p">,</span><span class="n">refltwt</span></div>
+
+
+<span class="c1">#######################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_depth2time</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="n">vel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert depth to time. </span>
+<span class="sd">    </span>
+<span class="sd">    Args: </span>
+<span class="sd">       z (ndarray): the depth array</span>
+<span class="sd">       vel (ndarray): the velocity array</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">       twt (ndarray): the two-way travel time</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">vel</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">vel</span><span class="o">.</span><span class="n">size</span><span class="o">==</span><span class="n">z</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+    <span class="n">npts</span><span class="o">=</span><span class="n">vel</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">twt</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">npts</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">npts</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">deltaz</span><span class="o">=</span><span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">deltaz</span><span class="o">&gt;=</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">twt</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">twt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">deltaz</span><span class="o">/</span><span class="n">vel</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        
+    <span class="k">return</span> <span class="n">twt</span>
+
+<span class="c1">#######################################################################</span>
+
+<div class="viewcode-block" id="imgshotgath">
+<a class="viewcode-back" href="../../../API/reflectionseismo.html#pestoseis.reflectionseismo.imgshotgath">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">imgshotgath</span><span class="p">(</span><span class="n">seisdata</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">offset</span><span class="p">,</span><span class="n">amplitudeclip</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create an image of a shotgather.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       seisdata (ndarray): seismic data, i.e., shotgather, *rows* contain traces</span>
+<span class="sd">       dt (float): time interval</span>
+<span class="sd">       offset (ndarray): array of offsets </span>
+<span class="sd">       amplitudeclip (float,optional): clip the amplitude to a desired value</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">twt</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">*</span><span class="n">dt</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">seisdata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span>  
+    <span class="n">vmax</span> <span class="o">=</span> <span class="n">amplitudeclip</span><span class="o">*</span><span class="n">__np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">seisdata</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">vmin</span> <span class="o">=</span> <span class="o">-</span><span class="n">vmax</span>
+    <span class="n">extent</span> <span class="o">=</span> <span class="p">[</span><span class="n">offset</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span><span class="n">offset</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="n">twt</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="n">twt</span><span class="o">.</span><span class="n">min</span><span class="p">()]</span>
+    <span class="n">__plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">seisdata</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">__plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gray</span><span class="p">,</span>
+               <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span><span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span><span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span><span class="p">)</span>
+    <span class="n">__plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+    <span class="n">__plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Offset [m]&#39;</span><span class="p">)</span>
+    <span class="n">__plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;TWT [s]&#39;</span><span class="p">)</span>
+    <span class="k">return</span></div>
+
+
+<span class="c1">#######################################################################</span>
+
+<div class="viewcode-block" id="wiggle">
+<a class="viewcode-back" href="../../../API/reflectionseismo.html#pestoseis.reflectionseismo.wiggle">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">wiggle</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">skiptr</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">scal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">filltrace</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a &#39;wiggle&#39; plot of a shotgather.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       data (ndarray): seismic data, i.e., shotgather, *rows* contain traces</span>
+<span class="sd">       dt (float): time interval</span>
+<span class="sd">       offset (ndarray,optional): array of offsets </span>
+<span class="sd">       skiptr (integer,optiona): plot only every &#39;skiptr&#39; traces</span>
+<span class="sd">       title (string,optional): add a title to the plot</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">*</span><span class="n">dt</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span>        
+    <span class="n">lwidth</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c1"># line width</span>
+    <span class="n">ntraces</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span><span class="n">__np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">ofs</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ntraces</span><span class="p">)])</span>
+        <span class="n">maxval</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="p">((</span><span class="nb">abs</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="n">ofs</span> <span class="o">=</span> <span class="n">offset</span>
+        <span class="n">maxseis</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">maxoff</span> <span class="o">=</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">__np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="n">maxval</span> <span class="o">=</span> <span class="n">maxoff</span><span class="o">/</span><span class="n">maxseis</span>
+
+    <span class="k">if</span> <span class="n">scal</span><span class="o">!=</span><span class="kc">None</span> <span class="p">:</span>
+        <span class="n">maxval</span> <span class="o">*=</span> <span class="n">scal</span>    
+
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">ntraces</span><span class="p">,</span><span class="n">skiptr</span><span class="p">):</span>
+        <span class="n">trace</span><span class="o">=</span><span class="n">ofs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span><span class="o">*</span><span class="n">maxval</span>
+        <span class="n">__plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="n">lwidth</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filltrace</span> <span class="p">:</span>
+            <span class="n">__plt</span><span class="o">.</span><span class="n">fill_betweenx</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">ofs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">trace</span><span class="p">,</span><span class="n">where</span><span class="o">=</span><span class="p">(</span><span class="n">trace</span><span class="o">&gt;=</span><span class="n">ofs</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+        <span class="c1">#__plt.fill_betweenx(t,ofs[i],trace,where=(trace&lt;ofs[i]),color=&#39;red&#39;)</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">__plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+    <span class="n">__plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">ofs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">*</span><span class="n">maxval</span><span class="p">,</span><span class="n">ofs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+    <span class="n">__plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span><span class="n">t</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">title</span><span class="o">!=</span><span class="kc">None</span> <span class="p">:</span>
+        <span class="n">__plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">__plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Offset [m]&#39;</span><span class="p">)</span>
+    <span class="n">__plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;TWT [s]&#39;</span><span class="p">)</span>
+    <span class="k">return</span></div>
+
+
+<span class="c1">#######################################################################</span>
+
+<div class="viewcode-block" id="geometrical_spreading">
+<a class="viewcode-back" href="../../../API/reflectionseismo.html#pestoseis.reflectionseismo.geometrical_spreading">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">geometrical_spreading</span><span class="p">(</span><span class="n">seis</span><span class="p">,</span><span class="n">twt</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply geometrical spreading correction to a shotgather.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        seis (ndarray): seismic shotgather, *rows* contain traces</span>
+<span class="sd">        twt (ndarray): two-way traveltime </span>
+<span class="sd">            </span>
+<span class="sd">    Returns</span>
+<span class="sd">        seis_gs (ndarray): seismograms corrected for geometrical spreading</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ns</span> <span class="o">=</span> <span class="n">seis</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">ntraces</span> <span class="o">=</span> <span class="n">seis</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="n">seis_gs</span> <span class="o">=</span> <span class="n">seis</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ntraces</span><span class="p">):</span>
+        <span class="c1">## twt**2 is a rough APPROXIMATION to geom. spreading...</span>
+        <span class="n">seis_gs</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">seis_gs</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">*</span> <span class="n">twt</span><span class="o">**</span><span class="mi">2</span>
+        <span class="c1">## scale max amplitude to 1</span>
+        <span class="n">seis_gs</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">/=</span> <span class="n">__np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">seis_gs</span><span class="p">[</span><span class="n">i</span><span class="p">,:])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        
+    <span class="k">return</span> <span class="n">seis_gs</span></div>
+
+
+<span class="c1">#######################################################################</span>
+
+<div class="viewcode-block" id="agc">
+<a class="viewcode-back" href="../../../API/reflectionseismo.html#pestoseis.reflectionseismo.agc">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">agc</span><span class="p">(</span><span class="n">seis</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;uniform&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply Automatic Gain Control to a shotgather.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        seis (ndarray): seismic shotgather, *rows* contain traces</span>
+<span class="sd">        w (float): window width</span>
+<span class="sd">        rho (ndarray,optional): density</span>
+<span class="sd">        agctype (string): &#39;linear&#39; or &#39;gaussian&#39;, weight kernel type</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">        seis_gs (ndarray): seismograms corrected with AGC</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ns</span> <span class="o">=</span> <span class="n">seis</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">ntraces</span> <span class="o">=</span> <span class="n">seis</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    
+    <span class="k">if</span> <span class="n">rho</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">nw</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">__np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">w</span><span class="o">/</span><span class="n">rho</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nw</span> <span class="o">=</span> <span class="n">w</span>
+        
+    <span class="c1"># select weight kernel type</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;gaussian&#39;</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span>
+        <span class="n">iw</span><span class="o">=</span><span class="n">__np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">nw</span><span class="p">);</span>
+        <span class="n">weight_kernel</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">iw</span><span class="p">)</span>
+        <span class="n">weight_kernel</span> <span class="o">=</span> <span class="n">weight_kernel</span><span class="o">/</span><span class="n">__np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weight_kernel</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">weight_kernel</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nw</span><span class="p">)</span>
+        <span class="n">weight_kernel</span> <span class="o">=</span> <span class="n">weight_kernel</span><span class="o">/</span><span class="n">__np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weight_kernel</span><span class="p">)</span>
+ 
+    <span class="n">seis_agc</span><span class="o">=</span><span class="n">__np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">seis</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ntraces</span><span class="p">):</span>
+        
+        <span class="n">seis_abs</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">seis</span><span class="p">[</span><span class="n">i</span><span class="p">,:])</span>
+        <span class="n">seis_weight</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">__np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">seis</span><span class="p">[</span><span class="n">i</span><span class="p">,:]),</span><span class="n">weight_kernel</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">seis_weight</span><span class="o">==</span><span class="mf">0.0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="p">:</span>
+            <span class="c1"># print(&quot;agc(): Dividing by zero in AGC correction... &quot;)</span>
+            <span class="n">seis_weight</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">seis_weight</span><span class="o">==</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1e-6</span><span class="p">,</span><span class="n">seis_weight</span><span class="p">)</span>      
+            
+        <span class="c1">##-----</span>
+        <span class="n">seis_agc</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">seis</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span><span class="o">/</span><span class="n">seis_weight</span>
+  
+    <span class="k">return</span> <span class="n">seis_agc</span></div>
+
+   
+<span class="c1">#######################################################################</span>
+
+<div class="viewcode-block" id="nmocorrection">
+<a class="viewcode-back" href="../../../API/reflectionseismo.html#pestoseis.reflectionseismo.nmocorrection">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">nmocorrection</span><span class="p">(</span><span class="n">velnmo</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">offset</span><span class="p">,</span><span class="n">seisdat</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Common Mid Point (CMP) normal moveout correction.</span>
+<span class="sd">  </span>
+<span class="sd">    Args:</span>
+<span class="sd">        velnmo (ndarray): 1D array of &quot;NMO&quot; velocity, representing the </span>
+<span class="sd">                          average velocity of the layers above</span>
+<span class="sd">        dt (float): the time interval</span>
+<span class="sd">        offset (ndarray): offsets for each trace</span>
+<span class="sd">        seisdat (ndarray): input seismic data, *rows* contain traces</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">        seisnmo (ndarray): seismograms NMO corrected</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ntraces</span><span class="p">,</span><span class="n">nsmpl</span> <span class="o">=</span> <span class="n">seisdat</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">assert</span> <span class="n">ntraces</span><span class="o">==</span><span class="n">offset</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">seisnmo</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">seisdat</span><span class="p">)</span>
+    <span class="n">timearr</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">dt</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nsmpl</span><span class="p">)])</span>
+
+    <span class="c1">## build the nmo array trace by trace</span>
+    <span class="k">for</span> <span class="n">itr</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ntraces</span><span class="p">):</span>
+        <span class="c1"># compute the time for nmo for all time points of a single trace</span>
+        <span class="c1"># velocity array is nx x nz so slice in depth is vel[?,:]</span>
+        <span class="n">tnmo</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">timearr</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">offset</span><span class="p">[</span><span class="n">itr</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">velnmo</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> 
+        <span class="c1"># new trace</span>
+        <span class="n">seisnmo</span><span class="p">[</span><span class="n">itr</span><span class="p">,:]</span> <span class="o">=</span>  <span class="n">_resampletrace</span><span class="p">(</span><span class="n">timearr</span><span class="p">,</span><span class="n">tnmo</span><span class="p">,</span><span class="n">seisdat</span><span class="p">[</span><span class="n">itr</span><span class="p">,:])</span>
+    <span class="k">return</span> <span class="n">seisnmo</span></div>
+
+
+<span class="c1">#######################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_resampletrace</span><span class="p">(</span><span class="n">torig</span><span class="p">,</span><span class="n">tnmo</span><span class="p">,</span><span class="n">seistr</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Resample a trace</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        torig</span>
+<span class="sd">        tnmo</span>
+<span class="sd">        seistr</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">        seisnew (ndarray): resampled trace</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">seisnew</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">torig</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+    <span class="n">itp</span> <span class="o">=</span> <span class="n">__CubicSpline</span><span class="p">(</span><span class="n">torig</span><span class="p">,</span><span class="n">seistr</span><span class="p">)</span>
+    <span class="c1"># time outside bounds?</span>
+    <span class="n">outbou</span> <span class="o">=</span> <span class="p">(</span><span class="n">tnmo</span><span class="o">&gt;</span><span class="n">torig</span><span class="o">.</span><span class="n">max</span><span class="p">())</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">outbou</span><span class="o">.</span><span class="n">size</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">outbou</span><span class="p">)</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">seisnew</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">seisnew</span><span class="p">[:</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">itp</span><span class="p">(</span><span class="n">tnmo</span><span class="p">[:</span><span class="n">idx</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">seisnew</span>
+
+<span class="c1">#######################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_pm_mask</span><span class="p">(</span><span class="n">seisdat</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets a mask of the sign (+/-) for a given set of seismic traces. Useful</span>
+<span class="sd">    for recoving the correct sign of the seismic data after FFTing the data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        seisdat (ndarray): input seismic data in time-space domain, *rows*</span>
+<span class="sd">                           contain traces</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">        pm_mask (ndarray): mask containing the sign (+1 or -1) of the trace</span>
+<span class="sd">                           samples</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pm_mask</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">seisdat</span><span class="p">)</span>
+    <span class="n">pm_mask</span><span class="p">[</span><span class="n">__np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">seisdat</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">pm_mask</span><span class="p">[</span><span class="n">__np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">seisdat</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">pm_mask</span>
+
+<span class="c1">#######################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">transform_tx_to_fk</span><span class="p">(</span><span class="n">seisdat</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Transform seismograms from time-space domain to frequency-wavenumber</span>
+<span class="sd">    domain.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        seisdat (ndarray): input seismic data, *rows* contain traces</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">        fk_seis (ndarray): transformed seismic data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Transform to frequency-space domain</span>
+    <span class="n">fx_seis</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">__np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">seisdat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">axes</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Transform to frequency-wavenumber domain</span>
+    <span class="n">fk_seis</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">__np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft</span><span class="p">(</span><span class="n">fx_seis</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">axes</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fk_seis</span>
+
+<span class="c1">#######################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">transform_fk_to_tx</span><span class="p">(</span><span class="n">seisdat</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Transform seismograms from frequency-wavenumber domain to time-space</span>
+<span class="sd">    domain.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        seisdat (ndarray): seismic traces in frequency-wavenumber domain,</span>
+<span class="sd">                           *rows* contain traces</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">        tx_seis (ndarray): transformed seismic data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Transform to frequency-space domain</span>
+    <span class="n">fx_seis</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">__np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftshift</span><span class="p">(</span><span class="n">seisdat</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Transform to time-space domain</span>
+    <span class="n">tx_seis</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft</span><span class="p">(</span><span class="n">__np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftshift</span><span class="p">(</span><span class="n">fx_seis</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">__np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">tx_seis</span><span class="p">)</span>
+
+<span class="c1">#######################################################################</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span> <span class="k">as</span> <span class="n">PolyPath</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_Canvas</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructs a canvas object for drawing on a plot</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ax (matplotlib.axes._subplots.AxesSubplot): plot axis </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span>
+        
+        <span class="c1"># Create handle for a path of connected points</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="s1">&#39;o-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+     
+        <span class="bp">self</span><span class="o">.</span><span class="n">vert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Interactive Plot</span><span class="se">\n</span><span class="s1">LEFT: new point, MIDDLE: close polygon, RIGHT: delete last point&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="p">[]</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mouse_button</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_point</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_close_polygon</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delete_point</span><span class="p">}</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">xdata</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">ydata</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_point</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">vert</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">])))</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_delete_point</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vert</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vert</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_close_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">vert</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vert</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]))</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">event</span><span class="p">):</span>
+
+        <span class="c1"># If the mouse pointer is not on the canvas, ignore buttons</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span><span class="p">:</span> <span class="k">return</span>
+
+        <span class="c1"># Do whichever action correspond to the mouse button clicked</span>
+        <span class="c1"># mouse_button: dictionary {1: self._add_point, 2: self._delete_point, 3: self._close_polygon}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mouse_button</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">]()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;vert:&quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">vert</span><span class="p">)</span>
+        
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">vert</span><span class="p">[</span><span class="n">k</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">vert</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">vert</span><span class="p">[</span><span class="n">k</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">vert</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">__plt</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+<span class="c1">#######################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_tracepoly</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span> <span class="p">:</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">cnv</span> <span class="o">=</span> <span class="n">_Canvas</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+
+    <span class="c1"># Get the information on the mouse events</span>
+    <span class="n">__plt</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;button_press_event&#39;</span><span class="p">,</span> <span class="n">cnv</span><span class="o">.</span><span class="n">update_path</span><span class="p">)</span>
+    <span class="n">__plt</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;motion_notify_event&#39;</span><span class="p">,</span> <span class="n">cnv</span><span class="o">.</span><span class="n">set_location</span><span class="p">)</span>
+
+    <span class="c1"># Display the plot</span>
+    <span class="n">__plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">__plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        
+    <span class="k">return</span> <span class="n">cnv</span>
+
+<span class="c1">#######################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_fk_spectrum</span><span class="p">(</span><span class="n">seisdat_fk</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plots the frequency-wavenumber spectrum of the seismic traces.  Data</span>
+<span class="sd">    must already be in frequency-wavenumber domain.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        seisdat_fk (ndarray): seismic traces in frequency-wavenumber domain,</span>
+<span class="sd">                              *rows* contain traces</span>
+<span class="sd">        ylim (float, optional): upper y-limit (frequency) to plot</span>
+<span class="sd">        interactive (bool, optional): whether to plot an interactive polygon</span>
+<span class="sd">                                      drawing tool</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">        canvas (_Canvas): canvas object containing the user-drawn polygon, only</span>
+<span class="sd">                          returned when `interactive=True`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Verify that the data is complex; rudamentary check to see if the data</span>
+    <span class="c1"># is still in time-space domain (but obviously not fool-proof)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">__np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">__np</span><span class="o">.</span><span class="n">iscomplex</span><span class="p">(</span><span class="n">seisdat_fk</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Input data is not complex; verify that the input</span><span class="se">\</span>
+<span class="s2">            data is in frequency-wavenumber domain&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Construct plot</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">__plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">__plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+        <span class="n">__np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">seisdat_fk</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> 
+        <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> 
+        <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray_r&quot;</span><span class="p">,</span>
+        <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span> 
+    <span class="p">)</span>
+
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">seisdat_fk</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">d</span><span class="o">=</span><span class="n">dt</span><span class="p">))</span>
+    <span class="n">__plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">seisdat_fk</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">25</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">freqs</span><span class="p">[::</span><span class="mi">25</span><span class="p">],</span> <span class="mi">0</span><span class="p">))</span>
+
+    <span class="n">ks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">seisdat_fk</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">d</span><span class="o">=</span><span class="n">dx</span><span class="p">))</span>
+    <span class="n">__plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">seisdat_fk</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">25</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">ks</span><span class="p">[::</span><span class="mi">25</span><span class="p">],</span> <span class="mi">3</span><span class="p">))</span>
+
+
+    <span class="k">if</span> <span class="n">ylim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ylim</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">seisdat_fk</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">__plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="n">seisdat_fk</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">seisdat_fk</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">ylim</span><span class="p">])</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Frequency-Wavenumber Spectrum&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Wavenumber [1/m]&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">interactive</span><span class="p">:</span>
+        <span class="c1"># Set canvas for drawing polygons onto</span>
+        <span class="n">canvas</span> <span class="o">=</span> <span class="n">_tracepoly</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">canvas</span>
+
+<span class="c1">#######################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">mask_from_polygon</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">poly</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">smoothing_strength</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Constructs a boolean mask from a polygon for a given image.  Regions within</span>
+<span class="sd">    the polygon are by default assigned `0` and values outside of the polygon</span>
+<span class="sd">    are assigned `1`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        img (ndarray): image to construct the mask for</span>
+<span class="sd">        poly (ndarray, _Canvas): polygon to construct the boolean</span>
+<span class="sd">                                    mask of</span>
+<span class="sd">        smooth (bool, optional): flag for whether to apply gaussian smoothing</span>
+<span class="sd">                                 to the edges of the mask</span>
+<span class="sd">        smoothing_strength (int, optional): strength of gaussian smoothing</span>
+<span class="sd">        invert (bool, optional): flag for inverting the boolean selection</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">        mask (ndarray): boolean mask with same dimensions of `img`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">poly</span><span class="p">)</span> <span class="ow">is</span> <span class="n">_Canvas</span><span class="p">:</span>
+        <span class="n">poly</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">poly</span><span class="o">.</span><span class="n">vert</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">poly</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">poly</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Polygon must have shape `[n, 2]` -&gt; Got polygon with shape </span><span class="si">{</span><span class="n">poly</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Create the mask from the polygon</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">_pts_inside_poly</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">poly</span><span class="p">))</span>
+
+    <span class="c1"># Invert selection if specified</span>
+    <span class="k">if</span> <span class="n">invert</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="c1"># Smooth the edges of the mask</span>
+    <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">gaussian_filter</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">smoothing_strength</span><span class="p">)</span>
+
+    <span class="c1"># Flip the maps along the axes of symmetry</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span>
+    <span class="n">mask</span><span class="p">[</span><span class="o">-</span><span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]:,</span> <span class="p">:</span><span class="n">inds</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="n">mask</span><span class="p">[</span><span class="o">-</span><span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]:,</span> <span class="o">-</span><span class="n">inds</span><span class="p">[</span><span class="mi">1</span><span class="p">]:])</span>
+    <span class="n">mask</span><span class="p">[:</span><span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">__np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">mask</span><span class="p">[</span><span class="o">-</span><span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]:,</span> <span class="p">:])</span>
+
+    <span class="k">return</span> <span class="n">mask</span><span class="o">.</span><span class="n">T</span>
+    
+
+<span class="c1">#######################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_pts_inside_poly</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">poly</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+    <span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="n">path</span> <span class="o">=</span> <span class="n">PolyPath</span><span class="p">(</span><span class="n">poly</span><span class="p">)</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">contains_points</span><span class="p">(</span><span class="n">pts</span><span class="p">)</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+    <span class="k">return</span> <span class="n">grid</span>
+
+<span class="c1">#######################################################################</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Andrea Zunino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

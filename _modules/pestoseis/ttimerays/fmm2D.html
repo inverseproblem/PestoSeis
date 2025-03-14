@@ -1,0 +1,587 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pestoseis.ttimerays.fmm2D &mdash; PestoSeis 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=83a61292"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PestoSeis
+              <img src="../../../_static/PestoSeisLogo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation — loading the module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ttimerays_guide.html">Traveltimes and rays – using <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../seismicwaves2d_guide.html">Seismic wave propagation – using <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/index.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developerdocs.html">Developer zone</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PestoSeis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pestoseis.ttimerays.fmm2D</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pestoseis.ttimerays.fmm2D</h1><div class="highlight"><pre>
+<span></span>
+<span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#    PestoSeis, a numerical laboratory to learn about seismology, written</span>
+<span class="c1">#    in the Python language.</span>
+<span class="c1">#    Copyright (C) 2021  Andrea Zunino </span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#    it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#    (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#    GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#    You should have received a copy of the GNU General Public License</span>
+<span class="c1">#    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+
+<span class="c1">##########################################################################</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.binheap</span><span class="w"> </span><span class="kn">import</span> <span class="n">BinHeapMin</span> 
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">__NP</span>
+
+<span class="c1">##########################################################################</span>
+
+<div class="viewcode-block" id="Grid2D">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.fmm2D.Grid2D">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Grid2D</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class containing the info of a 2D grid for traveltime calculations.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">      nx (int): number of points/cells in the x direction</span>
+<span class="sd">      ny (int): number of points/cells in the y direction</span>
+<span class="sd">      h (float): grid spacing (same for x and y)</span>
+<span class="sd">      xinit (float): grid origin for the x direction</span>
+<span class="sd">      yinit (float): grid origin for the y direction</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span><span class="n">xinit</span><span class="p">,</span><span class="n">yinit</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nx</span> <span class="o">=</span> <span class="n">nx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ny</span> <span class="o">=</span> <span class="n">ny</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hgrid</span> <span class="o">=</span> <span class="n">h</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ntx</span> <span class="o">=</span> <span class="n">nx</span><span class="o">+</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nty</span> <span class="o">=</span> <span class="n">ny</span><span class="o">+</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xinit</span> <span class="o">=</span> <span class="n">xinit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yinit</span> <span class="o">=</span> <span class="n">yinit</span></div>
+
+        
+<span class="c1"># from collections import namedtuple</span>
+<span class="c1"># MyStruct = namedtuple(&quot;MyStruct&quot;, &quot;field1 field2 field3&quot;)</span>
+<span class="c1"># m = MyStruct(field1=&quot;foo&quot;, field2=&quot;bar&quot;, field3=&quot;baz&quot;)</span>
+
+<span class="c1">##########################################################################</span>
+
+<div class="viewcode-block" id="ttimefmm">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.fmm2D.ttimefmm">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ttimefmm</span><span class="p">(</span><span class="n">vel</span><span class="p">,</span><span class="n">grdh</span><span class="p">,</span><span class="n">xinit</span><span class="p">,</span><span class="n">yinit</span><span class="p">,</span><span class="n">coordsrc</span><span class="p">,</span><span class="n">coordrec</span><span class="p">,</span><span class="n">ttarrout</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Traveltimes calculation given a velocity model, position of sources and receivers.</span>
+<span class="sd">      </span>
+<span class="sd">    Args:</span>
+<span class="sd">       vel (ndarray): input velocity model</span>
+<span class="sd">       grdh (float): grid spacing</span>
+<span class="sd">       xinit (float): x axis origin coordinate</span>
+<span class="sd">       yinit (float): y axis origin coordinate</span>
+<span class="sd">       coordsrc (ndarray): coordinates of the sources</span>
+<span class="sd">       coordred (ndarray): coordinates of the receivers</span>
+<span class="sd">       ttarrout (bool): optional, returns the full array of traveltimes</span>
+<span class="sd">      </span>
+<span class="sd">    Returns:</span>
+<span class="sd">       ttpicks (ndarray), ttarr (ndarray,optional): the traveltimes at the </span>
+<span class="sd">                            receivers and, optionally, the traveltime array(s)</span>
+<span class="sd">      </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">nx</span><span class="p">,</span><span class="n">ny</span> <span class="o">=</span> <span class="n">vel</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">grd</span> <span class="o">=</span> <span class="n">Grid2D</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span><span class="n">grdh</span><span class="p">,</span><span class="n">xinit</span><span class="p">,</span><span class="n">yinit</span><span class="p">)</span>
+    <span class="n">ttarr</span> <span class="o">=</span> <span class="n">_ttFMM</span><span class="p">(</span><span class="n">vel</span><span class="p">,</span><span class="n">coordsrc</span><span class="p">,</span><span class="n">grd</span><span class="p">)</span>
+    
+    <span class="n">nrec</span> <span class="o">=</span> <span class="n">coordrec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ttpicks</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nrec</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrec</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">ttpicks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">__bilinear_interp</span><span class="p">(</span><span class="n">ttarr</span><span class="p">,</span> <span class="n">grd</span><span class="o">.</span><span class="n">hgrid</span><span class="p">,</span><span class="n">grd</span><span class="o">.</span><span class="n">xinit</span><span class="p">,</span>
+                                     <span class="n">grd</span><span class="o">.</span><span class="n">yinit</span><span class="p">,</span><span class="n">coordrec</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+                                     <span class="n">coordrec</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">ttarrout</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="n">ttpicks</span><span class="p">,</span><span class="n">ttarr</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="n">ttpicks</span></div>
+
+
+<span class="c1">##########################################################################</span>
+
+<div class="viewcode-block" id="__bilinear_interp">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.fmm2D.__bilinear_interp">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">__bilinear_interp</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">hgrid</span><span class="p">,</span><span class="n">xinit</span><span class="p">,</span><span class="n">yinit</span><span class="p">,</span><span class="n">xreq</span><span class="p">,</span><span class="n">yreq</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Bilinear interpolation (2D).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nx</span><span class="p">,</span><span class="n">ny</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">shape</span>
+    <span class="c1">## rearrange such that the coordinates of corners are (0,0), (0,1), (1,0), and (1,1)</span>
+    <span class="n">xh</span><span class="o">=</span><span class="p">(</span><span class="n">xreq</span><span class="o">-</span><span class="n">xinit</span><span class="p">)</span><span class="o">/</span><span class="n">hgrid</span>
+    <span class="n">yh</span><span class="o">=</span><span class="p">(</span><span class="n">yreq</span><span class="o">-</span><span class="n">yinit</span><span class="p">)</span><span class="o">/</span><span class="n">hgrid</span>
+    <span class="n">i</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">__NP</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">xh</span><span class="p">))</span> <span class="c1"># indices starts from 0</span>
+    <span class="n">j</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">__NP</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">yh</span><span class="p">))</span> <span class="c1"># indices starts from 0</span>
+  
+    <span class="c1">## rearrange such that the coordinates of corners are (0,0), (0,1), (1,0), and (1,1)</span>
+    <span class="n">xh</span><span class="o">=</span><span class="p">(</span><span class="n">xreq</span><span class="o">-</span><span class="n">xinit</span><span class="p">)</span><span class="o">/</span><span class="n">hgrid</span>
+    <span class="n">yh</span><span class="o">=</span><span class="p">(</span><span class="n">yreq</span><span class="o">-</span><span class="n">yinit</span><span class="p">)</span><span class="o">/</span><span class="n">hgrid</span>
+    <span class="n">i</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">__NP</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">xh</span><span class="p">))</span> <span class="c1"># indices starts from 0</span>
+    <span class="n">j</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">__NP</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">yh</span><span class="p">))</span> <span class="c1"># indices starts from 0</span>
+    <span class="c1">## if at the edges of domain choose previous square...</span>
+    <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="n">nx</span> <span class="p">:</span>
+        <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span>
+    <span class="k">if</span> <span class="n">j</span><span class="o">==</span><span class="n">ny</span> <span class="p">:</span>
+        <span class="n">j</span><span class="o">=</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span>
+    <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="n">nx</span> <span class="p">:</span>
+        <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span>
+    <span class="k">if</span> <span class="n">j</span><span class="o">==</span><span class="n">ny</span> <span class="p">:</span>
+        <span class="n">j</span><span class="o">=</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span>
+
+    <span class="n">xd</span><span class="o">=</span><span class="n">xh</span><span class="o">-</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="c1"># indices starts from 0</span>
+    <span class="n">yd</span><span class="o">=</span><span class="n">yh</span><span class="o">-</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="c1"># indices starts from 0</span>
+    <span class="n">intval</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">xd</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">yd</span><span class="p">)</span><span class="o">+</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">yd</span><span class="p">)</span><span class="o">*</span><span class="n">xd</span> <span class="o">+</span> <span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">xd</span><span class="p">)</span><span class="o">*</span><span class="n">yd</span><span class="o">+</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">xd</span><span class="o">*</span><span class="n">yd</span>
+    <span class="k">return</span> <span class="n">intval</span></div>
+
+
+<span class="c1">##########################################################################</span>
+
+<div class="viewcode-block" id="__fmm_findclosestnode">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.fmm2D.__fmm_findclosestnode">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">__fmm_findclosestnode</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">xinit</span><span class="p">,</span><span class="n">yinit</span><span class="p">,</span><span class="n">h</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Find closest grid node to given coordinates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xzero</span> <span class="o">=</span> <span class="n">x</span><span class="o">-</span><span class="n">xinit</span>
+    <span class="n">yzero</span> <span class="o">=</span> <span class="n">y</span><span class="o">-</span><span class="n">yinit</span>
+    <span class="n">ix</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">__NP</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">xzero</span><span class="o">/</span><span class="n">h</span><span class="p">))</span> 
+    <span class="n">iy</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">__NP</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">yzero</span><span class="o">/</span><span class="n">h</span><span class="p">))</span> 
+    <span class="n">rx</span> <span class="o">=</span> <span class="n">xzero</span><span class="o">-</span><span class="p">(</span><span class="n">ix</span><span class="o">*</span><span class="n">h</span><span class="p">)</span>
+    <span class="n">ry</span> <span class="o">=</span> <span class="n">yzero</span><span class="o">-</span><span class="p">(</span><span class="n">iy</span><span class="o">*</span><span class="n">h</span><span class="p">)</span>
+    <span class="n">middle</span> <span class="o">=</span> <span class="n">h</span><span class="o">/</span><span class="mf">2.0</span>
+    <span class="k">if</span> <span class="n">rx</span><span class="o">&gt;=</span><span class="n">middle</span> <span class="p">:</span>
+        <span class="n">ix</span> <span class="o">=</span> <span class="n">ix</span><span class="o">+</span><span class="mi">1</span>
+    <span class="k">if</span> <span class="n">ry</span><span class="o">&gt;=</span><span class="n">middle</span> <span class="p">:</span>
+        <span class="n">iy</span> <span class="o">=</span> <span class="n">iy</span><span class="o">+</span><span class="mi">1</span>  
+    <span class="c1">## return Int(ix+1),Int(iy+1) # julia</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">ix</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="n">iy</span><span class="p">)</span> <span class="c1"># python</span></div>
+
+
+<span class="c1">##########################################################################</span>
+
+<div class="viewcode-block" id="_ttFMM">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.fmm2D._ttFMM">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">_ttFMM</span><span class="p">(</span><span class="n">vel</span><span class="p">,</span><span class="n">src</span><span class="p">,</span><span class="n">grd</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;   </span>
+<span class="sd">    Fast marching method to compute traveltimes in 2D.</span>
+<span class="sd">    Uses a staggered grid, time array is bigger than velocity array, </span>
+<span class="sd">    following Podvin &amp; Lecompte scheme.</span>
+<span class="sd">     </span>
+<span class="sd">    Args</span>
+<span class="sd">      vel: input velocity model</span>
+<span class="sd">      src: source position</span>
+<span class="sd">      grd: grid parameters</span>
+<span class="sd">     </span>
+<span class="sd">    Returns:</span>
+<span class="sd">      ttime: array of traveltimes</span>
+<span class="sd">     </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">1e-6</span>
+      
+    <span class="c1">## ttime</span>
+    <span class="n">ntx</span><span class="p">,</span><span class="n">nty</span><span class="o">=</span><span class="n">grd</span><span class="o">.</span><span class="n">ntx</span><span class="p">,</span><span class="n">grd</span><span class="o">.</span><span class="n">nty</span> <span class="c1"># ttime grid, size(vel)+1  ## STAGGERED GRID!!!</span>
+    <span class="n">nvx</span> <span class="o">=</span> <span class="n">grd</span><span class="o">.</span><span class="n">nx</span> <span class="c1"># velocity grid size</span>
+    <span class="n">nvy</span> <span class="o">=</span> <span class="n">grd</span><span class="o">.</span><span class="n">ny</span> <span class="c1"># velocity grid size</span>
+    <span class="n">inittt</span> <span class="o">=</span> <span class="mf">1e30</span>
+    <span class="n">ttime</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ntx</span><span class="p">,</span><span class="n">nty</span><span class="p">))</span>
+    <span class="n">ttime</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="n">inittt</span>
+    
+    <span class="c1">## source location, etc.      </span>
+    <span class="n">mindistsrc</span> <span class="o">=</span> <span class="mf">1e-5</span>
+    <span class="n">onsrc</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ntx</span><span class="p">,</span><span class="n">nty</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">onsrc</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">xsrc</span><span class="p">,</span><span class="n">ysrc</span><span class="o">=</span><span class="n">src</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">src</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1">## grd.xinit-hgr because TIME array on STAGGERED grid</span>
+    <span class="n">hgr</span> <span class="o">=</span> <span class="n">grd</span><span class="o">.</span><span class="n">hgrid</span><span class="o">/</span><span class="mf">2.0</span>
+    <span class="n">ix</span><span class="p">,</span><span class="n">iy</span> <span class="o">=</span> <span class="n">__fmm_findclosestnode</span><span class="p">(</span><span class="n">xsrc</span><span class="p">,</span><span class="n">ysrc</span><span class="p">,</span><span class="n">grd</span><span class="o">.</span><span class="n">xinit</span><span class="o">-</span><span class="n">hgr</span><span class="p">,</span><span class="n">grd</span><span class="o">.</span><span class="n">yinit</span><span class="o">-</span><span class="n">hgr</span><span class="p">,</span><span class="n">grd</span><span class="o">.</span><span class="n">hgrid</span><span class="p">)</span>
+    
+    <span class="n">rx</span> <span class="o">=</span> <span class="n">src</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="p">((</span><span class="n">ix</span><span class="p">)</span><span class="o">*</span><span class="n">grd</span><span class="o">.</span><span class="n">hgrid</span><span class="o">+</span><span class="n">grd</span><span class="o">.</span><span class="n">xinit</span><span class="o">-</span><span class="n">hgr</span><span class="p">)</span> <span class="c1"># NO (i-1)*grd.., just i*grd.. python</span>
+    <span class="n">ry</span> <span class="o">=</span> <span class="n">src</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="p">((</span><span class="n">iy</span><span class="p">)</span><span class="o">*</span><span class="n">grd</span><span class="o">.</span><span class="n">hgrid</span><span class="o">+</span><span class="n">grd</span><span class="o">.</span><span class="n">yinit</span><span class="o">-</span><span class="n">hgr</span><span class="p">)</span> <span class="c1"># NO (i-1)*grd.., just i*grd.. python</span>
+    <span class="n">halfg</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="c1">#hgrid/2.0</span>
+    
+    <span class="n">dist</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">rx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">ry</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="c1">#@show dist,src,rx,ry</span>
+    <span class="k">if</span> <span class="n">dist</span><span class="o">&lt;=</span><span class="n">mindistsrc</span> <span class="p">:</span>
+        <span class="n">onsrc</span><span class="p">[</span><span class="n">ix</span><span class="p">,</span><span class="n">iy</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">ttime</span><span class="p">[</span><span class="n">ix</span><span class="p">,</span><span class="n">iy</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span> 
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">rx</span><span class="o">&gt;=</span><span class="n">halfg</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ry</span><span class="o">&gt;=</span><span class="n">halfg</span><span class="p">)</span> <span class="p">:</span>
+            <span class="n">onsrc</span><span class="p">[</span><span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="n">iy</span><span class="p">:</span><span class="n">iy</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">rx</span><span class="o">&lt;</span><span class="n">halfg</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ry</span><span class="o">&gt;=</span><span class="n">halfg</span><span class="p">)</span> <span class="p">:</span>
+            <span class="n">onsrc</span><span class="p">[</span><span class="n">ix</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">iy</span><span class="p">:</span><span class="n">iy</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">rx</span><span class="o">&lt;</span><span class="n">halfg</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ry</span><span class="o">&lt;</span><span class="n">halfg</span><span class="p">)</span> <span class="p">:</span>
+            <span class="n">onsrc</span><span class="p">[</span><span class="n">ix</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">iy</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">iy</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">rx</span><span class="o">&gt;=</span><span class="n">halfg</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ry</span><span class="o">&lt;</span><span class="n">halfg</span><span class="p">)</span> <span class="p">:</span>
+            <span class="n">onsrc</span><span class="p">[</span><span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="n">iy</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">iy</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            
+        <span class="c1">## set ttime around source ONLY FOUR points!!!</span>
+        <span class="c1">######=======&gt;&gt;&gt;&gt;&gt;&gt;&gt;</span>
+        <span class="n">isrc</span><span class="p">,</span><span class="n">jsrc</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">onsrc</span><span class="p">)</span> <span class="c1">##ind2sub(size(onsrc),find(onsrc))</span>
+        <span class="c1">######=======&gt;&gt;&gt;&gt;&gt;&gt;&gt;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">jsrc</span><span class="p">,</span><span class="n">isrc</span><span class="p">)</span> <span class="p">:</span>
+            <span class="c1">#for i in isrc</span>
+            <span class="c1">## grd.xinit-hgr because TIME array on STAGGERED grid</span>
+            <span class="n">xp</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="n">grd</span><span class="o">.</span><span class="n">hgrid</span><span class="o">+</span><span class="n">grd</span><span class="o">.</span><span class="n">xinit</span><span class="o">-</span><span class="n">hgr</span> <span class="c1"># NO (i-1)*grd.., just i*grd.. python</span>
+            <span class="n">yp</span> <span class="o">=</span> <span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">grd</span><span class="o">.</span><span class="n">hgrid</span><span class="o">+</span><span class="n">grd</span><span class="o">.</span><span class="n">yinit</span><span class="o">-</span><span class="n">hgr</span>
+            <span class="n">ii</span> <span class="o">=</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span>   <span class="c1">#int(__NP.floor((xsrc-grd.xinit))/grd.hgrid) #+1</span>
+            <span class="n">jj</span> <span class="o">=</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span>    <span class="c1">#int(__NP.floor((ysrc-grd.yinit))/grd.hgrid) #+1</span>
+            <span class="c1">#### vel[isrc[1,1],jsrc[1,1]] STAGGERED GRID!!!</span>
+            <span class="n">ttime</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">xsrc</span><span class="o">-</span><span class="n">xp</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="p">(</span><span class="n">ysrc</span><span class="o">-</span><span class="n">yp</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">vel</span><span class="p">[</span><span class="n">ii</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">jj</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="c1">#[isrc[1,1],jsrc[1,1]]</span>
+            <span class="c1">#print(&quot;source:&quot;,ii,jj,xp,yp)</span>
+
+    <span class="c1"># import matplotlib.pyplot as plt</span>
+    <span class="c1"># plt.figure()</span>
+    <span class="c1"># extent=</span>
+    <span class="c1"># plt.imshow(onsrc.T,extent=extent)</span>
+    <span class="c1"># plt.plot(xsrc/grd.hgrid,ysrc/grd.hgrid,&#39;or&#39;)</span>
+    <span class="c1"># plt.show()</span>
+    <span class="c1"># exit()</span>
+    
+    <span class="c1">###################################################### </span>
+    <span class="c1">## indices of points clockwise</span>
+    <span class="c1">## A</span>
+    <span class="n">cooa</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                     <span class="p">[</span><span class="mi">0</span><span class="p">,</span>  <span class="mi">1</span><span class="p">],</span>
+                     <span class="p">[</span><span class="mi">0</span><span class="p">,</span>  <span class="mi">1</span><span class="p">],</span>
+                     <span class="p">[</span><span class="mi">1</span><span class="p">,</span>  <span class="mi">0</span><span class="p">],</span>
+                     <span class="p">[</span><span class="mi">1</span><span class="p">,</span>  <span class="mi">0</span><span class="p">],</span>
+                     <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                     <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                     <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="p">])</span>
+    <span class="c1">## B</span>
+    <span class="n">coob</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="mi">1</span><span class="p">],</span>
+                     <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="mi">1</span><span class="p">],</span>
+                     <span class="p">[</span><span class="mi">1</span><span class="p">,</span>  <span class="mi">1</span><span class="p">],</span>
+                     <span class="p">[</span><span class="mi">1</span><span class="p">,</span>   <span class="mi">1</span><span class="p">],</span>
+                     <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                     <span class="p">[</span><span class="mi">1</span><span class="p">,</span>  <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                     <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                     <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">])</span> 
+    <span class="c1">## velocity in ABCD</span>
+    <span class="n">coovin</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="mi">0</span><span class="p">],</span>
+                       <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="mi">0</span><span class="p">],</span>
+                       <span class="p">[</span><span class="mi">0</span><span class="p">,</span>   <span class="mi">0</span><span class="p">],</span>
+                       <span class="p">[</span><span class="mi">0</span><span class="p">,</span>   <span class="mi">0</span><span class="p">],</span>
+                       <span class="p">[</span><span class="mi">0</span><span class="p">,</span>  <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                       <span class="p">[</span><span class="mi">0</span><span class="p">,</span>  <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                       <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                       <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">])</span>
+    <span class="c1"># velocity in AFGC see paper</span>
+    <span class="n">coovadj</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">0</span><span class="p">,</span>   <span class="mi">0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="mi">0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">0</span><span class="p">,</span>  <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">0</span><span class="p">,</span>   <span class="mi">0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">0</span><span class="p">,</span>  <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="mi">0</span><span class="p">]</span> <span class="p">])</span>
+    
+    <span class="c1">##================================</span>
+    <span class="n">slowness</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">vel</span>
+    <span class="n">neigh</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                      <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+                     
+    <span class="c1">#-------------------------------</span>
+    <span class="c1">## init FMM </span>
+                     
+    <span class="n">status</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ntx</span><span class="p">,</span><span class="n">nty</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span> <span class="c1">#Array{Int64}(ntx,nty)</span>
+    <span class="n">status</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="mi">0</span>   <span class="c1">## set all to far</span>
+    <span class="n">status</span><span class="p">[</span><span class="n">onsrc</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1">## set to accepted on src</span>
+    <span class="n">naccinit</span><span class="o">=</span><span class="n">__NP</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">status</span><span class="o">==</span><span class="mi">2</span><span class="p">)</span>  <span class="c1">## count(status.==2)</span>
+    
+    <span class="c1">## get all i,j accepted </span>
+    <span class="n">iss</span><span class="p">,</span><span class="n">jss</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">status</span><span class="o">==</span><span class="mi">2</span><span class="p">)</span> <span class="c1">## findn(status.==2) #ind2sub((ntx,nty),find(status.==2))</span>
+    <span class="n">naccinit</span> <span class="o">=</span> <span class="n">iss</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">iss</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">naccinit</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span> <span class="c1">##Array{Int64,1}(naccinit)</span>
+    <span class="n">jss</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">naccinit</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span> <span class="c1">##Array{Int64,1}(naccinit)</span>
+    <span class="n">l</span><span class="o">=</span><span class="mi">0</span> <span class="c1">#1</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">grd</span><span class="o">.</span><span class="n">nty</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">grd</span><span class="o">.</span><span class="n">ntx</span><span class="p">)</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="n">status</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="mi">2</span> <span class="p">:</span>
+                <span class="n">iss</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+                <span class="n">jss</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span>
+                <span class="n">l</span><span class="o">+=</span><span class="mi">1</span>
+
+    <span class="c1">## Init the max binary heap with void arrays but max size</span>
+    <span class="n">Nmax</span> <span class="o">=</span> <span class="n">ntx</span><span class="o">*</span><span class="n">nty</span>
+    <span class="c1">## ???? bheap = build_minheap(Array{Float64}(0),Nmax,Array{Int64}(0))</span>
+    <span class="c1">## initialize an empty min bin heap</span>
+    <span class="n">bheap</span> <span class="o">=</span> <span class="n">BinHeapMin</span><span class="p">(</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span><span class="n">Nmax</span><span class="p">,</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([]))</span>
+
+    
+    <span class="c1">## pre-allocate</span>
+    <span class="n">tmptt</span> <span class="o">=</span> <span class="mf">0.0</span> 
+    <span class="n">ttlocmin</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+
+    <span class="c1">## construct initial narrow band</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">naccinit</span><span class="p">)</span> <span class="p">:</span>        
+        <span class="k">for</span> <span class="n">ne</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="p">:</span> <span class="c1">## four potential neighbors</span>
+
+            <span class="n">i</span> <span class="o">=</span> <span class="n">iss</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">+</span> <span class="n">neigh</span><span class="p">[</span><span class="n">ne</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="n">jss</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">+</span> <span class="n">neigh</span><span class="p">[</span><span class="n">ne</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="c1">## if the point is out of bounds skip this iteration</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">&gt;</span><span class="n">ntx</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">j</span><span class="o">&gt;</span><span class="n">nty</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">j</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span> <span class="p">:</span>
+                <span class="k">continue</span>
+            
+            <span class="k">if</span> <span class="n">status</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span> <span class="p">:</span> <span class="c1">## far</span>
+
+                <span class="c1">## add tt of point to binary heap and give handle</span>
+                <span class="n">tmptt</span> <span class="o">=</span> <span class="n">_calcttpt</span><span class="p">(</span><span class="n">ttime</span><span class="p">,</span><span class="n">ttlocmin</span><span class="p">,</span><span class="n">inittt</span><span class="p">,</span><span class="n">slowness</span><span class="p">,</span><span class="n">grd</span><span class="p">,</span><span class="n">cooa</span><span class="p">,</span><span class="n">coob</span><span class="p">,</span><span class="n">coovin</span><span class="p">,</span><span class="n">coovadj</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+                <span class="c1"># get handle</span>
+                <span class="c1">##han = sub2ind((ntx,nty),i,j)</span>
+                <span class="n">han</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">ravel_multi_index</span><span class="p">((</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">),(</span><span class="n">ntx</span><span class="p">,</span><span class="n">nty</span><span class="p">))</span>
+                <span class="c1"># insert into heap</span>
+                <span class="n">bheap</span><span class="o">.</span><span class="n">insert_minheap</span><span class="p">(</span><span class="n">tmptt</span><span class="p">,</span><span class="n">han</span><span class="p">)</span>
+                <span class="c1"># change status, add to narrow band</span>
+                <span class="n">status</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+
+    <span class="c1">#-------------------------------</span>
+    <span class="c1">## main FMM loop</span>
+    <span class="n">totnpts</span> <span class="o">=</span> <span class="n">ntx</span><span class="o">*</span><span class="n">nty</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">naccinit</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">totnpts</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span> <span class="c1">## &lt;&lt;&lt;&lt;===| CHECK !!!!</span>
+
+        <span class="c1">## if no top left exit the game...</span>
+        <span class="k">if</span> <span class="n">bheap</span><span class="o">.</span><span class="n">Nh</span><span class="o">&lt;</span><span class="mi">0</span> <span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="n">han</span><span class="p">,</span><span class="n">tmptt</span> <span class="o">=</span> <span class="n">bheap</span><span class="o">.</span><span class="n">pop_minheap</span><span class="p">()</span>
+        <span class="n">ia</span><span class="p">,</span><span class="n">ja</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">han</span><span class="p">,(</span><span class="n">ntx</span><span class="p">,</span><span class="n">nty</span><span class="p">))</span> <span class="c1">#ind2sub((ntx,nty),han)</span>
+        <span class="c1">#ja = div(han,ntx) +1</span>
+        <span class="c1">#ia = han - ntx*(ja-1)</span>
+        <span class="c1"># set status to accepted</span>
+        <span class="n">status</span><span class="p">[</span><span class="n">ia</span><span class="p">,</span><span class="n">ja</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1"># 2=accepted</span>
+        <span class="c1"># set traveltime of the new accepted point</span>
+        <span class="n">ttime</span><span class="p">[</span><span class="n">ia</span><span class="p">,</span><span class="n">ja</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmptt</span>
+
+        <span class="c1">## try all neighbors of newly accepted point</span>
+        <span class="k">for</span> <span class="n">ne</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span> <span class="c1">#=1:4 </span>
+
+            <span class="n">i</span> <span class="o">=</span> <span class="n">ia</span> <span class="o">+</span> <span class="n">neigh</span><span class="p">[</span><span class="n">ne</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="n">ja</span> <span class="o">+</span> <span class="n">neigh</span><span class="p">[</span><span class="n">ne</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+                       
+            <span class="c1">## if the point is out of bounds skip this iteration</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">&gt;</span><span class="n">ntx</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">j</span><span class="o">&gt;</span><span class="n">nty</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">j</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span> <span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">status</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span> <span class="p">:</span> <span class="c1">## far, active</span>
+
+                <span class="c1">## add tt of point to binary heap and give handle</span>
+                <span class="n">tmptt</span> <span class="o">=</span> <span class="n">_calcttpt</span><span class="p">(</span><span class="n">ttime</span><span class="p">,</span><span class="n">ttlocmin</span><span class="p">,</span><span class="n">inittt</span><span class="p">,</span><span class="n">slowness</span><span class="p">,</span><span class="n">grd</span><span class="p">,</span><span class="n">cooa</span><span class="p">,</span><span class="n">coob</span><span class="p">,</span><span class="n">coovin</span><span class="p">,</span><span class="n">coovadj</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+                <span class="n">han</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">ravel_multi_index</span><span class="p">((</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">),(</span><span class="n">ntx</span><span class="p">,</span><span class="n">nty</span><span class="p">))</span> <span class="c1">#sub2ind((ntx,nty),i,j)</span>
+                <span class="n">bheap</span><span class="o">.</span><span class="n">insert_minheap</span><span class="p">(</span><span class="n">tmptt</span><span class="p">,</span><span class="n">han</span><span class="p">)</span>
+                <span class="c1"># change status, add to narrow band</span>
+                <span class="n">status</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>                
+
+            <span class="k">elif</span> <span class="n">status</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span> <span class="p">:</span> <span class="c1">## narrow band                </span>
+
+                <span class="c1"># update the traveltime for this point</span>
+                <span class="n">tmptt</span> <span class="o">=</span> <span class="n">_calcttpt</span><span class="p">(</span><span class="n">ttime</span><span class="p">,</span><span class="n">ttlocmin</span><span class="p">,</span><span class="n">inittt</span><span class="p">,</span><span class="n">slowness</span><span class="p">,</span><span class="n">grd</span><span class="p">,</span><span class="n">cooa</span><span class="p">,</span><span class="n">coob</span><span class="p">,</span><span class="n">coovin</span><span class="p">,</span><span class="n">coovadj</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+                <span class="c1"># get handle</span>
+                <span class="n">han</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">ravel_multi_index</span><span class="p">((</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">),(</span><span class="n">ntx</span><span class="p">,</span><span class="n">nty</span><span class="p">))</span> <span class="c1">#sub2ind((nx,nty),i,j)</span>
+                <span class="c1"># update the traveltime for this point in the heap</span>
+                <span class="n">bheap</span><span class="o">.</span><span class="n">update_node_minheap</span><span class="p">(</span><span class="n">tmptt</span><span class="p">,</span><span class="n">han</span><span class="p">)</span>
+
+    <span class="c1">##-------------------------------</span>
+    <span class="k">return</span> <span class="n">ttime</span></div>
+
+
+
+<span class="c1">##########################################################################</span>
+
+<div class="viewcode-block" id="_calcttpt">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.fmm2D._calcttpt">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">_calcttpt</span><span class="p">(</span><span class="n">ttime</span><span class="p">,</span><span class="n">ttlocmin</span><span class="p">,</span><span class="n">inittt</span><span class="p">,</span><span class="n">slowness</span><span class="p">,</span><span class="n">grd</span><span class="p">,</span><span class="n">cooa</span><span class="p">,</span><span class="n">coob</span><span class="p">,</span><span class="n">coovin</span><span class="p">,</span><span class="n">coovadj</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the traveltime for a given point in the grid.</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+
+    <span class="c1">##--------------------------------##</span>
+    <span class="n">distab2</span> <span class="o">=</span> <span class="n">grd</span><span class="o">.</span><span class="n">hgrid</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">distac</span> <span class="o">=</span> <span class="n">grd</span><span class="o">.</span><span class="n">hgrid</span>
+    <span class="n">distbc</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span><span class="o">*</span><span class="n">grd</span><span class="o">.</span><span class="n">hgrid</span>
+    <span class="n">distab</span> <span class="o">=</span> <span class="n">grd</span><span class="o">.</span><span class="n">hgrid</span>
+    <span class="n">distAB2divBC</span> <span class="o">=</span> <span class="n">distab2</span><span class="o">/</span><span class="n">distbc</span>
+    <span class="c1">#ttlocmin = Array{Float64,1}(8)</span>
+    <span class="n">ttlocmin</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">inittt</span>
+    <span class="n">nvx</span> <span class="o">=</span> <span class="n">grd</span><span class="o">.</span><span class="n">nx</span>
+    <span class="n">nvy</span> <span class="o">=</span> <span class="n">grd</span><span class="o">.</span><span class="n">ny</span>
+    
+    <span class="c1">## if on src, skip this iteration</span>
+    <span class="c1"># onsrc[i,j]==true &amp;&amp; continue</span>
+    
+    <span class="c1">####################################################</span>
+    <span class="c1">##   Local solver (Podvin, Lecomte, 1991)         ##</span>
+    <span class="c1">####################################################</span>
+    
+    <span class="n">ttlocmin</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">inittt</span>  
+    <span class="n">ttdiffr</span> <span class="o">=</span> <span class="n">inittt</span>  
+    <span class="n">ttheadw</span> <span class="o">=</span> <span class="n">inittt</span>
+    <span class="n">ttc</span> <span class="o">=</span> <span class="n">inittt</span>
+    
+    <span class="c1">## loop on triangles</span>
+    <span class="k">for</span> <span class="n">cou</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span> <span class="c1">#1:8</span>
+        
+        <span class="n">ipix</span> <span class="o">=</span> <span class="n">coovin</span><span class="p">[</span><span class="n">cou</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span>
+        <span class="n">jpix</span> <span class="o">=</span> <span class="n">coovin</span><span class="p">[</span><span class="n">cou</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">j</span>
+        
+        <span class="c1">## if the point is out of bounds skip this iteration</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ipix</span><span class="o">&gt;</span><span class="n">nvx</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">ipix</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">jpix</span><span class="o">&gt;</span><span class="n">nvy</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">jpix</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span> <span class="p">:</span>
+            <span class="k">continue</span>
+        
+        <span class="c1"># ###################################################</span>
+        <span class="c1"># ##  transmission</span>
+        <span class="n">tta</span> <span class="o">=</span> <span class="n">ttime</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">cooa</span><span class="p">[</span><span class="n">cou</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">j</span><span class="o">+</span><span class="n">cooa</span><span class="p">[</span><span class="n">cou</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">ttb</span> <span class="o">=</span> <span class="n">ttime</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">coob</span><span class="p">[</span><span class="n">cou</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">j</span><span class="o">+</span><span class="n">coob</span><span class="p">[</span><span class="n">cou</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">testas</span> <span class="o">=</span> <span class="n">distAB2divBC</span> <span class="o">*</span> <span class="n">slowness</span><span class="p">[</span><span class="n">ipix</span><span class="p">,</span> <span class="n">jpix</span><span class="p">]</span>
+        <span class="c1">## stability condition</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">tta</span><span class="o">-</span><span class="n">ttb</span><span class="p">)</span><span class="o">&gt;=</span><span class="mf">0.0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span> <span class="p">(</span><span class="n">tta</span><span class="o">-</span><span class="n">ttb</span><span class="p">)</span><span class="o">&lt;=</span><span class="n">testas</span> <span class="p">)</span> <span class="p">:</span>
+            <span class="c1">## distab = grd.hgrid #sqrt((xa-xb)**2+(ya-yb)**2)</span>
+            <span class="n">ttc</span> <span class="o">=</span> <span class="n">tta</span> <span class="o">+</span> <span class="n">__NP</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="p">(</span><span class="n">distab</span><span class="o">*</span><span class="n">slowness</span><span class="p">[</span><span class="n">ipix</span><span class="p">,</span><span class="n">jpix</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="p">(</span><span class="n">tta</span><span class="o">-</span><span class="n">ttb</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span>
+     
+
+        <span class="c1">## to avoid multiple calculations of the same arrivals...</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">cou</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span> <span class="p">:</span>  <span class="c1"># check if odd ##isodd(cou)  ## cou=[1,3,5,7]</span>
+            
+            <span class="c1">###################################################</span>
+            <span class="c1">## diffraction</span>
+            <span class="n">ttdiffr</span> <span class="o">=</span> <span class="n">ttb</span> <span class="o">+</span> <span class="n">slowness</span><span class="p">[</span><span class="n">ipix</span><span class="p">,</span> <span class="n">jpix</span><span class="p">]</span> <span class="o">*</span> <span class="n">distbc</span>
+            
+            <span class="c1">###################################################</span>
+            <span class="c1">## head wave</span>
+            <span class="c1">## all these cases ARE necessary!</span>
+            <span class="c1">## ttheadw = inittt</span>
+            <span class="n">iadj</span> <span class="o">=</span> <span class="n">coovadj</span><span class="p">[</span><span class="n">cou</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span>
+            <span class="n">jadj</span> <span class="o">=</span> <span class="n">coovadj</span><span class="p">[</span><span class="n">cou</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">j</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">iadj</span><span class="o">&gt;</span><span class="n">nvx</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">iadj</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">jadj</span><span class="o">&gt;</span><span class="n">nvy</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">jadj</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span> <span class="p">:</span>
+                <span class="c1">##ttheadw = inittt</span>
+                <span class="n">ttheadw</span> <span class="o">=</span> <span class="n">tta</span> <span class="o">+</span> <span class="n">distac</span> <span class="o">*</span> <span class="n">slowness</span><span class="p">[</span><span class="n">ipix</span><span class="p">,</span><span class="n">jpix</span><span class="p">]</span>
+            <span class="k">else</span> <span class="p">:</span>
+                <span class="c1">#slowadj = slowness[i+coovadj[cou,0], j+coovadj[cou,1]]</span>
+                <span class="c1">#1.0/vel[i+coovadj[cou,0], j+coovadj[cou,1]]</span>
+                <span class="n">ttheadw</span> <span class="o">=</span> <span class="n">tta</span> <span class="o">+</span> <span class="n">distac</span> <span class="o">*</span> <span class="nb">min</span><span class="p">(</span> <span class="n">slowness</span><span class="p">[</span><span class="n">ipix</span><span class="p">,</span><span class="n">jpix</span><span class="p">],</span>
+                                              <span class="n">slowness</span><span class="p">[</span><span class="n">iadj</span><span class="p">,</span><span class="n">jadj</span><span class="p">]</span> <span class="p">)</span>
+        
+        <span class="c1">## minimum time</span>
+        <span class="n">ttlocmin</span><span class="p">[</span><span class="n">cou</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ttc</span><span class="p">,</span><span class="n">ttheadw</span><span class="p">,</span><span class="n">ttdiffr</span><span class="p">)</span> <span class="c1"># ,ttlocmin)!!            </span>
+    
+    <span class="c1">##################################################</span>
+    <span class="c1">#ttime[i,j] = min(ttimeold[i,j],minimum(ttlocmin))</span>
+    <span class="n">ttf</span> <span class="o">=</span> <span class="n">ttlocmin</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">ttf</span></div>
+
+    <span class="c1">##################################################</span>
+
+<span class="c1">##########################################################################</span>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Andrea Zunino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

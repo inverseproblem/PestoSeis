@@ -1,0 +1,543 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Developer zone &mdash; PestoSeis 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=83a61292"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Traveltimes and rays - ttimerays" href="API/ttimerays.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PestoSeis
+              <img src="_static/PestoSeisLogo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation — loading the module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ttimerays_guide.html">Traveltimes and rays – using <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="seismicwaves2d_guide.html">Seismic wave propagation – using <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="API/index.html">API reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer zone</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#all-members-including-private-ones">All members including private ones</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PestoSeis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Developer zone</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/developerdocs.rst" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="developer-zone">
+<span id="developerdocs"></span><h1>Developer zone<a class="headerlink" href="#developer-zone" title="Link to this heading"></a></h1>
+<section id="all-members-including-private-ones">
+<h2>All members including private ones<a class="headerlink" href="#all-members-including-private-ones" title="Link to this heading"></a></h2>
+<p>Calculate travel time from source to receiver on rectilinear grid</p>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">__bilinear_interp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hgrid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#__bilinear_interp"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bilinear interpolation.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">__findcelledge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ymin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ny</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endptgrad</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#__findcelledge"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Find the corners defining the cell where ray will propagate next</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">__globgrad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gridpar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#__globgrad"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate interpolant functions for the gradient of the traveltime array.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">__gradatpt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fxgrad</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fygrad</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#__gradatpt"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Compute gradient at point pt.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">__ijinvelgrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gridpar</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#__ijinvelgrid"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Get the indices of the velocity cell related to a given segment.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">__isonsrccelledge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">srccell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curpt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#__isonsrccelledge"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Is the point on a cell edge?</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">__nextptgrad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fxgrad</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fygrad</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steplen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#__nextptgrad"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate target point using negative gradient of traveltime increment</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">__pointisonLINE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pointc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#__pointisonLINE"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Check if point is on LINE</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">__pointisonSEGMENT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#__pointisonSEGMENT"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Is point on a segment?</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">__ptinbounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gridpar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#__ptinbounds"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Is the point within bounds?</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">__seg_intersect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#__seg_intersect"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Determine the intersection of two segments</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">__segintersRECT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rectangle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#__segintersRECT"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Find intersection of a segment and a polygon or rectangle if ‘rectangle=True’.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">_trace_straight_ray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gridpar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srcpos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recpos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#_trace_straight_ray"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Trace a straight ray, from receiver to source.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">_traceray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gridpar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recpos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordsrc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#_traceray"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Back-trace a single ray using negative gradient of traveltime direction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gridpar</strong> (<em>dict</em>) – grid parameters dictionary (as defined by setupgrid())</p></li>
+<li><p><strong>recpos</strong> (<em>ndarray</em>) – position of the receiver</p></li>
+<li><p><strong>coordsrc</strong> (<em>ndarray</em>) – position of the source</p></li>
+<li><p><strong>ttime</strong> (<em>ndarray</em>) – traveltime array (2D)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the traced ray as an array of coordinates</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">buildtomomat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gridpar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttpick</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#buildtomomat"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Build forward matrix from rays for traveltime tomography.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gridpar</strong> (<em>dict</em>) – grid parameters dictionary (as defined by setupgrid())</p></li>
+<li><p><strong>rays</strong> (<em>ndarray</em><em> of </em><em>ndarrays</em>) – seismic rays, as outputted by traceallrays()</p></li>
+<li><p><strong>ttpick</strong> (<em>ndarray</em>) – traveltime picks at the receivers. [These are needed
+only to provide the vector of traveltime picks
+flattened for performing tomography in the same order
+than the tomography matrix]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>the ‘tomography’ matrix and the vector of traveltime picks</dt><dd><p>(flattened for performing tomography)</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">lininv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cov_m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cov_d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mprior</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dobs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#lininv"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Linear inversion under Gaussian assumptions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>G</strong> – forward model matrix (d=Gm)</p></li>
+<li><p><strong>cov_m</strong><strong>,</strong><strong>cov_d</strong> – covariances for model parameters and observed data, respectively</p></li>
+<li><p><strong>mprior</strong> – prior model</p></li>
+<li><p><strong>dobs</strong> – obsrved data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the posterior mean model and the posterior covariance matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">plotgrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gridpar</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#plotgrid"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Plot staggered grid edges: traveltime at nodes and velocity in cells</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>gridpar</strong> – grid parameters dictionary (as defined by setupgrid())</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">plotrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rays</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#plotrays"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Plot rays as polylines.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> (<em>ndarray</em>) – coordinates of the sources</p></li>
+<li><p><strong>rec</strong> (<em>ndarray</em>) – coordinates of the receivers</p></li>
+<li><p><strong>rays</strong> (<em>narray</em><em> of </em><em>arrays</em>) – seismic rays, as outputted by traceallrays()</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">plotttimemod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gridpar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#plotttimemod"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Plot traveltime array as an image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gridpar</strong> (<em>dict</em>) – grid parameters dictionary (as defined by setupgrid())</p></li>
+<li><p><strong>ttime</strong> (<em>ndarray</em>) – traveltime array</p></li>
+<li><p><strong>units</strong> (<em>str</em>) – optional string to specify the units of measurement for traveltime</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">plotvelmod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gridpar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">velmod</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units=''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap=&lt;matplotlib.colors.LinearSegmentedColormap</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#plotvelmod"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Plot velocity model as an image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gridpar</strong> (<em>dict</em>) – grid parameters dictionary (as defined by setupgrid())</p></li>
+<li><p><strong>velmod</strong> (<em>ndarray</em>) – velocity model</p></li>
+<li><p><strong>vmin</strong> (<em>float</em><em>,</em><em>float</em>) – optional values to clip the colorbar min and max values</p></li>
+<li><p><strong>vmax</strong> (<em>float</em><em>,</em><em>float</em>) – optional values to clip the colorbar min and max values</p></li>
+<li><p><strong>units</strong> (<em>str</em>) – optional string to specify the units of measurement for velocity</p></li>
+<li><p><strong>cmap</strong> (<em>colormap</em>) – optional parameter to specify a colormap. Defaults to “rainbow”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">rollmod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mod</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ny</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#rollmod"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Reshape a flattened (a vector) model to 2D (an array).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mod</strong> (<em>ndarray</em>) – input flattened model</p></li>
+<li><p><strong>nx</strong> (<em>float</em><em>,</em><em>float</em>) – sizes of the input 2D model</p></li>
+<li><p><strong>ny</strong> (<em>float</em><em>,</em><em>float</em>) – sizes of the input 2D model</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the reshaped model as a 2D array</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">setupgrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ny</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xinit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yinit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#setupgrid"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Setup grid parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nx</strong><strong>,</strong><strong>ny</strong> – grid dimensions in x and y</p></li>
+<li><p><strong>dx</strong><strong>,</strong><strong>dy</strong> – grid spacing (cell size) in x and y</p></li>
+<li><p><strong>xinit</strong><strong>,</strong><strong>yinit</strong> – x and y axes origin</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">traceall_straight_rays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gridpar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srccoo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reccoo</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#traceall_straight_rays"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Trace multiple straight rays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gridpar</strong> (<em>dict</em>) – grid parameters dictionary (as defined by setupgrid())</p></li>
+<li><p><strong>srccoo</strong> (<em>ndarray</em>) – position of the source, a 2D array with two columns, representing x and y</p></li>
+<li><p><strong>reccoo</strong> (<em>ndarray</em>) – position of the receiver, a 2D array with two columns, representing x and y</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the coordinates of the ray paths</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">traceallrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gridpar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srccoo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reccoo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grdsttime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#traceallrays"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Trace multiple rays, for all sources and receivers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gridpar</strong> (<em>dict</em>) – grid parameters dictionary (as defined by setupgrid())</p></li>
+<li><p><strong>srccoo</strong> (<em>ndarray</em>) – position of the source, a 2D array with two columns, representing x and y</p></li>
+<li><p><strong>reccoo</strong> (<em>ndarray</em>) – position of the receiver, a 2D array with two columns, representing x and y</p></li>
+<li><p><strong>grdsttime</strong> (<em>list</em><em> of </em><em>ndarrays</em>) – array of traveltime arrays [list of 2D arrays, one per source]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the traced rays as (x,y) coordinates of the points defining the segments</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(ndarray of ndarrays)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">traveltime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">velmod</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gridpar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srcs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#traveltime"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate traveltime for all sources and receivers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>velmod</strong> – input velocity model</p></li>
+<li><p><strong>gridpar</strong> – grid parameters dictionary (as defined by setupgrid())</p></li>
+<li><p><strong>srcs</strong> – coordinates of sources</p></li>
+<li><p><strong>recs</strong> – coordinates of receivers</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>traveltimes at the receivers and traveltime arrays</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray,ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.traveltime_rays.</span></span><span class="sig-name descname"><span class="pre">unrollmod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mod</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/traveltime_rays.html#unrollmod"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Flatten a 2D model to a vector, using column-major Fortran order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mod</strong> (<em>ndarray</em>) – input 2D model (probably velocity)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the flattened model as a vector (1D)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.fmm2D.</span></span><span class="sig-name descname"><span class="pre">Grid2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ny</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xinit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yinit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/fmm2D.html#Grid2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Class containing the info of a 2D grid for traveltime calculations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nx</strong> (<em>int</em>) – number of points/cells in the x direction</p></li>
+<li><p><strong>ny</strong> (<em>int</em>) – number of points/cells in the y direction</p></li>
+<li><p><strong>h</strong> (<em>float</em>) – grid spacing (same for x and y)</p></li>
+<li><p><strong>xinit</strong> (<em>float</em>) – grid origin for the x direction</p></li>
+<li><p><strong>yinit</strong> (<em>float</em>) – grid origin for the y direction</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.fmm2D.</span></span><span class="sig-name descname"><span class="pre">__bilinear_interp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hgrid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xinit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yinit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xreq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yreq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/fmm2D.html#__bilinear_interp"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bilinear interpolation (2D).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.fmm2D.</span></span><span class="sig-name descname"><span class="pre">__fmm_findclosestnode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xinit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yinit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/fmm2D.html#__fmm_findclosestnode"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Find closest grid node to given coordinates.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.fmm2D.</span></span><span class="sig-name descname"><span class="pre">_calcttpt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ttime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttlocmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inittt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slowness</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cooa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coovin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coovadj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/fmm2D.html#_calcttpt"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the traveltime for a given point in the grid.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.fmm2D.</span></span><span class="sig-name descname"><span class="pre">_ttFMM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/fmm2D.html#_ttFMM"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Fast marching method to compute traveltimes in 2D.
+Uses a staggered grid, time array is bigger than velocity array,
+following Podvin &amp; Lecompte scheme.</p>
+<dl class="simple">
+<dt>Args</dt><dd><p>vel: input velocity model
+src: source position
+grd: grid parameters</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array of traveltimes</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ttime</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.fmm2D.</span></span><span class="sig-name descname"><span class="pre">ttimefmm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grdh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xinit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yinit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordsrc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordrec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttarrout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/fmm2D.html#ttimefmm"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Traveltimes calculation given a velocity model, position of sources and receivers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vel</strong> (<em>ndarray</em>) – input velocity model</p></li>
+<li><p><strong>grdh</strong> (<em>float</em>) – grid spacing</p></li>
+<li><p><strong>xinit</strong> (<em>float</em>) – x axis origin coordinate</p></li>
+<li><p><strong>yinit</strong> (<em>float</em>) – y axis origin coordinate</p></li>
+<li><p><strong>coordsrc</strong> (<em>ndarray</em>) – coordinates of the sources</p></li>
+<li><p><strong>coordred</strong> (<em>ndarray</em>) – coordinates of the receivers</p></li>
+<li><p><strong>ttarrout</strong> (<em>bool</em>) – optional, returns the full array of traveltimes</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>the traveltimes at the</dt><dd><p>receivers and, optionally, the traveltime array(s)</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ttpicks (ndarray), ttarr (ndarray,optional)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Binary heap trees (min/max).</p>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.binheap.</span></span><span class="sig-name descname"><span class="pre">BinHeapMax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/binheap.html#BinHeapMax"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Max heap binary tree.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pestoseis.ttimerays.binheap.</span></span><span class="sig-name descname"><span class="pre">BinHeapMin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pestoseis/ttimerays/binheap.html#BinHeapMin"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Min heap binary tree.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="API/ttimerays.html" class="btn btn-neutral float-left" title="Traveltimes and rays - ttimerays" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Andrea Zunino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

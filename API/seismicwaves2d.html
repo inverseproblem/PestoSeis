@@ -1,0 +1,290 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seismic waves - seismicwaves2d &mdash; PestoSeis 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=83a61292"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Traveltimes and rays - ttimerays" href="ttimerays.html" />
+    <link rel="prev" title="Reflection seismology - reflectionseismo" href="reflectionseismo.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PestoSeis
+              <img src="../_static/PestoSeisLogo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation — loading the module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ttimerays_guide.html">Traveltimes and rays – using <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../seismicwaves2d_guide.html">Seismic wave propagation – using <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="reflectionseismo.html">Reflection seismology - <code class="docutils literal notranslate"><span class="pre">reflectionseismo</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Seismic waves - <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pestoseis.seismicwaves2d.animateacousticwaves"><code class="docutils literal notranslate"><span class="pre">animateacousticwaves()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pestoseis.seismicwaves2d.animateelasticwaves"><code class="docutils literal notranslate"><span class="pre">animateelasticwaves()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pestoseis.seismicwaves2d.gaussource"><code class="docutils literal notranslate"><span class="pre">gaussource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pestoseis.seismicwaves2d.rickersource"><code class="docutils literal notranslate"><span class="pre">rickersource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pestoseis.seismicwaves2d.solveacoustic2D"><code class="docutils literal notranslate"><span class="pre">solveacoustic2D()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pestoseis.seismicwaves2d.solveelastic2D"><code class="docutils literal notranslate"><span class="pre">solveelastic2D()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ttimerays.html">Traveltimes and rays - <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developerdocs.html">Developer zone</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PestoSeis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+      <li class="breadcrumb-item active">Seismic waves - <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/API/seismicwaves2d.rst" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pestoseis.seismicwaves2d">
+<span id="seismic-waves-seismicwaves2d"></span><h1>Seismic waves - <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code><a class="headerlink" href="#module-pestoseis.seismicwaves2d" title="Link to this heading"></a></h1>
+<p>Functions to calculate acoustic and elastic wave propagation in 2D.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pestoseis.seismicwaves2d.animateacousticwaves">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.seismicwaves2d.</span></span><span class="sig-name descname"><span class="pre">animateacousticwaves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inpfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clipamplitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">showanim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pestoseis/seismicwaves2d/animatewaves.html#animateacousticwaves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pestoseis.seismicwaves2d.animateacousticwaves" title="Link to this definition"></a></dt>
+<dd><blockquote>
+<div><p>Function to ‘animate’ the results of a 2D acoustic finite difference simulation. It produces (and saves to a file) an .mp4 movie.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inpfile</strong> (<em>string</em>) – input HDF5 file name</p></li>
+<li><p><strong>clipamplitude</strong> (<em>float</em>) – amplitude clipping factor</p></li>
+<li><p><strong>showanim</strong> (<em>bool</em>) – show plot or not</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pestoseis.seismicwaves2d.animateelasticwaves">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.seismicwaves2d.</span></span><span class="sig-name descname"><span class="pre">animateelasticwaves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inpfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">showwhatela</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'VxVz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clipamplitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">showanim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pestoseis/seismicwaves2d/animatewaves.html#animateelasticwaves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pestoseis.seismicwaves2d.animateelasticwaves" title="Link to this definition"></a></dt>
+<dd><blockquote>
+<div><p>Function to ‘animate’ the results of a 2D elastic finite difference simulation. It produces (and saves to a file) an .mp4 movie.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inpfile</strong> (<em>string</em>) – input HDF5 file name</p></li>
+<li><p><strong>showwhatela</strong> (<em>string</em>) – what to show, either ‘VxVz’ or ‘PS’</p></li>
+<li><p><strong>clipamplitude</strong> (<em>float</em>) – amplitude clipping factor</p></li>
+<li><p><strong>showanim</strong> (<em>bool</em>) – show plot or not</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pestoseis.seismicwaves2d.gaussource">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.seismicwaves2d.</span></span><span class="sig-name descname"><span class="pre">gaussource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pestoseis/seismicwaves2d/sourcetimefuncs.html#gaussource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pestoseis.seismicwaves2d.gaussource" title="Link to this definition"></a></dt>
+<dd><p>Derivative of a Gaussian source time function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>ndarray</em>) – time array</p></li>
+<li><p><strong>t0</strong> (<em>float</em>) – time shift for the onset</p></li>
+<li><p><strong>f0</strong> (<em>float</em>) – central frequency</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the source time function</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>source (ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pestoseis.seismicwaves2d.rickersource">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.seismicwaves2d.</span></span><span class="sig-name descname"><span class="pre">rickersource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pestoseis/seismicwaves2d/sourcetimefuncs.html#rickersource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pestoseis.seismicwaves2d.rickersource" title="Link to this definition"></a></dt>
+<dd><p>Ricker wavelet source time function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>ndarray</em>) – time array</p></li>
+<li><p><strong>t0</strong> (<em>float</em>) – time shift for the onset</p></li>
+<li><p><strong>f0</strong> (<em>float</em>) – central frequency</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the source time function</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>source (ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pestoseis.seismicwaves2d.solveacoustic2D">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.seismicwaves2d.</span></span><span class="sig-name descname"><span class="pre">solveacoustic2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inpar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ijsrc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">velmod</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sourcetf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srcdomfreq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recpos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saveh5</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfileh5</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'acoustic_snapshots.h5'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pestoseis/seismicwaves2d/acousticwaveprop2D.html#solveacoustic2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pestoseis.seismicwaves2d.solveacoustic2D" title="Link to this definition"></a></dt>
+<dd><p>Solve the acoustic wave equation in 2D using finite differences on a staggered grid.
+Wrapper function for various boundary conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inpar</strong> (<em>dict</em>) – <p>dictionary containing various input parameters</p>
+<ul>
+<li><p>inpar[“ntimesteps”] (int) number of time steps</p></li>
+<li><p>inpar[“nx”] (int) number of grid nodes in the x direction</p></li>
+<li><p>inpar[“nz”] (int) number of grid nodes in the z direction</p></li>
+<li><p>inpar[“dt”] (float) time step for the simulation</p></li>
+<li><p>inpar[“dh”] (float) grid spacing (same in x and z)</p></li>
+<li><p>inpar[“savesnapshot”] (bool) switch to save snapshots of the entire wavefield</p></li>
+<li><p>inpar[“snapevery”] (int) save snapshots every “snapevery” iterations</p></li>
+<li><p>inpar[“freesurface”] (bool) True for free surface boundary condition at the top, False for PML</p></li>
+<li><p>inpar[“boundcond”] (string) Type of boundary conditions “PML”,”GaussTap” or “ReflBou”</p></li>
+</ul>
+</p></li>
+<li><p><strong>ijsrc</strong> (<em>ndarray</em><em>(</em><em>int</em><em>,</em><em>int</em><em>)</em>) – integers representing the position of the source on the grid</p></li>
+<li><p><strong>velmod</strong> (<em>ndarray</em><em>(</em><em>nx</em><em>,</em><em>nz</em><em>)</em>) – two-dimensional velocity model</p></li>
+<li><p><strong>sourcetf</strong> (<em>ndarray</em>) – source time function</p></li>
+<li><p><strong>srcdomfreq</strong> (<em>float</em>) – source dominant frequency</p></li>
+<li><p><strong>recpos</strong> (<em>ndarray</em>) – position of the receivers, a two-column array [x,z]</p></li>
+<li><p><strong>saveh5</strong> (<em>bool</em>) – whether to save results to HDF5 file or not</p></li>
+<li><p><strong>outfileh5</strong> (<em>string</em>) – name of the output HDF5 file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>seismograms recorded at the receivers
+psave (ndarray): set of snapshots of the wavefield (if inpar[“savesnapshot”]==True)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>seism (ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pestoseis.seismicwaves2d.solveelastic2D">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.seismicwaves2d.</span></span><span class="sig-name descname"><span class="pre">solveelastic2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inpar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rockprops</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ijsrc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sourcetf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srcdomfreq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recpos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saveh5</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfileh5</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'elastic_snapshots.h5'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pestoseis/seismicwaves2d/elasticwaveprop2D.html#solveelastic2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pestoseis.seismicwaves2d.solveelastic2D" title="Link to this definition"></a></dt>
+<dd><blockquote>
+<div><p>Solve the elastic wave equation in 2D using finite differences on a staggered grid. Wrapper function for various boundary conditions.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inpar</strong> (<em>dict</em>) – <p>dictionary containing various input parameters:</p>
+<ul>
+<li><p>inpar[“ntimesteps”] (int) number of time steps</p></li>
+<li><p>inpar[“nx”] (int) number of grid nodes in the x direction</p></li>
+<li><p>inpar[“nz”] (int) number of grid nodes in the z direction</p></li>
+<li><p>inpar[“dt”] (float) time step for the simulation</p></li>
+<li><p>inpar[“dh”] (float) grid spacing (same in x and z)</p></li>
+<li><p>inpar[“savesnapshot”] (bool) switch to save snapshots of the entire wavefield</p></li>
+<li><p>inpar[“snapevery”] (int) save snapshots every “snapevery” iterations</p></li>
+<li><p>inpar[“freesurface”] (bool) True for free surface boundary condition at the top, False for PML</p></li>
+<li><p>inpar[“boundcond”] (string) Type of boundary conditions “PML” or “ReflBou”</p></li>
+</ul>
+</p></li>
+<li><p><strong>rockprops</strong> (<em>dict</em>) – rho (ndarray) density array
+lambda (ndarray) lambda module array
+mu (ndarray) shear module array</p></li>
+<li><p><strong>ijsrc</strong> (<em>ndarray</em><em>(</em><em>int</em><em>,</em><em>int</em><em>)</em>) – integers representing the position of the source on the grid</p></li>
+<li><p><strong>sourcetf</strong> (<em>ndarray</em>) – source time function</p></li>
+<li><p><strong>srcdomfreq</strong> (<em>float</em>) – source dominant frequency</p></li>
+<li><p><strong>recpos</strong> (<em>ndarray</em>) – position of the receivers, a two-column array [x,z]</p></li>
+<li><p><strong>saveh5</strong> (<em>bool</em>) – whether to save results to HDF5 file or not</p></li>
+<li><p><strong>outfileh5</strong> (<em>string</em>) – name of the output HDF5 file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>seismograms, Vx and Vz components, recorded at the receivers
+(vxsave,vzsave) (ndarray,ndarray): set of Vx and Vz snapshots of the wavefield (if inpar[“savesnapshot”]==True)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>receiv (ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="reflectionseismo.html" class="btn btn-neutral float-left" title="Reflection seismology - reflectionseismo" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ttimerays.html" class="btn btn-neutral float-right" title="Traveltimes and rays - ttimerays" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Andrea Zunino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

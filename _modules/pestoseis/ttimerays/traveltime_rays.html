@@ -1,0 +1,1197 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pestoseis.ttimerays.traveltime_rays &mdash; PestoSeis 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=83a61292"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PestoSeis
+              <img src="../../../_static/PestoSeisLogo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation — loading the module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ttimerays_guide.html">Traveltimes and rays – using <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../seismicwaves2d_guide.html">Seismic wave propagation – using <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/index.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developerdocs.html">Developer zone</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PestoSeis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pestoseis.ttimerays.traveltime_rays</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pestoseis.ttimerays.traveltime_rays</h1><div class="highlight"><pre>
+<span></span>
+<span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#    PestoSeis, a numerical laboratory to learn about seismology, written</span>
+<span class="c1">#    in the Python language.</span>
+<span class="c1">#    Copyright (C) 2021  Andrea Zunino </span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#    it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#    (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#    GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#    You should have received a copy of the GNU General Public License</span>
+<span class="c1">#    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Calculate travel time from source to receiver on rectilinear grid</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1">############################################################################</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">__NP</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">__PL</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">__sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">linalg</span> <span class="k">as</span> <span class="n">__LA</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">interpolate</span> <span class="k">as</span> <span class="n">__SPINT</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.fmm2D</span><span class="w"> </span><span class="kn">import</span> <span class="n">ttimefmm</span> <span class="k">as</span> <span class="n">_ttimefmm</span>
+
+<span class="c1">############################################################################</span>
+
+<span class="c1">### important!</span>
+<span class="n">fmmtolerance</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">resolution</span>
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="rollmod">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.rollmod">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">rollmod</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reshape a flattened (a vector) model to 2D (an array).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       mod (ndarray): input flattened model</span>
+<span class="sd">       nx,ny (float,float): sizes of the input 2D model</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">       (ndarray): the reshaped model as a 2D array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">modr</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">modr</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="unrollmod">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.unrollmod">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">unrollmod</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Flatten a 2D model to a vector, using column-major Fortran order.</span>
+<span class="sd">   </span>
+<span class="sd">    Args:</span>
+<span class="sd">       mod (ndarray): input 2D model (probably velocity)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">       (ndarray): the flattened model as a vector (1D)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">modu</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">modu</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="setupgrid">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.setupgrid">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">setupgrid</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span><span class="n">dh</span><span class="p">,</span><span class="n">xinit</span><span class="p">,</span><span class="n">yinit</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;    </span>
+<span class="sd">    Setup grid parameters.</span>
+
+<span class="sd">    :param nx,ny: grid dimensions in x and y</span>
+<span class="sd">    :param dx,dy: grid spacing (cell size) in x and y</span>
+<span class="sd">    :param xinit,yinit: x and y axes origin</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gridpar</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dh</span><span class="p">)</span>
+    <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;nx&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span>
+    <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;ny&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ny</span><span class="p">)</span>
+    <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xinit&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">xinit</span><span class="p">)</span>
+    <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yinit&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">yinit</span><span class="p">)</span>
+    <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xinit&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span> <span class="c1">#  float(xttmin)</span>
+    <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yinit&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span> <span class="c1">#  float(yttmin)</span>
+    <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmax&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;nx&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmin&#39;</span><span class="p">]</span>
+    <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmax&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;ny&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmin&#39;</span><span class="p">]</span>
+    <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xvelmin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xinit&#39;</span><span class="p">]</span>
+    <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yvelmin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yinit&#39;</span><span class="p">]</span>
+    <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xvelmax&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;nx&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmin&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span>
+    <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yvelmax&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;ny&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmin&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span>
+    <span class="k">return</span> <span class="n">gridpar</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="lininv">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.lininv">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">lininv</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">cov_m</span><span class="p">,</span><span class="n">cov_d</span><span class="p">,</span><span class="n">mprior</span><span class="p">,</span><span class="n">dobs</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Linear inversion under Gaussian assumptions.</span>
+
+<span class="sd">    :param G: forward model matrix (d=Gm)</span>
+<span class="sd">    :param cov_m,cov_d: covariances for model parameters and observed data, respectively</span>
+<span class="sd">    :param mprior: prior model</span>
+<span class="sd">    :param dobs: obsrved data</span>
+
+<span class="sd">    :returns: the posterior mean model and the posterior covariance matrix</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">dobs</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">mprior</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">G</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">2</span>
+    <span class="k">assert</span> <span class="n">cov_m</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">2</span>
+    <span class="k">assert</span> <span class="n">cov_d</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">2</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">dobs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">==</span><span class="n">__NP</span><span class="o">.</span><span class="n">float64</span> <span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;lininv(): Error: Observed data are not in a simple 1D array&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;lininv(): Maybe traveltime picks have not been unrolled properly? &quot;</span><span class="p">)</span>
+        <span class="n">exit</span><span class="p">()</span>
+    <span class="n">nobs</span><span class="p">,</span><span class="n">nmodpar</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">G</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">postm</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nmodpar</span><span class="p">)</span>
+    <span class="n">postC_m</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nobs</span><span class="p">,</span><span class="n">nmodpar</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Computing posterior mean model and covariance...&#39;</span><span class="p">)</span>
+        
+    <span class="c1">## Computing posterior mean model</span>
+    <span class="n">T1</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">cov_m</span><span class="p">,</span><span class="n">G</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">__NP</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">cov_m</span><span class="p">),</span><span class="n">G</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="n">cov_d</span>  <span class="c1"># matrix to be inverted</span>
+    <span class="c1">#print &#39;A.shape:&#39;,A.shape</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">dobs</span> <span class="o">-</span> <span class="n">__NP</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">mprior</span><span class="p">)</span>
+    <span class="c1">## A^-1 b = y</span>
+    <span class="n">y</span> <span class="o">=</span>  <span class="n">__LA</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>  <span class="c1"># solve a lin system instead of inverting</span>
+    <span class="c1">##y = __LA.lstsq(A,b)[0] </span>
+    <span class="n">postm</span> <span class="o">=</span> <span class="n">mprior</span> <span class="o">+</span> <span class="n">__NP</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">T1</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="c1">## Computing posterior covariance</span>
+    <span class="c1">## A^-1 x2 = y2  -&gt; x2 = A y2</span>
+    <span class="n">x2</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">cov_m</span><span class="p">)</span>
+    <span class="n">y2</span> <span class="o">=</span> <span class="n">__LA</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">x2</span><span class="p">)</span>
+    <span class="c1">##y2 = __LA.lstsq(A,x2)[0]</span>
+    <span class="n">postC_m</span> <span class="o">=</span> <span class="n">cov_m</span> <span class="o">-</span> <span class="n">__NP</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">T1</span><span class="p">,</span><span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">postm</span><span class="p">,</span><span class="n">postC_m</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="__bilinear_interp">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.__bilinear_interp">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">__bilinear_interp</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">hgrid</span><span class="p">,</span> <span class="n">pt</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">     Bilinear interpolation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xreq</span><span class="o">=</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">yreq</span><span class="o">=</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">xh</span><span class="o">=</span><span class="n">xreq</span><span class="o">/</span><span class="n">hgrid</span>
+    <span class="n">yh</span><span class="o">=</span><span class="n">yreq</span><span class="o">/</span><span class="n">hgrid</span>
+    <span class="n">i</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">__NP</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">xh</span><span class="p">))</span>
+    <span class="n">j</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">__NP</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">yh</span><span class="p">))</span>
+    <span class="n">xd</span><span class="o">=</span><span class="n">xh</span><span class="o">-</span><span class="n">i</span>
+    <span class="n">yd</span><span class="o">=</span><span class="n">yh</span><span class="o">-</span><span class="n">j</span>
+    <span class="n">intval</span><span class="o">=</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">xd</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">yd</span><span class="p">)</span><span class="o">+</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">yd</span><span class="p">)</span><span class="o">*</span><span class="n">xd</span><span class="o">+</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">xd</span><span class="p">)</span><span class="o">*</span><span class="n">yd</span><span class="o">+</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">xd</span><span class="o">*</span><span class="n">yd</span>
+    <span class="k">return</span> <span class="n">intval</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="traveltime">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.traveltime">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">traveltime</span><span class="p">(</span><span class="n">velmod</span><span class="p">,</span><span class="n">gridpar</span><span class="p">,</span><span class="n">srcs</span><span class="p">,</span><span class="n">recs</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">      Calculate traveltime for all sources and receivers.</span>
+<span class="sd">      </span>
+<span class="sd">      :param velmod: input velocity model</span>
+<span class="sd">      :param gridpar: grid parameters dictionary (as defined by setupgrid())    </span>
+<span class="sd">      :param srcs: coordinates of sources</span>
+<span class="sd">      :param recs: coordinates of receivers</span>
+<span class="sd">      </span>
+<span class="sd">      :returns: traveltimes at the receivers and traveltime arrays</span>
+<span class="sd">      :rtype: ndarray,ndarray</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#assert gridpar[&#39;dx&#39;] == gridpar[&#39;dy&#39;]</span>
+    <span class="n">hgrid</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span>
+    <span class="n">xinit</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xinit&#39;</span><span class="p">]</span>
+    <span class="n">yinit</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yinit&#39;</span><span class="p">]</span>
+    <span class="n">nsrc</span> <span class="o">=</span> <span class="n">srcs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ttpicks</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nsrc</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;object&#39;</span><span class="p">)</span>
+    <span class="n">ttime</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nsrc</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;object&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nsrc</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r</span><span class="s2">Calculating traveltime for source </span><span class="si">{}</span><span class="s2"> of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">nsrc</span><span class="p">)</span>
+        <span class="n">__sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">__sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="n">ttpicks</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">ttime</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">_ttimefmm</span><span class="p">(</span><span class="n">velmod</span><span class="p">,</span><span class="n">hgrid</span><span class="p">,</span><span class="n">xinit</span><span class="p">,</span><span class="n">yinit</span><span class="p">,</span><span class="n">srcs</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="n">recs</span><span class="p">,</span><span class="n">ttarrout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        
+        <span class="c1">##ttpicks[i],ttime[i]=traveltimesinglesrc(velmod,gridpar,srcs[i,:],recs)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ttpicks</span><span class="p">,</span><span class="n">ttime</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<span class="c1"># def traveltimesinglesrc(velmod,gridpar,coordsrc,coordrec) :</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Calculate travel time given a velocity model and souce position</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     assert gridpar[&#39;dx&#39;] == gridpar[&#39;dy&#39;]</span>
+<span class="c1">#     hgrid = gridpar[&#39;dx&#39;]</span>
+        
+<span class="c1">#     # eps=0.001</span>
+  
+<span class="c1">#     # ## grid in FDTIMES starts from 0.0...</span>
+<span class="c1">#     # xsrc=coordsrc[0]-gridpar[&#39;xttmin&#39;]</span>
+<span class="c1">#     # ysrc=coordsrc[1]-gridpar[&#39;yttmin&#39;]</span>
+<span class="c1">#     # ## staggered grid in FDTIMES, so last col and row of vel are ignored</span>
+<span class="c1">#     # ##  but need to be passed anyways</span>
+<span class="c1">#     # vel2 = __NP.zeros((velmod.shape[0]+1,velmod.shape[1]+1))</span>
+<span class="c1">#     # vel2[:-1,:-1] = velmod</span>
+<span class="c1">#     # ## call Fortran subroutine</span>
+<span class="c1">#     # # vel : input rank-2 array(&#39;f&#39;) with bounds (nx,ny)</span>
+<span class="c1">#     # # xs : input float</span>
+<span class="c1">#     # # ys : input float</span>
+<span class="c1">#     # # h : input float</span>
+<span class="c1">#     # # eps : input float</span>
+<span class="c1">#     # tbuf,msg,errstatus = TT.time2dmod(vel2,xsrc,ysrc,hgrid,eps)</span>
+<span class="c1">#     # nrec=coordrec.shape[0]</span>
+<span class="c1">#     # ttpicks=__NP.zeros(nrec)</span>
+<span class="c1">#     # for i in range(nrec):</span>
+<span class="c1">#     #     ## interp in coord starting from 0.0, so subtract xyini</span>
+<span class="c1">#     #     coorec2 = coordrec[i,:]-__NP.array([gridpar[&#39;xttmin&#39;],gridpar[&#39;yttmin&#39;]])</span>
+<span class="c1">#     #     ttpicks[i] = __bilinear_interp(tbuf,hgrid,coorec2)</span>
+
+<span class="c1">#     ttpicks,ttarr = ttimefmm(vel,grdh,xinit,yinit,coordsrc,coordrec,ttarrout=False)</span>
+
+
+
+<span class="c1">#     ##----------------</span>
+<span class="c1">#     return ttpicks,tbuf</span>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="__seg_intersect">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.__seg_intersect">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">__seg_intersect</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span><span class="n">a2</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span><span class="n">b2</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determine the intersection of two segments</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">### http://www-cs.ccny.cuny.edu/~wolberg/capstone/intersection/Intersection%20point%20of%20two%20lines.html</span>
+
+    <span class="c1"># x1 + ua (x2 - x1) = x3 + ub (x4 - x3)</span>
+    <span class="c1"># y1 + ua (y2 - y1) = y3 + ub (y4 - y3)</span>
+    
+    <span class="c1"># If the denominator for the equations for ua and ub is 0 then the two lines are parallel.</span>
+
+    <span class="c1"># If the denominator and numerator for the equations for ua and ub are 0 then the two lines are coincident.</span>
+
+    <span class="c1"># The equations apply to lines, if the intersection of line segments is required then it is only necessary to test if ua and ub lie between 0 and 1. Whichever one lies within that range then the corresponding line segment contains the intersection point. If both lie within the range of 0 to 1 then the intersection point is within both line segments. </span>
+
+    <span class="n">a1x</span> <span class="o">=</span> <span class="n">a1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">a1y</span> <span class="o">=</span> <span class="n">a1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">a2x</span> <span class="o">=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">a2y</span> <span class="o">=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="n">b1x</span> <span class="o">=</span> <span class="n">b1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">b1y</span> <span class="o">=</span> <span class="n">b1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">b2x</span> <span class="o">=</span> <span class="n">b2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">b2y</span> <span class="o">=</span> <span class="n">b2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="n">denom</span> <span class="o">=</span> <span class="p">(</span><span class="n">b2y</span><span class="o">-</span><span class="n">b1y</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">a2x</span><span class="o">-</span><span class="n">a1x</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">b2x</span><span class="o">-</span><span class="n">b1x</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">a2y</span><span class="o">-</span><span class="n">a1y</span><span class="p">)</span>
+
+    <span class="n">numer_a</span> <span class="o">=</span>  <span class="p">(</span> <span class="p">(</span><span class="n">b2x</span><span class="o">-</span><span class="n">b1x</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">a1y</span><span class="o">-</span><span class="n">b1y</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">b2y</span><span class="o">-</span><span class="n">b1y</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">a1x</span><span class="o">-</span><span class="n">b1x</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">numer_b</span> <span class="o">=</span>  <span class="p">(</span> <span class="p">(</span><span class="n">a2x</span><span class="o">-</span><span class="n">a1x</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">a1y</span><span class="o">-</span><span class="n">b1y</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">a2y</span><span class="o">-</span><span class="n">a1y</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">a1x</span><span class="o">-</span><span class="n">b1x</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1">#print &#39;denom,numer_a,numer_b&#39;,denom,numer_a,numer_b</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">denom</span><span class="p">)</span><span class="o">&lt;=</span><span class="n">fmmtolerance</span><span class="p">)</span> <span class="p">:</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">numer_a</span><span class="p">)</span><span class="o">&lt;=</span><span class="n">fmmtolerance</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">numer_b</span><span class="p">)</span><span class="o">&lt;=</span><span class="n">fmmtolerance</span> <span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="c1">#&#39;coincident&#39;ua,ub</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="c1">#&#39;parallel&#39;</span>
+        <span class="n">interspoint</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">__NP</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span><span class="n">__NP</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
+        <span class="n">ua</span><span class="p">,</span><span class="n">ub</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span><span class="n">__NP</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">return</span> <span class="n">status</span><span class="p">,</span><span class="n">interspoint</span>
+      
+    <span class="n">ua</span> <span class="o">=</span>  <span class="n">numer_a</span> <span class="o">/</span> <span class="n">denom</span>
+    <span class="n">ub</span> <span class="o">=</span>  <span class="n">numer_b</span> <span class="o">/</span> <span class="n">denom</span>
+    
+    <span class="n">x</span> <span class="o">=</span> <span class="n">a1x</span> <span class="o">+</span> <span class="n">ua</span><span class="o">*</span><span class="p">(</span><span class="n">a2x</span><span class="o">-</span><span class="n">a1x</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">a1y</span> <span class="o">+</span> <span class="n">ua</span><span class="o">*</span><span class="p">(</span><span class="n">a2y</span><span class="o">-</span><span class="n">a1y</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="mf">0.0</span><span class="o">&lt;=</span><span class="n">ua</span><span class="o">&lt;=</span><span class="mf">1.0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="mf">0.0</span><span class="o">&lt;=</span><span class="n">ub</span><span class="o">&lt;=</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1">#&#39;intersection&#39;</span>
+    <span class="k">elif</span> <span class="mf">0.0</span><span class="o">&lt;=</span><span class="n">ua</span><span class="o">&lt;=</span><span class="mf">1.0</span> <span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1">#&#39;ua in limits&#39;</span>
+    <span class="k">elif</span> <span class="mf">0.0</span><span class="o">&lt;=</span><span class="n">ub</span><span class="o">&lt;=</span><span class="mf">1.0</span> <span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1"># &#39;ub in limits&#39;</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="mi">3</span> <span class="c1">#&#39;no segment intersection&#39;</span>
+  
+    <span class="c1"># print &#39;\nstatus &#39;, status</span>
+    <span class="c1"># print &#39;ua,ub&#39;,ua,ub</span>
+    <span class="c1"># print &#39;x,y&#39;,x,y,a1,a2, b1,b2</span>
+        
+    <span class="n">interspoint</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">])</span>
+  
+    <span class="k">return</span> <span class="n">status</span><span class="p">,</span><span class="n">interspoint</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="__pointisonLINE">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.__pointisonLINE">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">__pointisonLINE</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span> <span class="n">pointc</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if point is on LINE</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">## a, b points of line</span>
+    <span class="c1">## c test point</span>
+    <span class="n">crossproduct</span> <span class="o">=</span> <span class="p">(</span><span class="n">pointc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">pointc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">crossproduct</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">fmmtolerance</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>   <span class="c1"># (or != 0 if using integers)</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="__segintersRECT">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.__segintersRECT">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">__segintersRECT</span><span class="p">(</span><span class="n">rect</span><span class="p">,</span><span class="n">seg</span><span class="p">,</span><span class="n">rectangle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find intersection of a segment and a polygon or rectangle if &#39;rectangle=True&#39;.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">rectangle</span><span class="o">==</span><span class="kc">True</span> <span class="p">:</span>
+        <span class="k">assert</span> <span class="n">rect</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="mi">2</span> 
+        <span class="k">assert</span> <span class="n">rect</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="mi">5</span>
+    <span class="n">npts</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span>
+    <span class="n">itsp</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">npts</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">itsp</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">sta</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">npts</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">)</span> <span class="c1">#,dtype=&#39;str&#39;)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">npts</span><span class="p">)</span> <span class="p">:</span>
+        <span class="c1">#print &#39;\nside number &#39;,i,npts</span>
+        <span class="c1">## check that it be meaningfully ordered...</span>
+        <span class="k">if</span> <span class="n">rectangle</span><span class="o">==</span><span class="kc">True</span> <span class="p">:</span>
+            <span class="k">assert</span> <span class="p">(</span> <span class="n">rect</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="n">rect</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">rect</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="n">rect</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+        <span class="c1">## skip the intersection due to the point laying on an edge</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="ow">not</span> <span class="n">__pointisonLINE</span><span class="p">(</span><span class="n">rect</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="n">rect</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,:],</span> <span class="n">seg</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])</span> <span class="p">)</span> <span class="p">:</span>
+            <span class="n">sta</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">itsp</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">__seg_intersect</span><span class="p">(</span><span class="n">rect</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="n">rect</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,:],</span><span class="n">seg</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">seg</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="c1"># point is on the edge</span>
+            <span class="n">sta</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+    
+    <span class="k">return</span> <span class="n">sta</span><span class="p">,</span><span class="n">itsp</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">__findclosestnode</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">pt</span><span class="p">)</span> <span class="p">:</span>
+    <span class="c1"># xini ?</span>
+    <span class="c1"># yini ?</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">ix</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">xmin</span><span class="p">)</span><span class="o">/</span><span class="n">dx</span><span class="p">)</span>
+    <span class="n">iy</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">y</span><span class="o">-</span><span class="n">ymin</span><span class="p">)</span><span class="o">/</span><span class="n">dy</span><span class="p">)</span>
+    <span class="n">rx</span> <span class="o">=</span> <span class="n">x</span><span class="o">-</span><span class="n">xmin</span><span class="o">-</span><span class="n">ix</span><span class="o">*</span><span class="n">dx</span>
+    <span class="n">ry</span> <span class="o">=</span> <span class="n">y</span><span class="o">-</span><span class="n">ymin</span><span class="o">-</span><span class="n">iy</span><span class="o">*</span><span class="n">dy</span>
+    <span class="k">if</span> <span class="n">rx</span><span class="o">&gt;=</span><span class="p">(</span><span class="n">dx</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">ix</span> <span class="o">=</span> <span class="n">ix</span><span class="o">+</span><span class="mi">1</span>        
+    <span class="k">if</span> <span class="n">ry</span><span class="o">&gt;=</span><span class="p">(</span><span class="n">dy</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">iy</span> <span class="o">=</span> <span class="n">iy</span><span class="o">+</span><span class="mi">1</span>        
+    <span class="n">xcp</span> <span class="o">=</span> <span class="n">ix</span><span class="o">*</span><span class="n">dx</span> <span class="o">+</span> <span class="n">xmin</span>
+    <span class="n">ycp</span> <span class="o">=</span> <span class="n">iy</span><span class="o">*</span><span class="n">dy</span> <span class="o">+</span> <span class="n">ymin</span>
+    <span class="c1">#print &#39;\n$$$$$&#39;,x,y,ix,iy,rx,ry,xcp,ycp</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ycp</span><span class="o">-</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">&lt;=</span><span class="n">fmmtolerance</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xcp</span><span class="o">-</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">&lt;=</span><span class="n">fmmtolerance</span> <span class="p">:</span>
+        <span class="n">side</span> <span class="o">=</span> <span class="s1">&#39;corner&#39;</span> 
+    <span class="k">elif</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ycp</span><span class="o">-</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">&lt;=</span><span class="n">fmmtolerance</span> <span class="p">:</span>
+        <span class="n">side</span> <span class="o">=</span> <span class="s1">&#39;edge_right&#39;</span> <span class="k">if</span> <span class="n">xcp</span><span class="o">&lt;</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="s1">&#39;edge_left&#39;</span>
+    <span class="k">elif</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xcp</span><span class="o">-</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">&lt;=</span><span class="n">fmmtolerance</span> <span class="p">:</span>
+        <span class="n">side</span> <span class="o">=</span> <span class="s1">&#39;edge_above&#39;</span> <span class="k">if</span> <span class="n">ycp</span><span class="o">&lt;</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="s1">&#39;edge_below&#39;</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="n">side1</span> <span class="o">=</span> <span class="s1">&#39;right&#39;</span> <span class="k">if</span> <span class="n">xcp</span><span class="o">&lt;</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="s1">&#39;left&#39;</span>
+        <span class="n">side</span> <span class="o">=</span> <span class="n">side1</span><span class="o">+</span><span class="s1">&#39;_above&#39;</span> <span class="k">if</span> <span class="n">ycp</span><span class="o">&lt;</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="n">side1</span><span class="o">+</span><span class="s1">&#39;_below&#39;</span>        
+    <span class="k">return</span> <span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xcp</span><span class="p">,</span><span class="n">ycp</span><span class="p">]),</span><span class="n">side</span><span class="p">,</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ix</span><span class="p">,</span><span class="n">iy</span><span class="p">])</span>
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="__findcelledge">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.__findcelledge">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">__findcelledge</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span> <span class="n">pt</span><span class="p">,</span> <span class="n">endptgrad</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span> <span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Find the corners defining the cell where ray will propagate next</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">cgridpt</span><span class="p">,</span><span class="n">pos</span><span class="p">,</span><span class="n">idxsttime</span> <span class="o">=</span> <span class="n">__findclosestnode</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">pt</span><span class="p">)</span> 
+
+    <span class="c1"># print( &#39;&gt;&gt;&gt;&gt; position: &#39;,pos, pt,cgridpt )</span>
+    <span class="c1"># print( &#39;&gt;&gt;&gt;&gt; endptgrad: &#39;,endptgrad )</span>
+    
+    <span class="c1">## set lower left corner based on position with</span>
+    <span class="c1">##  respect to the closest grid point</span>
+    <span class="c1">## on the edge ;)</span>
+    <span class="k">if</span> <span class="n">pos</span><span class="o">==</span><span class="s1">&#39;corner&#39;</span> <span class="p">:</span>
+        <span class="k">if</span> <span class="n">endptgrad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">endptgrad</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">:</span>
+            <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span>
+        <span class="k">elif</span> <span class="n">endptgrad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">endptgrad</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">:</span>
+            <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">dx</span><span class="p">,</span><span class="mf">0.0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">endptgrad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">endptgrad</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">:</span>
+            <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span><span class="o">-</span><span class="n">dy</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">endptgrad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">endptgrad</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">:</span>
+            <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">dx</span><span class="p">,</span><span class="o">-</span><span class="n">dy</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">pos</span><span class="o">==</span><span class="s1">&#39;edge_above&#39;</span> <span class="p">:</span>
+        <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span> <span class="k">if</span> <span class="n">endptgrad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">dx</span><span class="p">,</span><span class="mf">0.0</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">pos</span><span class="o">==</span><span class="s1">&#39;edge_below&#39;</span> <span class="p">:</span>
+        <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span><span class="o">-</span><span class="n">dy</span><span class="p">])</span> <span class="k">if</span> <span class="n">endptgrad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">dx</span><span class="p">,</span><span class="o">-</span><span class="n">dy</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">pos</span><span class="o">==</span><span class="s1">&#39;edge_left&#39;</span> <span class="p">:</span>
+        <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">dx</span><span class="p">,</span><span class="mf">0.0</span><span class="p">])</span> <span class="k">if</span> <span class="n">endptgrad</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">dx</span><span class="p">,</span><span class="o">-</span><span class="n">dy</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">pos</span><span class="o">==</span><span class="s1">&#39;edge_right&#39;</span> <span class="p">:</span>
+        <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span> <span class="k">if</span> <span class="n">endptgrad</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span><span class="o">-</span><span class="n">dy</span><span class="p">])</span>
+    <span class="c1">## now we&#39;re inside a cell</span>
+    <span class="k">elif</span> <span class="n">pos</span><span class="o">==</span><span class="s1">&#39;right_above&#39;</span> <span class="p">:</span>
+        <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span>
+    <span class="k">elif</span> <span class="n">pos</span><span class="o">==</span><span class="s1">&#39;right_below&#39;</span> <span class="p">:</span>
+        <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span><span class="o">-</span><span class="n">dy</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">pos</span><span class="o">==</span><span class="s1">&#39;left_above&#39;</span> <span class="p">:</span>
+        <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">dx</span><span class="p">,</span><span class="mf">0.0</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">pos</span><span class="o">==</span><span class="s1">&#39;left_below&#39;</span> <span class="p">:</span>
+        <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">dx</span><span class="p">,</span><span class="o">-</span><span class="n">dy</span><span class="p">])</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;side error&#39;</span><span class="p">)</span>
+        <span class="n">exit</span><span class="p">()</span>
+
+    <span class="n">rectangle</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+    
+    <span class="k">if</span> <span class="n">source</span><span class="o">==</span><span class="kc">False</span> <span class="p">:</span>
+        
+        <span class="c1">## build the rectangle starting from lower left corner anti-clockwise</span>
+        <span class="n">addx</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+        <span class="n">addy</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+  
+    <span class="k">elif</span> <span class="n">source</span><span class="o">==</span><span class="kc">True</span> <span class="p">:</span>
+        
+        <span class="k">if</span> <span class="n">pos</span><span class="o">==</span><span class="s1">&#39;corner&#39;</span> <span class="p">:</span>
+            <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">dx</span><span class="p">,</span><span class="o">-</span><span class="n">dy</span><span class="p">])</span>
+            <span class="n">addx</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">2.</span><span class="o">*</span><span class="n">dx</span><span class="p">,</span><span class="mf">2.</span><span class="o">*</span><span class="n">dx</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+            <span class="n">addy</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">2.</span><span class="o">*</span><span class="n">dy</span><span class="p">,</span><span class="mf">2.</span><span class="o">*</span><span class="n">dy</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="n">pos</span><span class="o">==</span><span class="s1">&#39;edge_above&#39;</span> <span class="p">:</span>
+            <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">dx</span><span class="p">,</span><span class="mf">0.0</span><span class="p">])</span>
+            <span class="n">addx</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">2.</span><span class="o">*</span><span class="n">dx</span><span class="p">,</span><span class="mf">2.</span><span class="o">*</span><span class="n">dx</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+            <span class="n">addy</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="n">pos</span><span class="o">==</span><span class="s1">&#39;edge_below&#39;</span> <span class="p">:</span>
+            <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">dx</span><span class="p">,</span><span class="o">-</span><span class="n">dy</span><span class="p">])</span>
+            <span class="n">addx</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">2.</span><span class="o">*</span><span class="n">dx</span><span class="p">,</span><span class="mf">2.</span><span class="o">*</span><span class="n">dx</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+            <span class="n">addy</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="n">pos</span><span class="o">==</span><span class="s1">&#39;edge_left&#39;</span> <span class="p">:</span>
+            <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">dx</span><span class="p">,</span><span class="o">-</span><span class="n">dy</span><span class="p">])</span>
+            <span class="n">addx</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+            <span class="n">addy</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">2.</span><span class="o">*</span><span class="n">dy</span><span class="p">,</span><span class="mf">2.</span><span class="o">*</span><span class="n">dy</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="n">pos</span><span class="o">==</span><span class="s1">&#39;edge_right&#39;</span> <span class="p">:</span>
+            <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span><span class="o">-</span><span class="n">dy</span><span class="p">])</span>
+            <span class="n">addx</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+            <span class="n">addy</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">2.</span><span class="o">*</span><span class="n">dy</span><span class="p">,</span><span class="mf">2.</span><span class="o">*</span><span class="n">dy</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+        <span class="c1">## now we&#39;re inside a cell</span>
+        <span class="k">elif</span> <span class="n">pos</span><span class="o">==</span><span class="s1">&#39;right_above&#39;</span> <span class="p">:</span>
+            <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span>
+            <span class="n">addx</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+            <span class="n">addy</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">pos</span><span class="o">==</span><span class="s1">&#39;right_below&#39;</span> <span class="p">:</span>
+            <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span><span class="o">-</span><span class="n">dy</span><span class="p">])</span>
+            <span class="n">addx</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+            <span class="n">addy</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">pos</span><span class="o">==</span><span class="s1">&#39;left_above&#39;</span> <span class="p">:</span>
+            <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">dx</span><span class="p">,</span><span class="mf">0.0</span><span class="p">])</span>
+            <span class="n">addx</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+            <span class="n">addy</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">pos</span><span class="o">==</span><span class="s1">&#39;left_below&#39;</span> <span class="p">:</span>
+            <span class="n">lowerleft_corner</span> <span class="o">=</span> <span class="n">cgridpt</span><span class="o">+</span><span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">dx</span><span class="p">,</span><span class="o">-</span><span class="n">dy</span><span class="p">])</span>
+            <span class="n">addx</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+            <span class="n">addy</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;side error&#39;</span><span class="p">)</span>
+            <span class="n">exit</span><span class="p">()</span>
+
+    <span class="c1">#--------</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">rectangle</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">lowerleft_corner</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">addx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                   <span class="n">lowerleft_corner</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">addy</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+        
+          
+    <span class="c1">#print &#39;cell edge: &#39;,pt,rectangle,cgridpt,pos</span>
+    <span class="k">return</span> <span class="n">rectangle</span><span class="p">,</span><span class="n">pos</span></div>
+
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="__ijinvelgrid">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.__ijinvelgrid">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">__ijinvelgrid</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">gridpar</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Get the indices of the velocity cell related to a given segment.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xini</span><span class="o">=</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xvelmin&#39;</span><span class="p">]</span>
+    <span class="n">yini</span><span class="o">=</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yvelmin&#39;</span><span class="p">]</span>
+    <span class="n">dx</span><span class="o">=</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span>
+    <span class="n">dy</span><span class="o">=</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span>
+    <span class="c1">## calculate midpoint of segment</span>
+    <span class="n">midpoint</span> <span class="o">=</span> <span class="p">(</span><span class="n">segment</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">+</span><span class="n">segment</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span><span class="o">/</span><span class="mf">2.0</span>
+    <span class="c1">## indices corresponding to the nearest velocity model cell</span>
+    <span class="n">ivelcell</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">rint</span><span class="p">((</span><span class="n">midpoint</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">xini</span><span class="p">)</span><span class="o">/</span><span class="n">dx</span><span class="p">)</span>
+    <span class="n">jvelcell</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">rint</span><span class="p">((</span><span class="n">midpoint</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">yini</span><span class="p">)</span><span class="o">/</span><span class="n">dy</span><span class="p">)</span>
+    <span class="n">ijvel</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ivelcell</span><span class="p">,</span><span class="n">jvelcell</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ijvel</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="__globgrad">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.__globgrad">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">__globgrad</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">ttime</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">      Calculate interpolant functions for the gradient of the traveltime array.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#assert gridpar[&#39;dx&#39;]==gridpar[&#39;dy&#39;]</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span>
+    <span class="n">globxgrad</span><span class="p">,</span><span class="n">globygrad</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">ttime</span><span class="p">,</span><span class="n">h</span><span class="p">)</span> <span class="c1">#,edge_order=2)</span>
+    <span class="c1"># x, y : array_like</span>
+    <span class="c1"># Arrays defining the data point coordinates.</span>
+    <span class="c1"># If the points lie on a regular grid, x can</span>
+    <span class="c1">#  specify the column coordinates and y the</span>
+    <span class="c1">#  row coordinates.</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmin&#39;</span><span class="p">],</span>
+                    <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmax&#39;</span><span class="p">],</span>
+                    <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;nx&#39;</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">y</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmin&#39;</span><span class="p">],</span>
+                    <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmax&#39;</span><span class="p">],</span>
+                    <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;ny&#39;</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="c1">## create interpolant</span>
+    <span class="n">fxgrad</span> <span class="o">=</span> <span class="n">__SPINT</span><span class="o">.</span><span class="n">RectBivariateSpline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">globxgrad</span><span class="p">,</span><span class="n">kx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">ky</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span> <span class="c1">#kind=&#39;linear&#39;)</span>
+    <span class="n">fygrad</span> <span class="o">=</span> <span class="n">__SPINT</span><span class="o">.</span><span class="n">RectBivariateSpline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">globygrad</span><span class="p">,</span><span class="n">kx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">ky</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span> <span class="c1">#kind=&#39;linear&#39;)</span>
+    <span class="c1"># fxgrad = __SPINT.interp2d(x,y,globxgrad.T,kind=&#39;linear&#39;)</span>
+    <span class="c1"># fygrad = __SPINT.interp2d(x,y,globygrad.T,kind=&#39;linear&#39;)</span>
+    <span class="k">return</span> <span class="n">fxgrad</span><span class="p">,</span><span class="n">fygrad</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="__gradatpt">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.__gradatpt">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">__gradatpt</span><span class="p">(</span><span class="n">fxgrad</span><span class="p">,</span><span class="n">fygrad</span><span class="p">,</span><span class="n">pt</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Compute gradient at point pt.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># xgr = fxgrad(pt[0],pt[1])[0]</span>
+    <span class="c1"># ygr = fygrad(pt[0],pt[1])[0]</span>
+    <span class="n">xgr</span> <span class="o">=</span> <span class="n">fxgrad</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">grid</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ygr</span> <span class="o">=</span> <span class="n">fygrad</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">grid</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1">#print &#39;&gt;&gt; grad &gt;&gt;&gt; &#39;,xgr,ygr,&#39;pt&#39;,pt</span>
+    <span class="k">return</span> <span class="n">__NP</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xgr</span><span class="p">,</span><span class="n">ygr</span><span class="p">])</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="__nextptgrad">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.__nextptgrad">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">__nextptgrad</span><span class="p">(</span><span class="n">fxgrad</span><span class="p">,</span><span class="n">fygrad</span><span class="p">,</span><span class="n">steplen</span><span class="p">,</span> <span class="n">pt</span> <span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate target point using negative gradient of traveltime increment</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">grad</span> <span class="o">=</span> <span class="n">__gradatpt</span><span class="p">(</span><span class="n">fxgrad</span><span class="p">,</span><span class="n">fygrad</span><span class="p">,</span> <span class="n">pt</span> <span class="p">)</span>
+    <span class="c1">#print &#39;grad at point&#39;,grad</span>
+    <span class="c1">## modulus of grad</span>
+    <span class="n">modgrad</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">grad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">grad</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">modgrad</span><span class="o">==</span><span class="mf">0.0</span> <span class="p">:</span>
+        <span class="c1">#raise ValueError(&#39;__nextptgrad(): Gradient module is 0.0.&#39;)</span>
+        <span class="k">return</span> <span class="n">pt</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="c1">#print &#39;mod of grad&#39;,modgrad</span>
+    <span class="c1">## direction OPPOSITE to grad</span>
+    <span class="c1">#print pt,steplen,grad,modgrad</span>
+    <span class="n">endptgrad</span> <span class="o">=</span> <span class="n">pt</span> <span class="o">-</span> <span class="n">grad</span><span class="o">*</span><span class="n">steplen</span><span class="o">/</span><span class="n">modgrad</span>
+    <span class="k">return</span> <span class="n">endptgrad</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="__pointisonSEGMENT">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.__pointisonSEGMENT">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">__pointisonSEGMENT</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span> <span class="n">pt</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Is point on a segment?</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-6</span>
+    <span class="n">xminseg</span> <span class="o">=</span> <span class="n">seg</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">xmaxseg</span> <span class="o">=</span> <span class="n">seg</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">yminseg</span> <span class="o">=</span> <span class="n">seg</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">ymaxseg</span> <span class="o">=</span> <span class="n">seg</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">inx</span> <span class="o">=</span> <span class="p">(</span><span class="n">xminseg</span><span class="o">-</span><span class="n">eps</span> <span class="o">&lt;=</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">xmaxseg</span><span class="o">+</span><span class="n">eps</span><span class="p">)</span>
+    <span class="n">iny</span> <span class="o">=</span> <span class="p">(</span><span class="n">yminseg</span><span class="o">-</span><span class="n">eps</span> <span class="o">&lt;=</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">ymaxseg</span><span class="o">+</span><span class="n">eps</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">inx</span> <span class="ow">and</span> <span class="n">iny</span> <span class="p">:</span> <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="__isonsrccelledge">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.__isonsrccelledge">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">__isonsrccelledge</span><span class="p">(</span><span class="n">srccell</span><span class="p">,</span><span class="n">curpt</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Is the point on a cell edge?</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">isonedge</span> <span class="o">=</span> <span class="n">__pointisonSEGMENT</span><span class="p">(</span><span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">srccell</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="n">srccell</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,:])),</span> <span class="n">curpt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">isonedge</span> <span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="__ptinbounds">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.__ptinbounds">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">__ptinbounds</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">pt</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">      Is the point within bounds?</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmin&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmax&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmin&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmax&#39;</span><span class="p">]</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">pt</span><span class="p">,</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmin&#39;</span><span class="p">],</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmax&#39;</span><span class="p">],</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmin&#39;</span><span class="p">],</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmax&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="_traceray">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays._traceray">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">_traceray</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">recpos</span><span class="p">,</span><span class="n">coordsrc</span><span class="p">,</span> <span class="n">ttime</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Back-trace a single ray using negative gradient of traveltime direction</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      gridpar (dict): grid parameters dictionary (as defined by setupgrid())    </span>
+<span class="sd">      recpos (ndarray): position of the receiver</span>
+<span class="sd">      coordsrc (ndarray): position of the source</span>
+<span class="sd">      ttime (ndarray): traveltime array (2D)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      (ndarray): the traced ray as an array of coordinates</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xmin</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmin&#39;</span><span class="p">]</span> 
+    <span class="n">ymin</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmin&#39;</span><span class="p">]</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span> 
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span> 
+    <span class="n">nx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;nx&#39;</span><span class="p">])</span> 
+    <span class="n">ny</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;ny&#39;</span><span class="p">])</span>
+    
+    <span class="c1">## calculate gradient of traveltime  everywhere and</span>
+    <span class="c1">##   setup 2 interpolants</span>
+    <span class="n">fxgrad</span><span class="p">,</span><span class="n">fygrad</span> <span class="o">=</span> <span class="n">__globgrad</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">ttime</span><span class="p">)</span> 
+
+    <span class="c1">#steplen = 1.5*__NP.sqrt(dx**2+dy**2)</span>
+    <span class="n">steplen</span> <span class="o">=</span> <span class="mf">10.0</span><span class="o">*</span><span class="n">__NP</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">dy</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">nearsource</span> <span class="o">=</span> <span class="n">fmmtolerance</span> <span class="c1">#__NP.sqrt(dx/2.0**2+dy/2.0**2) #fmmtolerance</span>
+
+    <span class="c1">## find cell including source</span>
+    <span class="n">endptgrad</span> <span class="o">=</span> <span class="n">__nextptgrad</span><span class="p">(</span><span class="n">fxgrad</span><span class="p">,</span><span class="n">fygrad</span><span class="p">,</span><span class="n">steplen</span><span class="p">,</span> <span class="n">coordsrc</span> <span class="p">)</span>
+    <span class="n">srccell</span><span class="p">,</span><span class="n">possrc</span> <span class="o">=</span> <span class="n">__findcelledge</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span> <span class="n">coordsrc</span><span class="p">,</span> <span class="n">endptgrad</span><span class="p">,</span><span class="n">source</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span>
+
+    <span class="c1"># print(&#39;srccell&#39;,srccell)</span>
+    <span class="c1"># __PL.plot(srccell[:,0],srccell[:,1],&#39;o-&#39;)</span>
+    <span class="c1"># __PL.plot(coordsrc[0],coordsrc[1],&#39;o&#39;)</span>
+    <span class="c1"># __PL.show()</span>
+    
+    <span class="c1">## from receiver to first edge???</span>
+    <span class="n">curpt</span> <span class="o">=</span> <span class="n">recpos</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">endptgrad</span> <span class="o">=</span> <span class="n">__nextptgrad</span><span class="p">(</span><span class="n">fxgrad</span><span class="p">,</span><span class="n">fygrad</span><span class="p">,</span><span class="n">steplen</span><span class="p">,</span> <span class="n">curpt</span> <span class="p">)</span>
+
+    <span class="c1"># print(&quot;\ncurpt:&quot;,curpt)</span>
+    <span class="c1"># print(&quot;endptgrad:&quot;,endptgrad)</span>
+       
+    <span class="n">rect</span><span class="p">,</span><span class="n">pos</span> <span class="o">=</span> <span class="n">__findcelledge</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span> <span class="n">curpt</span><span class="p">,</span> <span class="n">endptgrad</span> <span class="p">)</span>
+    <span class="n">segment</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">curpt</span><span class="p">,</span><span class="n">endptgrad</span><span class="p">))</span>
+    <span class="n">status</span><span class="p">,</span><span class="n">itspt</span> <span class="o">=</span> <span class="n">__segintersRECT</span><span class="p">(</span><span class="n">rect</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">rectangle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1">#print(&quot;status: &quot;,status)</span>
+
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">status</span><span class="o">==</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">curpt</span> <span class="o">=</span> <span class="n">itspt</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">__ptinbounds</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">curpt</span><span class="p">)</span>
+    
+    <span class="n">ray</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">recpos</span><span class="p">,</span><span class="n">curpt</span><span class="p">))</span>
+    <span class="n">ijvel</span><span class="o">=</span> <span class="n">__ijinvelgrid</span><span class="p">(</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">:,:],</span><span class="n">gridpar</span><span class="p">)</span> 
+    <span class="n">ray</span><span class="p">[</span><span class="s1">&#39;ij&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ijvel</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">)</span> <span class="c1">#__NP.vstack((ijvel))</span>
+    <span class="n">seglen</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span><span class="o">-</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">,:])</span>
+    <span class="n">ray</span><span class="p">[</span><span class="s1">&#39;segment_len&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">seglen</span><span class="p">)</span>
+    
+    <span class="n">cou</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">notonsource</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">while</span> <span class="n">notonsource</span> <span class="p">:</span>
+        <span class="n">cou</span><span class="o">+=</span><span class="mi">1</span>
+        <span class="n">endptgrad</span> <span class="o">=</span> <span class="n">__nextptgrad</span><span class="p">(</span><span class="n">fxgrad</span><span class="p">,</span><span class="n">fygrad</span><span class="p">,</span><span class="n">steplen</span><span class="p">,</span> <span class="n">curpt</span> <span class="p">)</span>
+
+        <span class="n">rect</span><span class="p">,</span><span class="n">pos</span> <span class="o">=</span> <span class="n">__findcelledge</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span> <span class="n">curpt</span><span class="p">,</span> <span class="n">endptgrad</span> <span class="p">)</span> 
+        <span class="n">segment</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">curpt</span><span class="p">,</span><span class="n">endptgrad</span><span class="p">))</span>
+
+        <span class="n">status</span><span class="p">,</span><span class="n">itspt</span> <span class="o">=</span> <span class="n">__segintersRECT</span><span class="p">(</span><span class="n">rect</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">rectangle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>         
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">status</span><span class="o">==</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">curpt</span> <span class="o">=</span> <span class="n">itspt</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">__ptinbounds</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">curpt</span><span class="p">)</span>
+        <span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">],</span><span class="n">curpt</span><span class="p">))</span>
+        <span class="n">ijvel</span><span class="o">=</span> <span class="n">__ijinvelgrid</span><span class="p">(</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">:,:],</span><span class="n">gridpar</span><span class="p">)</span> 
+        <span class="n">ray</span><span class="p">[</span><span class="s1">&#39;ij&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;ij&#39;</span><span class="p">],</span><span class="n">ijvel</span><span class="p">))</span>
+        <span class="n">seglen</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span><span class="o">-</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">,:])</span>
+        <span class="n">ray</span><span class="p">[</span><span class="s1">&#39;segment_len&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;segment_len&#39;</span><span class="p">],</span><span class="n">seglen</span><span class="p">))</span>
+    
+        
+        <span class="c1"># # print cou,curpt,coordsrc</span>
+            
+        <span class="n">curptonsrccell</span> <span class="o">=</span> <span class="n">__isonsrccelledge</span><span class="p">(</span><span class="n">srccell</span><span class="p">,</span><span class="n">curpt</span><span class="p">)</span>
+        <span class="c1">## dist in case of ray &#39;ringing&#39; nearby source</span>
+        <span class="n">disttosrc</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">curpt</span><span class="o">-</span><span class="n">coordsrc</span><span class="p">)</span>
+
+        <span class="c1">#print(&#39;\r cou {} disttosrc {}&#39;.format(cou,disttosrc))</span>
+
+        <span class="c1"># if cou&gt;100 :</span>
+        <span class="c1">#     print(cou,ray[&#39;xy&#39;])</span>
+        <span class="c1">#     __PL.title(cou)</span>
+        <span class="c1">#     __PL.plot(ray[&#39;xy&#39;][:,0],ray[&#39;xy&#39;][:,1],&#39;-&#39;)</span>
+        <span class="c1">#     __PL.plot(segment[:,0],segment[:,1],&#39;-&#39;)</span>
+        <span class="c1">#     __PL.plot(segment[0,0],segment[0,1],&#39;o-&#39;)</span>
+        <span class="c1">#     __PL.plot(segment[1,0],segment[1,1],&#39;^-&#39;)</span>
+        <span class="c1">#     __PL.plot(rect[:,0],rect[:,1],&#39;-&#39;)</span>
+        <span class="c1">#     #__PL.plot(coordsrc[0],coordsrc[1],&#39;o&#39;)</span>
+        <span class="c1">#     __PL.gca().set_aspect(&#39;equal&#39;, &#39;datalim&#39;)</span>
+        <span class="c1">#     __PL.show()</span>
+        <span class="c1"># if cou&gt;16 :</span>
+        <span class="c1">#     exit()</span>
+        
+        <span class="k">if</span> <span class="n">curptonsrccell</span> <span class="ow">or</span> <span class="n">disttosrc</span><span class="o">&lt;=</span><span class="n">__NP</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">dx</span><span class="o">/</span><span class="mf">2.0</span><span class="p">):</span><span class="c1"># nearsource :</span>
+            <span class="c1">#print(curptonsrccell,&quot; &quot;,curptonsrccell)</span>
+            <span class="c1">#print(__NP.sqrt(2.0)*(dx/2.0),&quot; &quot;,__NP.sqrt(2.0)*(dx/2.0))</span>
+            <span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">],</span><span class="n">coordsrc</span><span class="p">))</span>
+            <span class="n">ijvel</span><span class="o">=</span> <span class="n">__ijinvelgrid</span><span class="p">(</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">:,:],</span><span class="n">gridpar</span><span class="p">)</span> 
+            <span class="n">ray</span><span class="p">[</span><span class="s1">&#39;ij&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;ij&#39;</span><span class="p">],</span><span class="n">ijvel</span><span class="p">))</span>
+            <span class="n">seglen</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span><span class="o">-</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">,:])</span>
+            <span class="n">ray</span><span class="p">[</span><span class="s1">&#39;segment_len&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;segment_len&#39;</span><span class="p">],</span><span class="n">seglen</span><span class="p">))</span>
+            <span class="n">notonsource</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1">#--</span>
+
+    <span class="k">return</span> <span class="n">ray</span></div>
+
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="traceallrays">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.traceallrays">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">traceallrays</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">srccoo</span><span class="p">,</span><span class="n">reccoo</span><span class="p">,</span><span class="n">grdsttime</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Trace multiple rays, for all sources and receivers.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       gridpar (dict): grid parameters dictionary (as defined by setupgrid())    </span>
+<span class="sd">       srccoo (ndarray): position of the source, a 2D array with two columns, representing x and y</span>
+<span class="sd">       reccoo (ndarray): position of the receiver, a 2D array with two columns, representing x and y</span>
+<span class="sd">       grdsttime (list of ndarrays): array of traveltime arrays [list of 2D arrays, one per source]</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      (ndarray of ndarrays): the traced rays as (x,y) coordinates of the points defining the segments</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">reccoo</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">2</span>
+    <span class="k">assert</span> <span class="n">srccoo</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">2</span>
+    <span class="k">assert</span> <span class="n">grdsttime</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="n">srccoo</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">nsrc</span> <span class="o">=</span> <span class="n">srccoo</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">nrec</span> <span class="o">=</span> <span class="n">reccoo</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">rays</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nrec</span><span class="p">,</span><span class="n">nsrc</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;object&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nsrc</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">ttime</span> <span class="o">=</span> <span class="n">grdsttime</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="n">singlesrc</span> <span class="o">=</span> <span class="n">srccoo</span><span class="p">[</span><span class="n">j</span><span class="p">,:]</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r</span><span class="s1">tracing rays for source </span><span class="si">{}</span><span class="s1"> of </span><span class="si">{}</span><span class="s1">    &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">nsrc</span><span class="p">)</span>
+        <span class="n">__sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">__sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrec</span><span class="p">)</span> <span class="p">:</span>
+            <span class="c1"># print(&#39;tracing ray for receiver&#39;,i+1,&#39;of&#39;,nrec)</span>
+            <span class="n">singlerec</span> <span class="o">=</span> <span class="n">reccoo</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span>
+            <span class="n">rays</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">_traceray</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">singlerec</span><span class="p">,</span><span class="n">singlesrc</span><span class="p">,</span><span class="n">ttime</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rays</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="_trace_straight_ray">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays._trace_straight_ray">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">_trace_straight_ray</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">srcpos</span><span class="p">,</span><span class="n">recpos</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Trace a straight ray, from receiver to source.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">xmin</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmin&#39;</span><span class="p">]</span> 
+    <span class="n">ymin</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmin&#39;</span><span class="p">]</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span> 
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span> 
+    <span class="n">nx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;nx&#39;</span><span class="p">])</span> 
+    <span class="n">ny</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;ny&#39;</span><span class="p">])</span>
+    
+ 
+    <span class="n">steplen</span> <span class="o">=</span> <span class="mf">1.5</span><span class="o">*</span><span class="n">__NP</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">dy</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">nearsource</span> <span class="o">=</span> <span class="n">fmmtolerance</span> <span class="c1">#__NP.sqrt(dx/2.0**2+dy/2.0**2) #fmmtolerance</span>
+
+    <span class="c1">## find cell including source</span>
+    <span class="c1"># endptgrad = __nextptgrad(fxgrad,fygrad,steplen, coordsrc )</span>
+    <span class="n">srccell</span><span class="p">,</span><span class="n">possrctxt</span> <span class="o">=</span> <span class="n">__findcelledge</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span><span class="n">srcpos</span><span class="p">,</span><span class="n">recpos</span><span class="p">,</span><span class="n">source</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span>
+
+
+    <span class="n">curpt</span> <span class="o">=</span> <span class="n">recpos</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">endpt</span> <span class="o">=</span> <span class="n">srcpos</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+       
+    <span class="n">rect</span><span class="p">,</span><span class="n">pos</span> <span class="o">=</span> <span class="n">__findcelledge</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span> <span class="n">curpt</span><span class="p">,</span> <span class="n">endpt</span> <span class="p">)</span>
+    <span class="n">segment</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">curpt</span><span class="p">,</span><span class="n">endpt</span><span class="p">))</span>
+    <span class="n">status</span><span class="p">,</span><span class="n">itspt</span> <span class="o">=</span> <span class="n">__segintersRECT</span><span class="p">(</span><span class="n">rect</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">rectangle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">status</span><span class="o">==</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">curpt</span> <span class="o">=</span> <span class="n">itspt</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">__ptinbounds</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">curpt</span><span class="p">)</span>
+    
+    <span class="n">ray</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">recpos</span><span class="p">,</span><span class="n">curpt</span><span class="p">))</span>
+    <span class="n">ijvel</span><span class="o">=</span> <span class="n">__ijinvelgrid</span><span class="p">(</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">:,:],</span><span class="n">gridpar</span><span class="p">)</span> 
+    <span class="n">ray</span><span class="p">[</span><span class="s1">&#39;ij&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ijvel</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">)</span> <span class="c1">#__NP.vstack((ijvel))</span>
+    <span class="n">seglen</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span><span class="o">-</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">,:])</span>
+    <span class="n">ray</span><span class="p">[</span><span class="s1">&#39;segment_len&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">seglen</span><span class="p">)</span>
+    
+    <span class="n">cou</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">notonsource</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">while</span> <span class="n">notonsource</span> <span class="p">:</span>
+        <span class="n">cou</span><span class="o">+=</span><span class="mi">1</span>
+        <span class="c1">##endpt = __nextptgrad(fxgrad,fygrad,steplen, curpt )</span>
+
+        <span class="n">rect</span><span class="p">,</span><span class="n">pos</span> <span class="o">=</span> <span class="n">__findcelledge</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span> <span class="n">curpt</span><span class="p">,</span> <span class="n">endpt</span> <span class="p">)</span> 
+        <span class="n">segment</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">curpt</span><span class="p">,</span><span class="n">endpt</span><span class="p">))</span>
+
+        <span class="n">status</span><span class="p">,</span><span class="n">itspt</span> <span class="o">=</span> <span class="n">__segintersRECT</span><span class="p">(</span><span class="n">rect</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">rectangle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">status</span><span class="o">==</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">curpt</span> <span class="o">=</span> <span class="n">itspt</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">__ptinbounds</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">curpt</span><span class="p">)</span>
+        <span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">],</span><span class="n">curpt</span><span class="p">))</span>
+        <span class="n">ijvel</span><span class="o">=</span> <span class="n">__ijinvelgrid</span><span class="p">(</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">:,:],</span><span class="n">gridpar</span><span class="p">)</span> 
+        <span class="n">ray</span><span class="p">[</span><span class="s1">&#39;ij&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;ij&#39;</span><span class="p">],</span><span class="n">ijvel</span><span class="p">))</span>
+        <span class="n">seglen</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span><span class="o">-</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">,:])</span>
+        <span class="n">ray</span><span class="p">[</span><span class="s1">&#39;segment_len&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;segment_len&#39;</span><span class="p">],</span><span class="n">seglen</span><span class="p">))</span>
+
+        <span class="n">curptonsrccell</span> <span class="o">=</span> <span class="n">__isonsrccelledge</span><span class="p">(</span><span class="n">srccell</span><span class="p">,</span><span class="n">curpt</span><span class="p">)</span>
+        <span class="c1">## dist in case of ray &#39;ringing&#39; nearby source</span>
+        <span class="c1">#disttorec = __NP.linalg.norm(curpt-recpos)</span>
+
+        <span class="c1"># nearsource :</span>
+        <span class="k">if</span> <span class="n">curptonsrccell</span> <span class="p">:</span> <span class="c1">#or disttorec&lt;=(0.5*__NP.sqrt(2.0)*dx) :</span>
+            <span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">],</span><span class="n">srcpos</span><span class="p">))</span>
+            <span class="n">ijvel</span><span class="o">=</span> <span class="n">__ijinvelgrid</span><span class="p">(</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">:,:],</span><span class="n">gridpar</span><span class="p">)</span> 
+            <span class="n">ray</span><span class="p">[</span><span class="s1">&#39;ij&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;ij&#39;</span><span class="p">],</span><span class="n">ijvel</span><span class="p">))</span>
+            <span class="n">seglen</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span><span class="o">-</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;xy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">,:])</span>
+            <span class="n">ray</span><span class="p">[</span><span class="s1">&#39;segment_len&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">ray</span><span class="p">[</span><span class="s1">&#39;segment_len&#39;</span><span class="p">],</span><span class="n">seglen</span><span class="p">))</span>
+            <span class="n">notonsource</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1">#--</span>
+    <span class="k">return</span> <span class="n">ray</span></div>
+
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="traceall_straight_rays">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.traceall_straight_rays">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">traceall_straight_rays</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">srccoo</span><span class="p">,</span><span class="n">reccoo</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Trace multiple straight rays.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       gridpar (dict): grid parameters dictionary (as defined by setupgrid())    </span>
+<span class="sd">       srccoo (ndarray): position of the source, a 2D array with two columns, representing x and y</span>
+<span class="sd">       reccoo (ndarray): position of the receiver, a 2D array with two columns, representing x and y  </span>
+<span class="sd">           </span>
+<span class="sd">    Returns:</span>
+<span class="sd">       (ndarray): the coordinates of the ray paths</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">reccoo</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">2</span>
+    <span class="k">assert</span> <span class="n">srccoo</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">2</span>
+    <span class="n">nsrc</span> <span class="o">=</span> <span class="n">srccoo</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">nrec</span> <span class="o">=</span> <span class="n">reccoo</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">rays</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nrec</span><span class="p">,</span><span class="n">nsrc</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;object&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nsrc</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">singlesrc</span> <span class="o">=</span> <span class="n">srccoo</span><span class="p">[</span><span class="n">j</span><span class="p">,:]</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r</span><span class="s1">tracing rays for source </span><span class="si">{}</span><span class="s1"> of </span><span class="si">{}</span><span class="s1">    &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">nsrc</span><span class="p">)</span>
+        <span class="n">__sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">__sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrec</span><span class="p">)</span> <span class="p">:</span>
+            <span class="c1"># print(&#39;tracing ray for receiver&#39;,i+1,&#39;of&#39;,nrec)</span>
+            <span class="n">singlerec</span> <span class="o">=</span> <span class="n">reccoo</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span>
+            <span class="n">rays</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">_trace_straight_ray</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">singlesrc</span><span class="p">,</span><span class="n">singlerec</span><span class="p">)</span>
+            
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rays</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="buildtomomat">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.buildtomomat">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">buildtomomat</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">rays</span><span class="p">,</span><span class="n">ttpick</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build forward matrix from rays for traveltime tomography.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       gridpar (dict): grid parameters dictionary (as defined by setupgrid())    </span>
+<span class="sd">       rays (ndarray of ndarrays):  seismic rays, as outputted by traceallrays()</span>
+<span class="sd">       ttpick (ndarray): traveltime picks at the receivers. [These are needed </span>
+<span class="sd">                   only to provide the vector of traveltime picks </span>
+<span class="sd">                   flattened for performing tomography in the same order </span>
+<span class="sd">                   than the tomography matrix]</span>
+
+<span class="sd">    Returns: </span>
+<span class="sd">       (ndarray): the &#39;tomography&#39; matrix and the vector of traveltime picks </span>
+<span class="sd">                    (flattened for performing tomography)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Building forward matrix&quot;</span><span class="p">)</span>
+    <span class="n">nrec</span> <span class="o">=</span> <span class="n">rays</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">nsrc</span> <span class="o">=</span> <span class="n">rays</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">tomomat</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nrec</span><span class="o">*</span><span class="n">nsrc</span><span class="p">,</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;nx&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;ny&#39;</span><span class="p">]))</span>
+    <span class="n">ttpickvector</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nrec</span><span class="o">*</span><span class="n">nsrc</span><span class="p">)</span>
+    <span class="n">obscou</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">for</span> <span class="n">isrc</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nsrc</span><span class="p">)</span> <span class="p">:</span>
+        <span class="k">for</span> <span class="n">irec</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrec</span><span class="p">)</span> <span class="p">:</span>
+            <span class="n">obscou</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">nseg</span> <span class="o">=</span> <span class="n">rays</span><span class="p">[</span><span class="n">irec</span><span class="p">,</span><span class="n">isrc</span><span class="p">][</span><span class="s1">&#39;ij&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">ttpickvector</span><span class="p">[</span><span class="n">obscou</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttpick</span><span class="p">[</span><span class="n">isrc</span><span class="p">][</span><span class="n">irec</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nseg</span><span class="p">)</span> <span class="p">:</span>
+                <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="o">=</span> <span class="n">rays</span><span class="p">[</span><span class="n">irec</span><span class="p">,</span><span class="n">isrc</span><span class="p">][</span><span class="s1">&#39;ij&#39;</span><span class="p">][</span><span class="n">s</span><span class="p">,:]</span>
+                <span class="n">idunr</span> <span class="o">=</span> <span class="n">__NP</span><span class="o">.</span><span class="n">ravel_multi_index</span><span class="p">((</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">),</span>
+                                             <span class="p">(</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;nx&#39;</span><span class="p">],</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;ny&#39;</span><span class="p">]),</span>
+                                             <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+                <span class="n">tomomat</span><span class="p">[</span><span class="n">obscou</span><span class="p">,</span><span class="n">idunr</span><span class="p">]</span> <span class="o">=</span> <span class="n">rays</span><span class="p">[</span><span class="n">irec</span><span class="p">,</span><span class="n">isrc</span><span class="p">][</span><span class="s1">&#39;segment_len&#39;</span><span class="p">][</span><span class="n">s</span><span class="p">]</span>
+            
+    <span class="k">return</span> <span class="n">tomomat</span><span class="p">,</span><span class="n">ttpickvector</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="plotgrid">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.plotgrid">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plotgrid</span><span class="p">(</span><span class="n">gridpar</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot staggered grid edges: traveltime at nodes and velocity in cells</span>
+
+<span class="sd">    :param gridpar: grid parameters dictionary (as defined by setupgrid())    </span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;ny&#39;</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">__PL</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">y</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmin&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">j</span><span class="o">*</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">],</span> <span class="n">xmin</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmin&#39;</span><span class="p">],</span>
+                  <span class="n">xmax</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmin&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;nx&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">],</span>
+                  <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;nx&#39;</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">__PL</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span>  <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmin&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">j</span><span class="o">*</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">],</span> <span class="n">ymin</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmin&#39;</span><span class="p">],</span>
+                  <span class="n">ymax</span> <span class="o">=</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmin&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;ny&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">],</span>
+                  <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+    <span class="n">__PL</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmin&#39;</span><span class="p">],</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmax&#39;</span><span class="p">]])</span>
+    <span class="n">__PL</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmax&#39;</span><span class="p">],</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmin&#39;</span><span class="p">]])</span> 
+    <span class="k">return</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="plotrays">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.plotrays">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plotrays</span><span class="p">(</span><span class="n">src</span><span class="p">,</span><span class="n">rec</span><span class="p">,</span><span class="n">rays</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot rays as polylines.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       src (ndarray): coordinates of the sources</span>
+<span class="sd">       rec (ndarray): coordinates of the receivers</span>
+<span class="sd">       rays (narray of arrays): seismic rays, as outputted by traceallrays()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rays</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">:</span>
+        <span class="n">__PL</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">src</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">src</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;ok&#39;</span><span class="p">,</span><span class="n">zorder</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rays</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">:</span>
+            <span class="n">__PL</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">rays</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">][</span><span class="s1">&#39;xy&#39;</span><span class="p">][:,</span><span class="mi">0</span><span class="p">],</span>
+                      <span class="n">rays</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">][</span><span class="s1">&#39;xy&#39;</span><span class="p">][:,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">:</span>
+            <span class="n">__PL</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">rec</span><span class="p">[</span><span class="n">r</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">rec</span><span class="p">[</span><span class="n">r</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;vk&#39;</span><span class="p">,</span><span class="n">zorder</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="k">return</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="plotvelmod">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.plotvelmod">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plotvelmod</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">velmod</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">units</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">__PL</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">rainbow</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot velocity model as an image.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       gridpar (dict): grid parameters dictionary (as defined by setupgrid())    </span>
+<span class="sd">       velmod (ndarray): velocity model</span>
+<span class="sd">       vmin,vmax (float,float): optional values to clip the colorbar min and max values</span>
+<span class="sd">       units (str): optional string to specify the units of measurement for velocity</span>
+<span class="sd">       cmap (colormap): optional parameter to specify a colormap. Defaults to &quot;rainbow&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">vmin</span><span class="o">==</span><span class="kc">None</span> <span class="ow">and</span> <span class="n">vmax</span><span class="o">==</span><span class="kc">None</span> <span class="p">:</span>
+        <span class="n">vmin</span><span class="o">=</span><span class="n">velmod</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">vmax</span><span class="o">=</span><span class="n">velmod</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="n">extent_vel</span> <span class="o">=</span> <span class="p">[</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xvelmin&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span><span class="p">,</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xvelmax&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span><span class="p">,</span>
+                  <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yvelmax&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span><span class="p">,</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yvelmin&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span> <span class="p">]</span>
+    <span class="n">__PL</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">velmod</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span><span class="n">extent</span><span class="o">=</span><span class="n">extent_vel</span><span class="p">,</span>
+              <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;upper&#39;</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span><span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">=</span><span class="n">__PL</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s1">&#39;Velocity &#39;</span><span class="o">+</span><span class="n">units</span><span class="p">)</span>
+    <span class="c1">#__PL.gca().set_aspect(&#39;equal&#39;)</span>
+    <span class="k">return</span></div>
+
+
+<span class="c1">############################################################################</span>
+
+<div class="viewcode-block" id="plotttimemod">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.plotttimemod">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plotttimemod</span><span class="p">(</span><span class="n">gridpar</span><span class="p">,</span><span class="n">ttime</span><span class="p">,</span><span class="n">units</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot traveltime array as an image.</span>
+
+<span class="sd">    Args: </span>
+<span class="sd">       gridpar (dict): grid parameters dictionary (as defined by setupgrid()) </span>
+<span class="sd">       ttime (ndarray): traveltime array</span>
+<span class="sd">       units (str): optional string to specify the units of measurement for traveltime</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">extent_ttime</span> <span class="o">=</span> <span class="p">[</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmin&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span><span class="p">,</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;xttmax&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span><span class="p">,</span>
+                    <span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmax&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span><span class="p">,</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;yttmin&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">gridpar</span><span class="p">[</span><span class="s1">&#39;dh&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span> <span class="p">]</span>
+    <span class="n">__PL</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">ttime</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span><span class="n">extent</span><span class="o">=</span><span class="n">extent_ttime</span><span class="p">,</span>
+              <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;upper&#39;</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">__PL</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">rainbow</span><span class="p">,</span><span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">=</span><span class="n">__PL</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+
+    <span class="n">__PL</span><span class="o">.</span><span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s1">&#39;Traveltime &#39;</span><span class="o">+</span><span class="n">units</span><span class="p">)</span>
+    <span class="c1">#__PL.gca().set_aspect(&#39;equal&#39;)</span>
+    <span class="k">return</span></div>
+
+
+
+<span class="c1">##########################################################</span>
+<span class="c1">##########################################################</span>
+
+
+<span class="c1"># if __name__ == &#39;__main__&#39; :</span>
+<span class="c1">#     test()</span>
+  
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Andrea Zunino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

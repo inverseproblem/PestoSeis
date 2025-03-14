@@ -1,0 +1,271 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reflection seismology - reflectionseismo &mdash; PestoSeis 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=83a61292"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Seismic waves - seismicwaves2d" href="seismicwaves2d.html" />
+    <link rel="prev" title="API reference" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PestoSeis
+              <img src="../_static/PestoSeisLogo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation — loading the module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ttimerays_guide.html">Traveltimes and rays – using <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../seismicwaves2d_guide.html">Seismic wave propagation – using <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Reflection seismology - <code class="docutils literal notranslate"><span class="pre">reflectionseismo</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pestoseis.reflectionseismo.agc"><code class="docutils literal notranslate"><span class="pre">agc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pestoseis.reflectionseismo.calcreflectivity"><code class="docutils literal notranslate"><span class="pre">calcreflectivity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pestoseis.reflectionseismo.fwdconvolve"><code class="docutils literal notranslate"><span class="pre">fwdconvolve()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pestoseis.reflectionseismo.geometrical_spreading"><code class="docutils literal notranslate"><span class="pre">geometrical_spreading()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pestoseis.reflectionseismo.imgshotgath"><code class="docutils literal notranslate"><span class="pre">imgshotgath()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pestoseis.reflectionseismo.nmocorrection"><code class="docutils literal notranslate"><span class="pre">nmocorrection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pestoseis.reflectionseismo.wiggle"><code class="docutils literal notranslate"><span class="pre">wiggle()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="seismicwaves2d.html">Seismic waves - <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ttimerays.html">Traveltimes and rays - <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developerdocs.html">Developer zone</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PestoSeis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+      <li class="breadcrumb-item active">Reflection seismology - <code class="docutils literal notranslate"><span class="pre">reflectionseismo</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/API/reflectionseismo.rst" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pestoseis.reflectionseismo">
+<span id="reflection-seismology-reflectionseismo"></span><h1>Reflection seismology - <code class="docutils literal notranslate"><span class="pre">reflectionseismo</span></code><a class="headerlink" href="#module-pestoseis.reflectionseismo" title="Link to this heading"></a></h1>
+<p>A module to generate and process seismic reflection data to mimic an exploration seismology setup.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pestoseis.reflectionseismo.agc">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.reflectionseismo.</span></span><span class="sig-name descname"><span class="pre">agc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'uniform'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pestoseis/reflectionseismo/reflseismo.html#agc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pestoseis.reflectionseismo.agc" title="Link to this definition"></a></dt>
+<dd><p>Apply Automatic Gain Control to a shotgather.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seis</strong> (<em>ndarray</em>) – seismic shotgather, <em>rows</em> contain traces</p></li>
+<li><p><strong>w</strong> (<em>float</em>) – window width</p></li>
+<li><p><strong>rho</strong> (<em>ndarray</em><em>,</em><em>optional</em>) – density</p></li>
+<li><p><strong>agctype</strong> (<em>string</em>) – ‘linear’ or ‘gaussian’, weight kernel type</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns</dt><dd><p>seis_gs (ndarray): seismograms corrected with AGC</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pestoseis.reflectionseismo.calcreflectivity">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.reflectionseismo.</span></span><span class="sig-name descname"><span class="pre">calcreflectivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">density</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pestoseis/reflectionseismo/reflseismo.html#calcreflectivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pestoseis.reflectionseismo.calcreflectivity" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Compute the reflectivity series given density and velocity as a function</dt><dd><p>of depth and a time interval.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>density</strong> (<em>ndarray</em>) – a vector of density values</p></li>
+<li><p><strong>vel</strong> (<em>ndarray</em>) – a vector of velocity values</p></li>
+<li><p><strong>z</strong> (<em>ndarray</em>) – a vector of depths</p></li>
+<li><p><strong>dt</strong> (<em>float</em>) – the time interval</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the two-way travel time
+refltwt (ndarray): the reflectivity series as a function of two-way travel time</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>twt (ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pestoseis.reflectionseismo.fwdconvolve">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.reflectionseismo.</span></span><span class="sig-name descname"><span class="pre">fwdconvolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">refle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pestoseis/reflectionseismo/reflseismo.html#fwdconvolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pestoseis.reflectionseismo.fwdconvolve" title="Link to this definition"></a></dt>
+<dd><p>Convolve a reflectivity series with a wavelet to compute a seismogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>refle</strong> (<em>ndarray</em>) – reflectivity series</p></li>
+<li><p><strong>wavelet</strong> (<em>ndarray</em>) – the wavelet</p></li>
+<li><p><strong>dt</strong> (<em>float</em>) – time interval</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>time array
+convo (ndarry): seismic trace resulting from the convolution</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tarr (ndarry)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pestoseis.reflectionseismo.geometrical_spreading">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.reflectionseismo.</span></span><span class="sig-name descname"><span class="pre">geometrical_spreading</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pestoseis/reflectionseismo/reflseismo.html#geometrical_spreading"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pestoseis.reflectionseismo.geometrical_spreading" title="Link to this definition"></a></dt>
+<dd><p>Apply geometrical spreading correction to a shotgather.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seis</strong> (<em>ndarray</em>) – seismic shotgather, <em>rows</em> contain traces</p></li>
+<li><p><strong>twt</strong> (<em>ndarray</em>) – two-way traveltime</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns</dt><dd><p>seis_gs (ndarray): seismograms corrected for geometrical spreading</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pestoseis.reflectionseismo.imgshotgath">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.reflectionseismo.</span></span><span class="sig-name descname"><span class="pre">imgshotgath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seisdata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitudeclip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pestoseis/reflectionseismo/reflseismo.html#imgshotgath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pestoseis.reflectionseismo.imgshotgath" title="Link to this definition"></a></dt>
+<dd><p>Create an image of a shotgather.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seisdata</strong> (<em>ndarray</em>) – seismic data, i.e., shotgather, <em>rows</em> contain traces</p></li>
+<li><p><strong>dt</strong> (<em>float</em>) – time interval</p></li>
+<li><p><strong>offset</strong> (<em>ndarray</em>) – array of offsets</p></li>
+<li><p><strong>amplitudeclip</strong> (<em>float</em><em>,</em><em>optional</em>) – clip the amplitude to a desired value</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pestoseis.reflectionseismo.nmocorrection">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.reflectionseismo.</span></span><span class="sig-name descname"><span class="pre">nmocorrection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">velnmo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seisdat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pestoseis/reflectionseismo/reflseismo.html#nmocorrection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pestoseis.reflectionseismo.nmocorrection" title="Link to this definition"></a></dt>
+<dd><p>Common Mid Point (CMP) normal moveout correction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>velnmo</strong> (<em>ndarray</em>) – 1D array of “NMO” velocity, representing the
+average velocity of the layers above</p></li>
+<li><p><strong>dt</strong> (<em>float</em>) – the time interval</p></li>
+<li><p><strong>offset</strong> (<em>ndarray</em>) – offsets for each trace</p></li>
+<li><p><strong>seisdat</strong> (<em>ndarray</em>) – input seismic data, <em>rows</em> contain traces</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns</dt><dd><p>seisnmo (ndarray): seismograms NMO corrected</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pestoseis.reflectionseismo.wiggle">
+<span class="sig-prename descclassname"><span class="pre">pestoseis.reflectionseismo.</span></span><span class="sig-name descname"><span class="pre">wiggle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skiptr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filltrace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pestoseis/reflectionseismo/reflseismo.html#wiggle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pestoseis.reflectionseismo.wiggle" title="Link to this definition"></a></dt>
+<dd><p>Create a ‘wiggle’ plot of a shotgather.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>ndarray</em>) – seismic data, i.e., shotgather, <em>rows</em> contain traces</p></li>
+<li><p><strong>dt</strong> (<em>float</em>) – time interval</p></li>
+<li><p><strong>offset</strong> (<em>ndarray</em><em>,</em><em>optional</em>) – array of offsets</p></li>
+<li><p><strong>skiptr</strong> (<em>integer</em><em>,</em><em>optiona</em>) – plot only every ‘skiptr’ traces</p></li>
+<li><p><strong>title</strong> (<em>string</em><em>,</em><em>optional</em>) – add a title to the plot</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="API reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="seismicwaves2d.html" class="btn btn-neutral float-right" title="Seismic waves - seismicwaves2d" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Andrea Zunino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

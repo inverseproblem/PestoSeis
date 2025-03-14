@@ -1,0 +1,427 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pestoseis.ttimerays.binheap &mdash; PestoSeis 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=83a61292"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PestoSeis
+              <img src="../../../_static/PestoSeisLogo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation — loading the module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ttimerays_guide.html">Traveltimes and rays – using <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../seismicwaves2d_guide.html">Seismic wave propagation – using <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/index.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developerdocs.html">Developer zone</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PestoSeis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pestoseis.ttimerays.binheap</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pestoseis.ttimerays.binheap</h1><div class="highlight"><pre>
+<span></span>
+<span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#    PestoSeis, a numerical laboratory to learn about seismology, written</span>
+<span class="c1">#    in the Python language.</span>
+<span class="c1">#    Copyright (C) 2021  Andrea Zunino </span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#    it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#    (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#    GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#    You should have received a copy of the GNU General Public License</span>
+<span class="c1">#    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Binary heap trees (min/max).</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">NP</span>
+
+<span class="c1">#=================================</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">index_parent</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">i</span><span class="o">//</span><span class="mi">2</span> 
+
+<span class="k">def</span><span class="w"> </span><span class="nf">index_leftchild</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">i</span> <span class="c1">## shift bits???</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">index_rightchild</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span> <span class="c1">## shift bits???</span>
+
+
+<span class="c1"># #=============================================================</span>
+<span class="c1"># #               MAX stuff</span>
+<span class="c1"># #=============================================================</span>
+
+<div class="viewcode-block" id="BinHeapMax">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.binheap.BinHeapMax">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BinHeapMax</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">      Max heap binary tree.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#==========================================</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">values</span><span class="p">,</span><span class="n">Nmax</span><span class="p">,</span><span class="n">handles</span><span class="p">):</span>
+        
+        <span class="k">assert</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="o">==</span><span class="n">handles</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="c1">## Init the structure </span>
+        <span class="c1">## Nmax,Nh,nodes,handles</span>
+        <span class="n">Nh</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">size</span>
+        <span class="c1">## Init big arrays</span>
+        <span class="c1">##Array{Float64}(0),10,Array{Int64}(0)</span>
+        <span class="n">values2</span>  <span class="o">=</span> <span class="n">NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">Nmax</span><span class="p">)</span>
+        <span class="n">handles2</span> <span class="o">=</span> <span class="n">NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">Nmax</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">NP</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+        <span class="c1">## copy to avoid modifying input arrays!!</span>
+        <span class="n">values2</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">Nh</span><span class="p">]</span>  <span class="o">=</span> <span class="n">NP</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="n">handles2</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">Nh</span><span class="p">]</span> <span class="o">=</span> <span class="n">NP</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">handles</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Nh</span> <span class="o">=</span> <span class="n">Nh</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Nmax</span> <span class="o">=</span> <span class="n">Nmax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="n">values2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handles</span> <span class="o">=</span> <span class="n">handles2</span>
+        <span class="c1">#h = BinHeapMax(Nmax,Nh,values2,handles2)</span>
+        <span class="c1">## heapify the structure</span>
+        <span class="n">sta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">//</span><span class="mi">2</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sta</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span> <span class="c1">#sta:-1:1 ## backwards</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__max_heapify</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+          
+    <span class="c1">#==========================================    </span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__swap_nodes_heap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">q</span><span class="p">):</span>
+        <span class="c1"># temporary copy</span>
+        <span class="n">ptmp_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+        <span class="n">ptmp_handle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+        <span class="c1"># swap last and first node</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="n">ptmp_node</span>
+        <span class="c1"># swap handles too</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="n">ptmp_handle</span>
+
+    <span class="c1">#==========================================</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">topval_heap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                  
+    <span class="c1">##=============================================================</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">__max_heapify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">i</span><span class="p">):</span>
+        <span class="c1">## Go DOWN the tree (max heap)...</span>
+        <span class="c1"># get children indices</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">index_leftchild</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">index_rightchild</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="c1">## Introduction to algorithms, p. 154</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">l</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">l</span><span class="p">]</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">:</span>
+            <span class="c1"># largest on left</span>
+            <span class="n">largest</span> <span class="o">=</span> <span class="n">l</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="c1"># largest on i</span>
+            <span class="n">largest</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">r</span><span class="p">]</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">largest</span><span class="p">])</span> <span class="p">:</span>
+            <span class="c1"># largest on right</span>
+            <span class="n">largest</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="k">if</span> <span class="n">largest</span><span class="o">!=</span><span class="n">i</span> <span class="p">:</span>
+            <span class="c1"># swap the nodes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__swap_nodes_heap</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">largest</span><span class="p">)</span>
+            <span class="c1"># keep going</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__max_heapify</span><span class="p">(</span><span class="n">largest</span><span class="p">)</span>
+
+    <span class="c1">##=============================================================</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_node_maxheap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">val</span><span class="p">,</span><span class="n">handle</span><span class="p">)</span> <span class="p">:</span>
+        <span class="c1">## find index of node given handle</span>
+        <span class="n">idxh</span> <span class="o">=</span> <span class="n">NP</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="o">==</span><span class="n">handle</span><span class="p">)</span> <span class="c1">#find(self.handles==handle)</span>
+        <span class="c1">#assert size(idxh,1)&lt;=1</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">idxh</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1">## from 1D array to scalar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+    
+        <span class="c1"># GO UP THE TREE: compare with parents...</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">i</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">index_parent</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span><span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">:</span>
+            <span class="c1">## swap node with parent</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__swap_nodes_heap</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">index_parent</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">index_parent</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+        <span class="c1"># GO DOWN THE TREE: compare with children...</span>
+        <span class="k">if</span> <span class="n">i</span><span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span> <span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__max_heapify</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="c1">##=============================================================</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">insert_maxheap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">val</span><span class="p">,</span><span class="n">handle</span><span class="p">)</span> <span class="p">:</span>
+        <span class="c1">## Go UP the tree (max heap) from the bottom...</span>
+        <span class="c1"># extend heap</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nmax</span><span class="o">&gt;</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1">## IMPORTANT: make sure handle is unique</span>
+        <span class="c1">## commented because slows things down</span>
+        <span class="c1">#   @assert ~(handle in self.handles[1:self.Nh])</span>
+        <span class="c1"># resize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Nh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">+</span><span class="mi">1</span>
+        <span class="c1"># add the new node at the bottom</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span> <span class="c1"># set handle too</span>
+        <span class="c1"># start from bottom right leaf</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span>
+        <span class="c1"># compare with parents...</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">i</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">index_parent</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span><span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">:</span>
+            <span class="c1">## swap node with parent</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__swap_nodes_heap</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">index_parent</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">index_parent</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="c1">##=============================================================</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">pop_maxheap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="c1"># save handle and values of top to return them</span>
+        <span class="n">poppedtophandle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">poppedval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># move last elem to top</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1">## set out of Nh nodes to 0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># shorten heap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Nh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span>
+        <span class="c1"># swap the root [1] with largest child, and so on...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__max_heapify</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">poppedtophandle</span><span class="p">,</span><span class="n">poppedval</span></div>
+
+
+    <span class="c1">##=============================================================</span>
+
+
+<span class="c1"># #=============================================================</span>
+<span class="c1"># #               MIN stuff</span>
+<span class="c1"># #=============================================================</span>
+
+
+<div class="viewcode-block" id="BinHeapMin">
+<a class="viewcode-back" href="../../../developerdocs.html#pestoseis.ttimerays.binheap.BinHeapMin">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BinHeapMin</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">      Min heap binary tree.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#====================================================</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">values</span><span class="p">,</span><span class="n">Nmax</span><span class="p">,</span><span class="n">handles</span><span class="p">):</span>
+
+        <span class="k">assert</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="o">==</span><span class="n">handles</span><span class="o">.</span><span class="n">size</span>
+        <span class="c1">## Init the structure </span>
+        <span class="c1">## Nmax,Nh,nodes,handles</span>
+        <span class="n">Nh</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">size</span>
+        <span class="c1">## Init big arrays</span>
+        <span class="c1">##Array{Float64}(0),10,Array{Int64}(0)</span>
+        <span class="n">values2</span>  <span class="o">=</span> <span class="n">NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">Nmax</span><span class="p">)</span>
+        <span class="n">handles2</span> <span class="o">=</span> <span class="n">NP</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">Nmax</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">NP</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+        <span class="c1">## copy to avoid modifying input arrays!!</span>
+        <span class="n">values2</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">Nh</span><span class="p">]</span>  <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">handles2</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">Nh</span><span class="p">]</span> <span class="o">=</span> <span class="n">handles</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Nh</span> <span class="o">=</span> <span class="n">Nh</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Nmax</span> <span class="o">=</span> <span class="n">Nmax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="n">values2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handles</span> <span class="o">=</span> <span class="n">handles2</span>
+        <span class="c1">#h = BinHeapMax(Nmax,Nh,values2,handles2)</span>
+        <span class="c1">## heapify the structure</span>
+        <span class="n">sta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">//</span><span class="mi">2</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sta</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span> <span class="c1">#sta:-1:1 ## backwards</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__min_heapify</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="c1">#==================================================    </span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__swap_nodes_heap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">q</span><span class="p">):</span>
+        <span class="c1"># temporary copy</span>
+        <span class="n">ptmp_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+        <span class="n">ptmp_handle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+        <span class="c1"># swap last and first node</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="n">ptmp_node</span>
+        <span class="c1"># swap handles too</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="n">ptmp_handle</span>
+
+    <span class="c1">#==================================================    </span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">topval_heap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1">##=============================================================</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">__min_heapify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="p">:</span>
+        <span class="c1">## Go DOWN the tree (min heap)...</span>
+        <span class="c1"># get children indices</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">index_leftchild</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">index_rightchild</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="c1">## Introduction to algorithms, p. 154</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">l</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">l</span><span class="p">]</span><span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">:</span>
+            <span class="c1"># smallest on left</span>
+            <span class="n">smallest</span> <span class="o">=</span> <span class="n">l</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="c1"># smallest on i</span>
+            <span class="n">smallest</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">r</span><span class="p">]</span><span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">smallest</span><span class="p">])</span> <span class="p">:</span>
+            <span class="c1"># smallest on right</span>
+            <span class="n">smallest</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="k">if</span> <span class="n">smallest</span><span class="o">!=</span><span class="n">i</span> <span class="p">:</span>
+            <span class="c1"># swap the nodes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__swap_nodes_heap</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">smallest</span><span class="p">)</span>
+            <span class="c1"># keep going</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__min_heapify</span><span class="p">(</span><span class="n">smallest</span><span class="p">)</span>
+
+    <span class="c1">##=============================================================</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_node_minheap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">val</span><span class="p">,</span><span class="n">handle</span><span class="p">)</span> <span class="p">:</span>
+        <span class="c1">## find index of node given handle</span>
+        <span class="c1">#idxh = 0</span>
+        <span class="c1"># for l in range(0,self.Nh) :</span>
+        <span class="c1">#     if self.handles[l]==handle :</span>
+        <span class="c1">#         idxh = l</span>
+        <span class="n">idxh</span> <span class="o">=</span> <span class="n">NP</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="o">==</span><span class="n">handle</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">i</span> <span class="o">=</span> <span class="n">idxh</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1">## from 1D array to scalar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="c1"># GO UP THE TREE: compare with parents...</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">i</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">index_parent</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">:</span>
+            <span class="c1">## swap node with parent</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__swap_nodes_heap</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">index_parent</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">index_parent</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="c1"># GO DOWN THE TREE: compare with children...</span>
+        <span class="k">if</span> <span class="n">i</span><span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span> <span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__min_heapify</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="c1">##=============================================================</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">insert_minheap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">val</span><span class="p">,</span><span class="n">handle</span><span class="p">)</span> <span class="p">:</span>
+        <span class="c1">## Go UP the tree (min heap) from the bottom...</span>
+        <span class="c1"># extend heap</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nmax</span><span class="o">&gt;</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1">## IMPORTANT: make sure handle is unique</span>
+        <span class="c1">## commented because slows things down</span>
+        <span class="c1">#   @assert ~(handle in self.handles[1:self.Nh])</span>
+        <span class="c1"># resize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Nh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">+</span><span class="mi">1</span>
+        <span class="c1"># add the new node at the bottom</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span> <span class="c1"># set handle too</span>
+        <span class="c1"># start from bottom right leaf</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span>
+        <span class="c1"># compare with parents...</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">i</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">index_parent</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">:</span>
+            <span class="c1">## swap node with parent</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__swap_nodes_heap</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">index_parent</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">index_parent</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="c1">##=============================================================</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">pop_minheap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># save handle and values of top to return them</span>
+        <span class="n">poppedtophandle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">poppedval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># move last elem to top</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1">## set out of Nh nodes to 0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># shorten heap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Nh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nh</span><span class="o">-</span><span class="mi">1</span>
+        <span class="c1"># swap the root [1] with largest child, and so on...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__min_heapify</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">poppedtophandle</span><span class="p">,</span><span class="n">poppedval</span></div>
+
+
+
+    <span class="c1">##=============================================================</span>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Andrea Zunino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

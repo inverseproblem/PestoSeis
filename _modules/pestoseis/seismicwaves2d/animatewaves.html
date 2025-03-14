@@ -1,0 +1,414 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pestoseis.seismicwaves2d.animatewaves &mdash; PestoSeis 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=83a61292"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PestoSeis
+              <img src="../../../_static/PestoSeisLogo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation — loading the module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ttimerays_guide.html">Traveltimes and rays – using <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../seismicwaves2d_guide.html">Seismic wave propagation – using <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/index.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developerdocs.html">Developer zone</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PestoSeis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pestoseis.seismicwaves2d.animatewaves</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pestoseis.seismicwaves2d.animatewaves</h1><div class="highlight"><pre>
+<span></span>
+<span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#    PestoSeis, a numerical laboratory to learn about seismology, written</span>
+<span class="c1">#    in the Python language.</span>
+<span class="c1">#    Copyright (C) 2021  Andrea Zunino </span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#    it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#    (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#    GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#    You should have received a copy of the GNU General Public License</span>
+<span class="c1">#    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Animate result of 2D finite difference simulation</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1">#######################################################################</span>
+<span class="c1">#######################################################################</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">animation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">gridspec</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">h5</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spi</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sps</span>
+
+<span class="c1">#######################################################################</span>
+<span class="c1"># ######################################################################</span>
+
+<div class="viewcode-block" id="animateacousticwaves">
+<a class="viewcode-back" href="../../../API/seismicwaves2d.html#pestoseis.seismicwaves2d.animateacousticwaves">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">animateacousticwaves</span><span class="p">(</span><span class="n">inpfile</span><span class="p">,</span><span class="n">clipamplitude</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span><span class="n">showanim</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Function to &#39;animate&#39; the results of a 2D acoustic finite difference simulation. It produces (and saves to a file) an .mp4 movie.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       inpfile (string): input HDF5 file name</span>
+<span class="sd">       clipamplitude (float): amplitude clipping factor</span>
+<span class="sd">       showanim (bool): show plot or not</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">##============================</span>
+    <span class="n">every</span> <span class="o">=</span> <span class="mi">1</span> 
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;acoustic&quot;</span>
+    <span class="n">fl</span><span class="o">=</span><span class="n">inpfile</span> <span class="c1">#&quot;outdata/acoustic_snapshots.h5&quot;</span>
+
+    <span class="c1">##=========================================</span>
+
+    <span class="n">h</span><span class="o">=</span><span class="n">h5</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fl</span><span class="p">,</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">press</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;press&quot;</span><span class="p">][:,:,:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">srctf</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;srctf&quot;</span><span class="p">][:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">][()]</span>
+    <span class="n">dh</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;dh&quot;</span><span class="p">][()]</span> <span class="c1">#[()]</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;nx&quot;</span><span class="p">][()]</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;nz&quot;</span><span class="p">][()]</span>
+    <span class="n">vel</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;vel&quot;</span><span class="p">][:,:]</span>
+    <span class="n">snapevery</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;snapevery&quot;</span><span class="p">][()]</span>
+    <span class="n">recs</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;recpos&quot;</span><span class="p">][:,:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">press</span>
+
+    <span class="n">N</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">pmax</span> <span class="o">=</span> <span class="n">clipamplitude</span><span class="o">*</span><span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">pmin</span> <span class="o">=</span> <span class="o">-</span><span class="n">pmax</span>
+    <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">RdGy_r</span> <span class="c1">#hot_r #gray_r #jet #RdGy_r #viridis</span>
+
+    <span class="c1">######################################################</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">updatefig_acou</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">reddot</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">t</span><span class="p">[(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">snapevery</span><span class="p">],</span><span class="n">srctf</span><span class="p">[(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">snapevery</span><span class="p">])</span>
+        <span class="n">sp2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Iter </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+        <span class="n">wav</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">x</span><span class="p">[:,:,</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">wav</span><span class="p">,</span><span class="n">reddot</span><span class="p">,</span><span class="n">sp2</span><span class="p">)</span>
+
+    <span class="c1">######################################################</span>
+
+    <span class="n">nt</span> <span class="o">=</span> <span class="n">srctf</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dt</span><span class="o">*</span><span class="n">nt</span><span class="p">,</span><span class="n">dt</span><span class="p">)</span>
+
+    <span class="n">fig1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">gs</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">fig1</span><span class="p">)</span>
+    <span class="n">gs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">wspace</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span><span class="n">hspace</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+
+    <span class="n">sp1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Source Time Function&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">)</span>
+    <span class="n">sep1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">srctf</span><span class="p">,</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+    <span class="n">reddot</span><span class="p">,</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">srctf</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s1">&#39;or&#39;</span><span class="p">)</span>
+
+
+    <span class="n">sp2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Amplitude Scaling Factor: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">clipamplitude</span><span class="p">))</span>
+    <span class="c1"># sp2 = plt.subplot(122)</span>
+    <span class="n">extent</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dh</span><span class="o">*</span><span class="p">(</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span><span class="n">dh</span><span class="o">*</span><span class="p">(</span><span class="n">nz</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span><span class="mf">0.0</span><span class="p">]</span>
+    <span class="n">vp</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">vel</span><span class="p">[:,:]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">,</span><span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
+                     <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Horizontal Distance [m]&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Depth [m]&quot;</span><span class="p">)</span>
+    
+    <span class="n">cbar1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">vp</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">cbar1</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;P-Wave Velocity [m/s]&quot;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">recs</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">recs</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s2">&quot;v&quot;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
+    <span class="n">wav</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">x</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="n">pmin</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="n">pmax</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span><span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
+                     <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span> <span class="n">animated</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+
+    <span class="c1">###</span>
+    <span class="n">ani</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">FuncAnimation</span><span class="p">(</span><span class="n">fig1</span><span class="p">,</span> <span class="n">updatefig_acou</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">every</span><span class="p">),</span> <span class="n">interval</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">blit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">mywriter</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">FFMpegWriter</span><span class="p">()</span>
+    <span class="n">ani</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;animation_</span><span class="si">{}</span><span class="s1">.mp4&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kind</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">96</span><span class="p">,</span><span class="n">writer</span><span class="o">=</span><span class="n">mywriter</span><span class="p">)</span>
+
+
+    <span class="c1">##################</span>
+    <span class="k">if</span> <span class="n">showanim</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        
+    <span class="k">return</span> <span class="n">ani</span></div>
+
+
+
+<span class="c1">#######################################################################</span>
+
+<div class="viewcode-block" id="animateelasticwaves">
+<a class="viewcode-back" href="../../../API/seismicwaves2d.html#pestoseis.seismicwaves2d.animateelasticwaves">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">animateelasticwaves</span><span class="p">(</span><span class="n">inpfile</span><span class="p">,</span><span class="n">showwhatela</span><span class="o">=</span><span class="s2">&quot;VxVz&quot;</span><span class="p">,</span><span class="n">clipamplitude</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span><span class="n">showanim</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Function to &#39;animate&#39; the results of a 2D elastic finite difference simulation. It produces (and saves to a file) an .mp4 movie.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       inpfile (string): input HDF5 file name</span>
+<span class="sd">       showwhatela (string): what to show, either &#39;VxVz&#39; or &#39;PS&#39;</span>
+<span class="sd">       clipamplitude (float): amplitude clipping factor</span>
+<span class="sd">       showanim (bool): show plot or not</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">##============================</span>
+    <span class="n">every</span> <span class="o">=</span> <span class="mi">1</span> 
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;elastic&quot;</span>
+    <span class="n">fl</span><span class="o">=</span><span class="n">inpfile</span> 
+
+    <span class="c1">##=========================================</span>
+
+    <span class="n">h</span><span class="o">=</span><span class="n">h5</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fl</span><span class="p">,</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">srctf</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;srctf&quot;</span><span class="p">][:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>    
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">][()]</span>
+    <span class="n">dh</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;dh&quot;</span><span class="p">][()]</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;nx&quot;</span><span class="p">][()]</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;nz&quot;</span><span class="p">][()]</span>
+    <span class="n">vx</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;vx&quot;</span><span class="p">][:,:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">vz</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;vz&quot;</span><span class="p">][:,:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">lamb</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;lambda&quot;</span><span class="p">][:,:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;mu&quot;</span><span class="p">][:,:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">rho</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;rho&quot;</span><span class="p">][:,:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">snapevery</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;snapevery&quot;</span><span class="p">][()]</span>
+    <span class="n">recs</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;recpos&quot;</span><span class="p">][:,:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1"># N=x.shape[2]</span>
+    <span class="c1"># pmax = clipamplitude*abs(x).max()</span>
+    <span class="c1"># pmin = -pmax</span>
+    <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">RdGy_r</span> <span class="c1">#hot_r #gray_r #jet #RdGy_r #viridis</span>
+
+    <span class="k">if</span> <span class="n">showwhatela</span><span class="o">==</span><span class="s1">&#39;PS&#39;</span><span class="p">:</span>
+        <span class="c1">## get displacement from velocity</span>
+        <span class="n">vxdetr</span> <span class="o">=</span> <span class="n">sps</span><span class="o">.</span><span class="n">detrend</span><span class="p">(</span><span class="n">vx</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
+        <span class="n">vzdetr</span> <span class="o">=</span> <span class="n">sps</span><span class="o">.</span><span class="n">detrend</span><span class="p">(</span><span class="n">vz</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
+        <span class="n">ux</span> <span class="o">=</span> <span class="n">spi</span><span class="o">.</span><span class="n">cumtrapz</span><span class="p">(</span><span class="n">vxdetr</span><span class="p">,</span><span class="n">dx</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">uz</span> <span class="o">=</span> <span class="n">spi</span><span class="o">.</span><span class="n">cumtrapz</span><span class="p">(</span><span class="n">vzdetr</span><span class="p">,</span><span class="n">dx</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+        <span class="c1">## calculate derivatives</span>
+        <span class="n">tmpux</span> <span class="o">=</span> <span class="p">(</span><span class="n">ux</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span><span class="mi">1</span><span class="p">:,:]</span><span class="o">+</span><span class="n">ux</span><span class="p">[</span><span class="mi">1</span><span class="p">:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span><span class="o">+</span><span class="n">ux</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:,:]</span><span class="o">+</span><span class="n">ux</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:])</span><span class="o">/</span><span class="mf">4.0</span> <span class="c1"># staggered grid...</span>
+        <span class="n">tmpuz</span> <span class="o">=</span> <span class="n">uz</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span>
+        <span class="c1">## divengence of displacement</span>
+        <span class="n">duxdx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">tmpux</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span><span class="o">/</span><span class="n">dh</span>
+        <span class="n">duzdz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">tmpuz</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:,:]</span><span class="o">/</span><span class="n">dh</span>
+        <span class="n">Pw</span> <span class="o">=</span> <span class="n">duxdx</span><span class="p">[:,:,:]</span> <span class="o">+</span> <span class="n">duzdz</span><span class="p">[:,:,:]</span>
+        <span class="c1">## curl of displacement</span>
+        <span class="n">duxdz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">tmpux</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:,:]</span><span class="o">/</span><span class="n">dh</span>
+        <span class="n">duzdx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">tmpuz</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span><span class="o">/</span><span class="n">dh</span>
+        <span class="n">Sw</span> <span class="o">=</span> <span class="n">duxdz</span><span class="p">[:,:,:]</span> <span class="o">-</span> <span class="n">duzdx</span><span class="p">[:,:,:]</span>
+
+        <span class="n">N</span><span class="o">=</span><span class="n">Pw</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">pmax1</span> <span class="o">=</span> <span class="n">clipamplitude</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">Pw</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="c1">#abs(x).max()</span>
+        <span class="n">pmin1</span> <span class="o">=</span> <span class="o">-</span><span class="n">pmax1</span> <span class="c1">#x.min()</span>
+        <span class="n">pmax2</span> <span class="o">=</span> <span class="n">clipamplitude</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">Pw</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="c1">#abs(x).max()</span>
+        <span class="n">pmin2</span> <span class="o">=</span> <span class="o">-</span><span class="n">pmax2</span> <span class="c1">#x.min()</span>
+
+        <span class="n">title1</span> <span class="o">=</span> <span class="s2">&quot;P waves&quot;</span>
+        <span class="n">title2</span> <span class="o">=</span> <span class="s2">&quot;S waves&quot;</span>
+        <span class="n">data1</span> <span class="o">=</span> <span class="n">Pw</span>
+        <span class="n">data2</span> <span class="o">=</span> <span class="n">Sw</span>
+
+    <span class="k">elif</span> <span class="n">showwhatela</span><span class="o">==</span><span class="s1">&#39;VxVz&#39;</span><span class="p">:</span>
+        <span class="n">data1</span> <span class="o">=</span> <span class="n">vx</span>
+        <span class="n">data2</span> <span class="o">=</span> <span class="n">vz</span>
+        <span class="n">title1</span> <span class="o">=</span> <span class="s2">&quot;Vx&quot;</span>
+        <span class="n">title2</span> <span class="o">=</span> <span class="s2">&quot;Vz&quot;</span>
+
+        <span class="n">N</span><span class="o">=</span><span class="n">vx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">pmax1</span> <span class="o">=</span> <span class="n">clipamplitude</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">vx</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="c1">#abs(x).max()</span>
+        <span class="n">pmin1</span> <span class="o">=</span> <span class="o">-</span><span class="n">pmax1</span> <span class="c1">#x.min()</span>
+        <span class="n">pmax2</span> <span class="o">=</span> <span class="n">clipamplitude</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">vz</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="c1">#abs(x).max()</span>
+        <span class="n">pmin2</span> <span class="o">=</span> <span class="o">-</span><span class="n">pmax2</span> <span class="c1">#x.min()</span>
+
+    <span class="k">elif</span> <span class="n">showwhatela</span> <span class="o">==</span> <span class="s2">&quot;Vmag&quot;</span><span class="p">:</span>
+        <span class="n">data1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">vx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">vz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">title1</span> <span class="o">=</span> <span class="s2">&quot;V Combined&quot;</span>
+        <span class="n">data2</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">vx</span>
+        <span class="n">title2</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">N</span><span class="o">=</span><span class="n">vx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">pmax1</span> <span class="o">=</span> <span class="n">clipamplitude</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">data1</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="c1">#abs(x).max()</span>
+        <span class="c1"># pmin1 = -pmax1 #x.min()</span>
+        <span class="n">pmin1</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">pmax2</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">pmin2</span> <span class="o">=</span> <span class="o">-</span><span class="n">pmax2</span> <span class="c1">#x.min()</span>
+
+    <span class="c1">######################################################</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">updatefig_ela</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">reddot</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">t</span><span class="p">[(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">snapevery</span><span class="p">],</span><span class="n">srctf</span><span class="p">[(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">snapevery</span><span class="p">])</span>
+        <span class="n">sp2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title1</span><span class="o">+</span><span class="s2">&quot;  Snapshot: </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+        <span class="n">wav1</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">data1</span><span class="p">[:,:,</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">sp3</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title2</span><span class="o">+</span><span class="s2">&quot;  Snapshot: </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+        <span class="n">wav2</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">data2</span><span class="p">[:,:,</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">wav1</span><span class="p">,</span><span class="n">sp2</span><span class="p">,</span><span class="n">wav2</span><span class="p">,</span><span class="n">sp3</span><span class="p">)</span>
+
+    <span class="c1">######################################################</span>
+
+    <span class="n">nt</span> <span class="o">=</span> <span class="n">srctf</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dt</span><span class="o">*</span><span class="n">nt</span><span class="p">,</span><span class="n">dt</span><span class="p">)</span>
+
+    <span class="n">fig1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="mi">8</span><span class="p">),</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">gs</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">fig1</span><span class="p">)</span>
+    <span class="n">gs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">wspace</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span><span class="n">hspace</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+
+    <span class="c1">## source-time function</span>
+    <span class="n">sp1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Source Time Function&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">)</span>
+    <span class="n">sep1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">srctf</span><span class="p">,</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+    <span class="n">reddot</span><span class="p">,</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">srctf</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s1">&#39;or&#39;</span><span class="p">)</span>
+
+    <span class="c1">## data1 waves</span>
+    <span class="n">sp2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[:</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">:])</span>
+    <span class="n">extent</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dh</span><span class="o">*</span><span class="p">(</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span><span class="n">dh</span><span class="o">*</span><span class="p">(</span><span class="n">nz</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span><span class="mf">0.0</span><span class="p">]</span>
+    <span class="n">prop1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">rho</span><span class="p">[:,:]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">,</span><span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
+                     <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">recs</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">recs</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s2">&quot;v&quot;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
+    <span class="n">wav1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">data1</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="n">pmin1</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="n">pmax1</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span><span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
+                      <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span> <span class="n">animated</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Horizontal Distance [m]&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Depth [m]&quot;</span><span class="p">)</span>
+
+    <span class="n">cbar1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">prop1</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">cbar1</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Density [kg/m^3]&quot;</span><span class="p">)</span>
+
+    <span class="c1">## data2 waves</span>
+    <span class="n">sp3</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:])</span>
+    <span class="n">extent</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="n">dh</span><span class="o">*</span><span class="p">(</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span><span class="n">dh</span><span class="o">*</span><span class="p">(</span><span class="n">nz</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span><span class="mf">0.0</span><span class="p">]</span>
+    <span class="n">prop2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">rho</span><span class="p">[:,:]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">,</span><span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
+                     <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">recs</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">recs</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s2">&quot;v&quot;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
+    <span class="n">wav2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">data2</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="n">pmin2</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="n">pmax2</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span><span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
+                      <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span> <span class="n">animated</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Horizontal Distance [m]&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Depth [m]&quot;</span><span class="p">)</span>
+
+    <span class="n">cbar2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">prop2</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">cbar2</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Density [kg/m^3]&quot;</span><span class="p">)</span>
+
+    <span class="c1">###</span>
+    <span class="n">ani</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">FuncAnimation</span><span class="p">(</span><span class="n">fig1</span><span class="p">,</span> <span class="n">updatefig_ela</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">every</span><span class="p">),</span> <span class="n">interval</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">blit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">mywriter</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">FFMpegWriter</span><span class="p">()</span>
+    <span class="n">ani</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;animation_</span><span class="si">{}</span><span class="s1">.mp4&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kind</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">96</span><span class="p">,</span><span class="n">writer</span><span class="o">=</span><span class="n">mywriter</span><span class="p">)</span>
+
+
+    <span class="c1">##################</span>
+    <span class="k">if</span> <span class="n">showanim</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">ani</span></div>
+
+
+<span class="c1">#######################################################################</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Andrea Zunino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,305 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PestoSeis’s documentation &mdash; PestoSeis 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=83a61292"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation — loading the module" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            PestoSeis
+              <img src="_static/PestoSeisLogo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation — loading the module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ttimerays_guide.html">Traveltimes and rays – using <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="seismicwaves2d_guide.html">Seismic wave propagation – using <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="API/index.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developerdocs.html">Developer zone</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">PestoSeis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">PestoSeis’s documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pestoseis-s-documentation">
+<h1>PestoSeis’s documentation<a class="headerlink" href="#pestoseis-s-documentation" title="Link to this heading"></a></h1>
+<p>The PestoSeis package is a set of functions to perform calculations of seismic traveltimes, rays and wave propagation in two dimensions (2D). PestoSeis covers the range from forward modeling wave propagation through a known model to reconstructing the structural map of an unknown medium from some observed (synthetic) data by providing algorithms to solve a 2D inverse problem by simple means.</p>
+<p>Its main purpose is educational, it aims to be a simple tool to play around with some aspects of seismology. Due to the fact that many fields of research use the fundamentals of wave propagation, the functionalities within PestoSeis are not limited to seismology, but can also be applied for instance to problems in medical ultrasound (check out the tutorial on medical ultrasound). Due to the educational purpose of the code, no optimization for speed has been perfomed and it has <em>not</em> been tested extensively. Therefore, use of this code for research it is <em>not</em> encouraged.</p>
+<p>The functions contained in this package aim at the following:</p>
+<ul class="simple">
+<li><p>Setting up a grid containing a velocity model;</p></li>
+<li><p>Computing traveltimes for given sources and receivers, optionally providing the entire 2D traveltime model;</p></li>
+<li><p>Tracing seismic rays given a 2D traveltime array and position of sources and receivers;</p></li>
+<li><p>Performing very simple traveltime tomography using rays;</p></li>
+<li><p>Computing acoustic and elastic wave propagation in 2D by finite differences;</p></li>
+<li><p>Performing basic seismic processing for exploration seismology.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Authors<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p>Andrea Zunino</p></li>
+<li><p>Patrick Marty</p></li>
+<li><p>Ines E. Ulrich</p></li>
+</ul>
+</dd>
+</dl>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<p>See the <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation — loading the module</span></a> for more details.</p>
+</section>
+<section id="user-guide">
+<h2>User guide<a class="headerlink" href="#user-guide" title="Link to this heading"></a></h2>
+<p>The User guide provides information about functionality and how to use the package with examples.</p>
+<section id="traveltimes-and-rays-in-2d">
+<h3>Traveltimes and rays in 2D<a class="headerlink" href="#traveltimes-and-rays-in-2d" title="Link to this heading"></a></h3>
+<p>See <a class="reference internal" href="ttimerays_guide.html#ttimerays-guide"><span class="std std-ref">Traveltimes and rays – using ttimerays</span></a>.</p>
+</section>
+<section id="wave-propagation-in-2d">
+<h3>Wave propagation in 2D<a class="headerlink" href="#wave-propagation-in-2d" title="Link to this heading"></a></h3>
+<p>See <a class="reference internal" href="seismicwaves2d_guide.html#seismicwaves2d-guide"><span class="std std-ref">Seismic wave propagation – using seismicwaves2d</span></a>.</p>
+</section>
+</section>
+<section id="tutorials">
+<h2>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading"></a></h2>
+<p>A set of examples in the form of Jupyter notebooks illustrating the capabilities of the code.
+See <a class="reference internal" href="tutorials.html#tutorials"><span class="std std-ref">Tutorials</span></a>.</p>
+</section>
+<section id="for-developers">
+<h2>For developers<a class="headerlink" href="#for-developers" title="Link to this heading"></a></h2>
+<p>See <a class="reference internal" href="developerdocs.html#developerdocs"><span class="std std-ref">Developer zone</span></a>.</p>
+</section>
+</section>
+<section id="table-of-contents">
+<h1>Table of contents<a class="headerlink" href="#table-of-contents" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation — loading the module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ttimerays_guide.html">Traveltimes and rays – using <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ttimerays_guide.html#setup-of-grid-parameters-and-models">Setup of grid parameters and models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ttimerays_guide.html#visualization">Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ttimerays_guide.html#computation-of-traveltimes">Computation of traveltimes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ttimerays_guide.html#rays">Rays</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ttimerays_guide.html#trace-rays-in-a-2d-heterogeneous-model">Trace rays in a 2D heterogeneous model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ttimerays_guide.html#trace-straight-rays">Trace <em>straight</em> rays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ttimerays_guide.html#trace-rays-in-a-horizontally-layered-medium">Trace rays in a <em>horizontally layered</em> medium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ttimerays_guide.html#ray-tomography">Ray tomography</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="seismicwaves2d_guide.html">Seismic wave propagation – using <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="seismicwaves2d_guide.html#acoustic-wave-equation-in-2d">Acoustic wave equation in 2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="seismicwaves2d_guide.html#elastic-wave-equation-in-2d">Elastic wave equation in 2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="seismicwaves2d_guide.html#boundary-conditions">Boundary conditions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial%2001%20-%20Earthquake%20location.html">Tutorial 01 - Earthquake location</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2001%20-%20Earthquake%20location.html#1.-Problem-Setup">1. Problem Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2001%20-%20Earthquake%20location.html#2.-Create-list-of-trial-source-positions">2. Create list of trial source positions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2001%20-%20Earthquake%20location.html#3.-Calculate-all-traveltimes-for-all-sources">3. Calculate all traveltimes for all sources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2001%20-%20Earthquake%20location.html#4.-Traveltime-Difference">4. Traveltime Difference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2001%20-%20Earthquake%20location.html#5.-Plotting-the-Results">5. Plotting the Results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial%2002%20-%20Trace%20rays.html">Tutorial 02 - Trace rays</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2002%20-%20Trace%20rays.html#1.-Problem-Setup">1. Problem Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2002%20-%20Trace%20rays.html#2.-Compute-the-Traveltimes">2. Compute the Traveltimes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2002%20-%20Trace%20rays.html#3.-Trace-the-Rays">3. Trace the Rays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2002%20-%20Trace%20rays.html#4.-Plot-the-Results">4. Plot the Results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial%2003%20-%20Velocity%20inversion.html">Tutorial 03 - Velocity inversion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2003%20-%20Velocity%20inversion.html#1.-Problem-Setup">1. Problem Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2003%20-%20Velocity%20inversion.html#2.-Trace-Ray-Paths">2. Trace Ray Paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2003%20-%20Velocity%20inversion.html#3.-Build-the-Tomography-Matrix">3. Build the Tomography Matrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2003%20-%20Velocity%20inversion.html#4.-Perform-the-Least-Squares-Inversion">4. Perform the Least-Squares Inversion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2003%20-%20Velocity%20inversion.html#5.-Plotting-the-Results">5. Plotting the Results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial%2004%20-%20Medical%20Ultrasound%20-%20Calculate%20travel%20times%20using%20the%20USCT%20setup.html">Tutorial 04 - Medical Ultrasound - Calculate travel times using the USCT setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2004%20-%20Medical%20Ultrasound%20-%20Calculate%20travel%20times%20using%20the%20USCT%20setup.html#Problem-Setup">Problem Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2004%20-%20Medical%20Ultrasound%20-%20Calculate%20travel%20times%20using%20the%20USCT%20setup.html#Compute-the-Traveltimes">Compute the Traveltimes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2004%20-%20Medical%20Ultrasound%20-%20Calculate%20travel%20times%20using%20the%20USCT%20setup.html#Trace-the-Rays">Trace the Rays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2004%20-%20Medical%20Ultrasound%20-%20Calculate%20travel%20times%20using%20the%20USCT%20setup.html#Plot-the-Results">Plot the Results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2004%20-%20Medical%20Ultrasound%20-%20Calculate%20travel%20times%20using%20the%20USCT%20setup.html#References">References</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial%2005%20-%20Acoustic%20Wave%20Propagation.html">Tutorial 05 - Acoustic Wave Propagation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2005%20-%20Acoustic%20Wave%20Propagation.html#Acoustic-Forward-Simulation">Acoustic Forward Simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2005%20-%20Acoustic%20Wave%20Propagation.html#Preamble">Preamble</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2005%20-%20Acoustic%20Wave%20Propagation.html#Model-Interpolation">Model Interpolation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2005%20-%20Acoustic%20Wave%20Propagation.html#Simulation-Setup">Simulation Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2005%20-%20Acoustic%20Wave%20Propagation.html#Running-the-Simulation">Running the Simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2005%20-%20Acoustic%20Wave%20Propagation.html#Plotting-the-Results">Plotting the Results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2005%20-%20Acoustic%20Wave%20Propagation.html#References">References</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial%2006%20-%20Elastic%20Wave%20Propagation.html">Tutorial 06 - Elastic Wave Propagation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2006%20-%20Elastic%20Wave%20Propagation.html#Elastic-Forward-Simulation">Elastic Forward Simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2006%20-%20Elastic%20Wave%20Propagation.html#Preamble">Preamble</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2006%20-%20Elastic%20Wave%20Propagation.html#Model-Interpolation">Model Interpolation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2006%20-%20Elastic%20Wave%20Propagation.html#Simulation-Setup">Simulation Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2006%20-%20Elastic%20Wave%20Propagation.html#Running-the-Simulation">Running the Simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2006%20-%20Elastic%20Wave%20Propagation.html#Plotting-the-Results">Plotting the Results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2006%20-%20Elastic%20Wave%20Propagation.html#References">References</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial%2007%20-%20Processing%20seismic%20data%20I.html">Tutorial 07 - Processing seismic data I</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2007%20-%20Processing%20seismic%20data%20I.html#Acoustic-waves-simulation">Acoustic waves simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2007%20-%20Processing%20seismic%20data%20I.html#Create-a-movie">Create a movie</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial%2008%20-%20Processing%20seismic%20data%20II.html">Tutorial 08 - Processing seismic data II</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2008%20-%20Processing%20seismic%20data%20II.html#f-k-Filtering">f-k Filtering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2008%20-%20Processing%20seismic%20data%20II.html#Preamble">Preamble</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2008%20-%20Processing%20seismic%20data%20II.html#Import-Data">Import Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2008%20-%20Processing%20seismic%20data%20II.html#Transform-to-Frequency-Wavenumber-Domain">Transform to Frequency-Wavenumber Domain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2008%20-%20Processing%20seismic%20data%20II.html#Remove-the-Ground-Roll">Remove the Ground Roll</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial%2008%20-%20Processing%20seismic%20data%20II.html#Convert-back-to-Time-Space-Domain">Convert back to Time-Space Domain</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="API/index.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="API/reflectionseismo.html">Reflection seismology - <code class="docutils literal notranslate"><span class="pre">reflectionseismo</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="API/reflectionseismo.html#pestoseis.reflectionseismo.agc"><code class="docutils literal notranslate"><span class="pre">agc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/reflectionseismo.html#pestoseis.reflectionseismo.calcreflectivity"><code class="docutils literal notranslate"><span class="pre">calcreflectivity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/reflectionseismo.html#pestoseis.reflectionseismo.fwdconvolve"><code class="docutils literal notranslate"><span class="pre">fwdconvolve()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/reflectionseismo.html#pestoseis.reflectionseismo.geometrical_spreading"><code class="docutils literal notranslate"><span class="pre">geometrical_spreading()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/reflectionseismo.html#pestoseis.reflectionseismo.imgshotgath"><code class="docutils literal notranslate"><span class="pre">imgshotgath()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/reflectionseismo.html#pestoseis.reflectionseismo.nmocorrection"><code class="docutils literal notranslate"><span class="pre">nmocorrection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/reflectionseismo.html#pestoseis.reflectionseismo.wiggle"><code class="docutils literal notranslate"><span class="pre">wiggle()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="API/seismicwaves2d.html">Seismic waves - <code class="docutils literal notranslate"><span class="pre">seismicwaves2d</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="API/seismicwaves2d.html#pestoseis.seismicwaves2d.animateacousticwaves"><code class="docutils literal notranslate"><span class="pre">animateacousticwaves()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/seismicwaves2d.html#pestoseis.seismicwaves2d.animateelasticwaves"><code class="docutils literal notranslate"><span class="pre">animateelasticwaves()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/seismicwaves2d.html#pestoseis.seismicwaves2d.gaussource"><code class="docutils literal notranslate"><span class="pre">gaussource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/seismicwaves2d.html#pestoseis.seismicwaves2d.rickersource"><code class="docutils literal notranslate"><span class="pre">rickersource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/seismicwaves2d.html#pestoseis.seismicwaves2d.solveacoustic2D"><code class="docutils literal notranslate"><span class="pre">solveacoustic2D()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/seismicwaves2d.html#pestoseis.seismicwaves2d.solveelastic2D"><code class="docutils literal notranslate"><span class="pre">solveelastic2D()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="API/ttimerays.html">Traveltimes and rays - <code class="docutils literal notranslate"><span class="pre">ttimerays</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.buildtomomat"><code class="docutils literal notranslate"><span class="pre">buildtomomat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.lininv"><code class="docutils literal notranslate"><span class="pre">lininv()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.plotgrid"><code class="docutils literal notranslate"><span class="pre">plotgrid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.plotrays"><code class="docutils literal notranslate"><span class="pre">plotrays()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.plotttimemod"><code class="docutils literal notranslate"><span class="pre">plotttimemod()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.plotvelmod"><code class="docutils literal notranslate"><span class="pre">plotvelmod()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.rollmod"><code class="docutils literal notranslate"><span class="pre">rollmod()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.setupgrid"><code class="docutils literal notranslate"><span class="pre">setupgrid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.traceall_straight_rays"><code class="docutils literal notranslate"><span class="pre">traceall_straight_rays()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.traceallrays"><code class="docutils literal notranslate"><span class="pre">traceallrays()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.tracerayhorlay"><code class="docutils literal notranslate"><span class="pre">tracerayhorlay()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.traveltime"><code class="docutils literal notranslate"><span class="pre">traveltime()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="API/ttimerays.html#pestoseis.ttimerays.unrollmod"><code class="docutils literal notranslate"><span class="pre">unrollmod()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developerdocs.html">Developer zone</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developerdocs.html#all-members-including-private-ones">All members including private ones</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation — loading the module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Andrea Zunino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
