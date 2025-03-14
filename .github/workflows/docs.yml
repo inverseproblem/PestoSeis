@@ -27,13 +27,17 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           
-     
+      # - name: Install Act dependencies
+      #   if: ${{ env.ACT }}
+      #   run: |
+      #     apt-get update && apt-get install sudo -y
+          
       - name: Install pandoc
-        uses: pandoc/actions/setup@v1\
+        uses: pandoc/actions/setup@v1
       - name: Install dependencies
         run: |
           pwd
-          #apt-get -yq install pandoc
+          #apt-get install pandoc
           python -m pip install --upgrade pip
           python -m pip install .
           python -m pip install ipython
