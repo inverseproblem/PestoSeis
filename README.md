@@ -1,6 +1,6 @@
 # PestoSeis
 
-[![Docs](https://img.shields.io/badge/docs-blue.svg)](https://anzun.gitlab.io/PestoSeis/)
+[![Docs](https://img.shields.io/badge/docs-blue.svg)](https://inverseproblem.github.io/PestoSeis/)
 
 **PestoSeis** is a Python package which contains functions for performing simulations in wave physics, with a particular emphasis on seismic applications.  
 
@@ -33,7 +33,7 @@ pip install git+https://gitlab.com/anzun/PestoSeis
 ```
 
 ## Documentation
-The documentation for PestoSeis can be found [here](https://anzun.gitlab.io/PestoSeis/).
+The documentation for PestoSeis can be found [here](https://inverseproblem.github.io/PestoSeis/).
 
 
 
